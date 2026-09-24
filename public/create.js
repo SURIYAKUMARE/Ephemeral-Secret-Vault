@@ -14,6 +14,8 @@
   const fileType = document.getElementById('file-type');
   const btnRemoveFile = document.getElementById('btn-remove-file');
   const byteCounter = document.getElementById('byte-counter');
+  const passphraseInput = document.getElementById('passphrase-input');
+  const btnToggleEye = document.getElementById('btn-toggle-eye');
   const submitBtn = document.getElementById('submit-btn');
   const errorAlert = document.getElementById('error-alert');
   const errorMessage = document.getElementById('error-message');
@@ -24,6 +26,7 @@
   const expiresDisplay = document.getElementById('expires-display');
   const viewsDisplay = document.getElementById('views-display');
   const fingerprintDisplay = document.getElementById('fingerprint-display');
+  const btnCopyFingerprint = document.getElementById('btn-copy-fingerprint');
   const resetBtn = document.getElementById('reset-btn');
   const toast = document.getElementById('toast');
   const toastMessage = document.getElementById('toast-message');
@@ -39,8 +42,15 @@
   // Tabs
   const tabText = document.getElementById('tab-text');
   const tabFile = document.getElementById('tab-file');
-  const textSection = document.getElementById('text-section');
-  const fileDropzoneGroup = document.getElementById('file-dropzone-group');
+
+  // Theme toggle
+  const themeToggle = document.getElementById('theme-toggle');
+
+  // Nav modals
+  const navHowItWorks = document.getElementById('nav-how-it-works');
+  const navSecurity = document.getElementById('nav-security');
+  const navFeatures = document.getElementById('nav-features');
+  const navFaq = document.getElementById('nav-faq');
 
   // Active state
   let currentFile = null;
@@ -89,29 +99,58 @@
 
   // Reactive byte counter
   function updateByteCounter() {
+    if (!secretInput || !byteCounter) return;
     const text = secretInput.value;
     const bytes = new Blob([text]).size;
     byteCounter.textContent = `${bytes.toLocaleString()} / 10,240 bytes`;
     if (bytes > 10240) {
-      byteCounter.style.color = 'var(--danger)';
+      byteCounter.style.color = '#ef4444';
     } else {
       byteCounter.style.color = 'var(--text-muted)';
     }
   }
-  secretInput.addEventListener('input', updateByteCounter);
+  if (secretInput) {
+    secretInput.addEventListener('input', updateByteCounter);
+  }
+
+  // Passphrase visibility toggle
+  if (btnToggleEye && passphraseInput) {
+    btnToggleEye.addEventListener('click', () => {
+      const isPassword = passphraseInput.getAttribute('type') === 'password';
+      passphraseInput.setAttribute('type', isPassword ? 'text' : 'password');
+      btnToggleEye.textContent = isPassword ? '🔒' : '👁️';
+      btnToggleEye.setAttribute('aria-label', isPassword ? 'Hide passphrase' : 'Show passphrase');
+    });
+  }
+
+  // Theme toggle
+  if (themeToggle) {
+    const savedTheme = localStorage.getItem('vault_theme');
+    if (savedTheme === 'light') {
+      document.body.classList.add('light-theme');
+      themeToggle.textContent = '☀️';
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const isLight = document.body.classList.toggle('light-theme');
+      themeToggle.textContent = isLight ? '☀️' : '🌙';
+      localStorage.setItem('vault_theme', isLight ? 'light' : 'dark');
+      showToast(isLight ? 'Switched to Light Theme' : 'Switched to Cyber Cosmic Dark Theme');
+    });
+  }
 
   // Tab switching
   if (tabText && tabFile) {
     tabText.addEventListener('click', () => {
       tabText.classList.add('active');
       tabFile.classList.remove('active');
-      secretInput.focus();
+      if (secretInput) secretInput.focus();
     });
 
     tabFile.addEventListener('click', () => {
       tabFile.classList.add('active');
       tabText.classList.remove('active');
-      dropzone.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (dropzone) dropzone.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
   }
 
@@ -131,7 +170,7 @@
         name: file.name,
         type: file.type || 'application/octet-stream',
         size: file.size,
-        data: e.target.result // data URL base64
+        data: e.target.result // base64 Data URL
       };
 
       // Show preview card
@@ -161,35 +200,53 @@
   }
 
   // Drag and drop events
-  dropzone.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    dropzone.classList.add('dragover');
-  });
+  if (dropzone) {
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
 
-  dropzone.addEventListener('dragleave', () => {
-    dropzone.classList.remove('dragover');
-  });
+    dropzone.addEventListener('dragleave', () => {
+      dropzone.classList.remove('dragover');
+    });
 
-  dropzone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropzone.classList.remove('dragover');
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      processSelectedFile(e.dataTransfer.files[0]);
-    }
-  });
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        processSelectedFile(e.dataTransfer.files[0]);
+      }
+    });
 
-  fileInput.addEventListener('change', (e) => {
-    if (e.target.files && e.target.files.length > 0) {
-      processSelectedFile(e.target.files[0]);
-    }
-  });
+    dropzone.addEventListener('click', () => {
+      if (fileInput) fileInput.click();
+    });
 
-  btnRemoveFile.addEventListener('click', () => {
-    currentFile = null;
-    fileInput.value = '';
-    filePreviewCard.classList.add('hidden');
-    dropzone.classList.remove('hidden');
-  });
+    dropzone.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        if (fileInput) fileInput.click();
+      }
+    });
+  }
+
+  if (fileInput) {
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files.length > 0) {
+        processSelectedFile(e.target.files[0]);
+      }
+    });
+  }
+
+  if (btnRemoveFile) {
+    btnRemoveFile.addEventListener('click', (e) => {
+      e.stopPropagation();
+      currentFile = null;
+      if (fileInput) fileInput.value = '';
+      filePreviewCard.classList.add('hidden');
+      dropzone.classList.remove('hidden');
+    });
+  }
 
   // Enable native device share if available
   if (navigator.share && shareNative) {
@@ -197,131 +254,151 @@
   }
 
   // Form submission
-  createForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    hideError();
+  if (createForm) {
+    createForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideError();
 
-    const secretText = secretInput.value.trim();
-    if (!secretText && !currentFile) {
-      showError('Please enter a secret text note or attach a file.');
-      return;
-    }
-
-    const ttlSeconds = parseInt(document.getElementById('ttl-select').value, 10);
-    const maxViews = parseInt(document.getElementById('views-select').value, 10);
-    const passphrase = document.getElementById('passphrase-input').value;
-
-    const payload = {
-      ttl_seconds: ttlSeconds,
-      max_views: maxViews
-    };
-
-    if (secretText) {
-      payload.secret = secretText;
-    }
-
-    if (currentFile) {
-      payload.file = currentFile;
-    }
-
-    if (passphrase) {
-      payload.passphrase = passphrase;
-    }
-
-    submitBtn.disabled = true;
-    submitBtn.textContent = '🔒 Encrypting & Sealing Vault...';
-
-    try {
-      const response = await fetch('/api/secret', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to create secret.');
+      const secretText = secretInput ? secretInput.value.trim() : '';
+      if (!secretText && !currentFile) {
+        showError('Please enter a secret text note or attach a file.');
+        return;
       }
 
-      // Display result
-      activeSecretUrl = data.view_url;
-      linkOutput.value = data.view_url;
-      openLinkBtn.href = data.view_url;
-      expiresDisplay.textContent = new Date(data.expires_at).toLocaleString();
-      viewsDisplay.textContent = `${data.views_remaining} view${data.views_remaining > 1 ? 's' : ''}`;
-      fingerprintDisplay.textContent = data.fingerprint;
+      const ttlSeconds = parseInt(document.getElementById('ttl-select').value, 10);
+      const maxViews = parseInt(document.getElementById('views-select').value, 10);
+      const passphrase = passphraseInput ? passphraseInput.value : '';
 
-      // Setup Social Sharing Integrations
-      const shareText = `🔒 Confidential Secret: I've sent you a self-destructing secret link via Ephemeral Secret Vault.\n\nOpen link: ${data.view_url}\n\n⚠️ Notice: This link permanently self-destructs once viewed!`;
-      
-      // WhatsApp
-      shareWhatsApp.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
+      const payload = {
+        ttl_seconds: ttlSeconds,
+        max_views: maxViews
+      };
 
-      // Microsoft Teams
-      shareTeams.href = `https://teams.microsoft.com/share?href=${encodeURIComponent(data.view_url)}&msgText=${encodeURIComponent("🔒 I have shared a confidential self-destructing secret with you.")}`;
+      if (secretText) {
+        payload.secret = secretText;
+      }
 
-      // Email
-      const emailSubject = '🔒 Secure Self-Destructing Secret Link';
-      const emailBody = `Hello,\n\nI have shared a confidential secret with you via Ephemeral Secret Vault:\n\n${data.view_url}\n\n⚠️ IMPORTANT: This secret will be permanently destroyed from storage once viewed or when it expires. Zero copies remain after destruction.\n`;
-      shareEmail.href = `mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+      if (currentFile) {
+        payload.file = currentFile;
+      }
 
-      // Hide form, show result
-      createForm.classList.add('hidden');
-      resultSection.classList.remove('hidden');
-      resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    } catch (err) {
-      showError(err.message);
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = '<span>🔒 Encrypt & Generate Self-Destructing Link</span>';
-    }
-  });
+      if (passphrase) {
+        payload.passphrase = passphrase;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>⏳ Encrypting & Sealing Vault...</span>';
+
+      try {
+        const response = await fetch('/api/secret', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to create secret.');
+        }
+
+        // Display result
+        activeSecretUrl = data.view_url;
+        linkOutput.value = data.view_url;
+        openLinkBtn.href = data.view_url;
+        expiresDisplay.textContent = new Date(data.expires_at).toLocaleString();
+        viewsDisplay.textContent = `${data.views_remaining} view${data.views_remaining > 1 ? 's' : ''}`;
+        fingerprintDisplay.textContent = data.fingerprint;
+
+        // Setup Social Sharing Integrations
+        const shareText = `🔒 Confidential Secret: I've sent you a self-destructing secret link via Ephemeral Secret Vault.\n\nOpen link: ${data.view_url}\n\n⚠️ Notice: This link permanently self-destructs once viewed!`;
+
+        // WhatsApp
+        shareWhatsApp.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
+
+        // Microsoft Teams
+        shareTeams.href = `https://teams.microsoft.com/share?href=${encodeURIComponent(data.view_url)}&msgText=${encodeURIComponent("🔒 I have shared a confidential self-destructing secret with you.")}`;
+
+        // Email
+        const emailSubject = '🔒 Secure Self-Destructing Secret Link';
+        const emailBody = `Hello,\n\nI have shared a confidential secret with you via Ephemeral Secret Vault:\n\n${data.view_url}\n\n⚠️ IMPORTANT: This secret will be permanently destroyed from storage once viewed or when it expires. Zero copies remain after destruction.\n`;
+        shareEmail.href = `mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+
+        // Hide form, show result
+        createForm.classList.add('hidden');
+        resultSection.classList.remove('hidden');
+        resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } catch (err) {
+        showError(err.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>🔒 Encrypt &amp; Generate Self-Destructing Link</span>';
+      }
+    });
+  }
 
   // Copy link handler
-  copyBtn.addEventListener('click', async () => {
-    try {
-      await navigator.clipboard.writeText(linkOutput.value);
-      copyBtn.textContent = 'Copied!';
-      showToast('Link copied to clipboard!');
-      setTimeout(() => {
-        copyBtn.textContent = 'Copy Link';
-      }, 2000);
-    } catch {
-      linkOutput.select();
-      document.execCommand('copy');
-      copyBtn.textContent = 'Copied!';
-      showToast('Link copied to clipboard!');
-      setTimeout(() => {
-        copyBtn.textContent = 'Copy Link';
-      }, 2000);
-    }
-  });
+  if (copyBtn) {
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(linkOutput.value);
+        copyBtn.textContent = 'Copied!';
+        showToast('Link copied to clipboard!');
+        setTimeout(() => {
+          copyBtn.textContent = '📋 Copy Link';
+        }, 2000);
+      } catch {
+        linkOutput.select();
+        document.execCommand('copy');
+        copyBtn.textContent = 'Copied!';
+        showToast('Link copied to clipboard!');
+        setTimeout(() => {
+          copyBtn.textContent = '📋 Copy Link';
+        }, 2000);
+      }
+    });
+  }
+
+  // Copy Fingerprint handler
+  if (btnCopyFingerprint && fingerprintDisplay) {
+    btnCopyFingerprint.addEventListener('click', async () => {
+      const hash = fingerprintDisplay.textContent.trim();
+      try {
+        await navigator.clipboard.writeText(hash);
+        showToast('SHA-256 Fingerprint copied to clipboard!');
+      } catch {
+        showToast('Failed to copy fingerprint.');
+      }
+    });
+  }
 
   // Slack share handler (copies mrkdwn + launches Slack)
-  shareSlack.addEventListener('click', async () => {
-    const slackSnippet = `*🔒 Encrypted Self-Destructing Secret*\nView Link: <${activeSecretUrl}>\n> ⚠️ _This secret link self-destructs automatically once opened._`;
-    try {
-      await navigator.clipboard.writeText(slackSnippet);
-      showToast('Slack-formatted message copied to clipboard!');
-    } catch {
-      showToast('Failed to copy to clipboard.');
-    }
-    // Attempt to open Slack
-    window.open('https://slack.com/app_redirect', '_blank');
-  });
+  if (shareSlack) {
+    shareSlack.addEventListener('click', async () => {
+      const slackSnippet = `*🔒 Encrypted Self-Destructing Secret*\nView Link: <${activeSecretUrl}>\n> ⚠️ _This secret link self-destructs automatically once opened._`;
+      try {
+        await navigator.clipboard.writeText(slackSnippet);
+        showToast('Slack-formatted message copied to clipboard!');
+      } catch {
+        showToast('Failed to copy to clipboard.');
+      }
+      window.open('https://slack.com/app_redirect', '_blank');
+    });
+  }
 
   // Discord share handler (copies Discord markdown)
-  shareDiscord.addEventListener('click', async () => {
-    const discordSnippet = `**🔒 Ephemeral Secret Vault**\n> **Secret Link:** ${activeSecretUrl}\n> ⚠️ *Warning: This link will self-destruct and permanently delete upon being opened.*`;
-    try {
-      await navigator.clipboard.writeText(discordSnippet);
-      showToast('Discord markdown copied to clipboard!');
-    } catch {
-      showToast('Failed to copy to clipboard.');
-    }
-    window.open('https://discord.com/app', '_blank');
-  });
+  if (shareDiscord) {
+    shareDiscord.addEventListener('click', async () => {
+      const discordSnippet = `**🔒 Ephemeral Secret Vault**\n> **Secret Link:** ${activeSecretUrl}\n> ⚠️ *Warning: This link will self-destruct and permanently delete upon being opened.*`;
+      try {
+        await navigator.clipboard.writeText(discordSnippet);
+        showToast('Discord markdown copied to clipboard!');
+      } catch {
+        showToast('Failed to copy to clipboard.');
+      }
+      window.open('https://discord.com/app', '_blank');
+    });
+  }
 
   // Native share handler
   if (shareNative) {
@@ -344,16 +421,76 @@
   }
 
   // Reset form
-  resetBtn.addEventListener('click', () => {
-    createForm.reset();
-    currentFile = null;
-    fileInput.value = '';
-    filePreviewCard.classList.add('hidden');
-    dropzone.classList.remove('hidden');
-    updateByteCounter();
-    resultSection.classList.add('hidden');
-    createForm.classList.remove('hidden');
-    hideError();
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      createForm.reset();
+      currentFile = null;
+      if (fileInput) fileInput.value = '';
+      if (filePreviewCard) filePreviewCard.classList.add('hidden');
+      if (dropzone) dropzone.classList.remove('hidden');
+      updateByteCounter();
+      resultSection.classList.add('hidden');
+      createForm.classList.remove('hidden');
+      hideError();
+    });
+  }
+
+  // Modal system
+  function openModal(id) {
+    const modal = document.getElementById(id);
+    if (modal) {
+      modal.classList.add('active');
+    }
+  }
+
+  function closeAllModals() {
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+      modal.classList.remove('active');
+    });
+  }
+
+  if (navHowItWorks) {
+    navHowItWorks.addEventListener('click', (e) => {
+      e.preventDefault();
+      openModal('modal-how-it-works');
+    });
+  }
+
+  if (navSecurity) {
+    navSecurity.addEventListener('click', (e) => {
+      e.preventDefault();
+      openModal('modal-security');
+    });
+  }
+
+  if (navFeatures) {
+    navFeatures.addEventListener('click', (e) => {
+      e.preventDefault();
+      openModal('modal-features');
+    });
+  }
+
+  if (navFaq) {
+    navFaq.addEventListener('click', (e) => {
+      e.preventDefault();
+      openModal('modal-faq');
+    });
+  }
+
+  // Close modal when clicking X button or backdrop
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay || e.target.classList.contains('modal-close-btn')) {
+        overlay.classList.remove('active');
+      }
+    });
+  });
+
+  // Close modals on Escape key
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeAllModals();
+    }
   });
 
   // Initial byte count

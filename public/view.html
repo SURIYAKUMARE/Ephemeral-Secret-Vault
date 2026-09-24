@@ -12,11 +12,34 @@
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+  <!-- Futuristic Cyber Navigation Bar -->
+  <nav class="navbar" role="navigation" aria-label="Main Navigation">
+    <a href="/" class="nav-brand" title="Ephemeral Secret Vault">
+      <div class="nav-logo" aria-hidden="true">🔒</div>
+      <span class="brand-text">Ephemeral <span class="brand-highlight">Secret Vault</span></span>
+    </a>
+
+    <div class="nav-links">
+      <a href="/" class="nav-link">Home</a>
+      <a href="/#how-it-works" class="nav-link">How It Works</a>
+      <a href="/#security" class="nav-link">Security</a>
+      <a href="/#features" class="nav-link">Features</a>
+      <a href="/#faq" class="nav-link">FAQ</a>
+    </div>
+
+    <div class="nav-actions">
+      <button type="button" class="btn-icon" id="theme-toggle" aria-label="Toggle Dark/Light Mode" title="Toggle Theme">🌙</button>
+      <a href="/" class="btn-nav-create" title="Create your own ephemeral secret">
+        <span>+ Create Secret</span>
+      </a>
+    </div>
+  </nav>
+
   <div class="container">
     <header class="header">
       <div class="vault-logo" aria-hidden="true">🔐</div>
       <h1>SECURE SECRET</h1>
-      <p class="subtitle">You have been sent a secure, self-destructing secret.</p>
+      <p class="subtitle">You have received a confidential, self-destructing secret link.</p>
     </header>
 
     <main class="card" id="vault-card"
@@ -72,7 +95,7 @@
       <!-- Post-reveal Revealed Section -->
       <section id="revealed-section" class="hidden" aria-label="Revealed secret">
         <div id="burn-status-alert" class="alert alert-danger">
-          <strong id="burn-status-title">🔥 SECRET REVEALED & DESTROYED</strong>
+          <strong id="burn-status-title">🔥 SECRET REVEALED &amp; DESTROYED</strong>
           <span id="burn-status-desc">This secret has now been permanently erased from the vault with zero-overwriting.</span>
         </div>
 
@@ -133,14 +156,29 @@
     </div>
 
     <footer class="footer">
-      Zero traces remain after destruction • AES-256-GCM authenticated
+      <div>Zero traces remain after destruction • AES-256-GCM authenticated</div>
       <div style="margin-top: 0.5rem; display: flex; justify-content: center; gap: 1.5rem;">
         <a href="/images/workflow-diagram.jpg" target="_blank" style="color:var(--text-muted);text-decoration:underline;font-size:0.75rem;">Architecture Workflow Diagram</a>
-        <a href="/images/vault-ui-screenshot.png" target="_blank" style="color:var(--text-muted);text-decoration:underline;font-size:0.75rem;">UI Design Overview</a>
+        <a href="/images/ui-mockup-create.jpg" target="_blank" style="color:var(--text-muted);text-decoration:underline;font-size:0.75rem;">UI Design Overview</a>
       </div>
     </footer>
   </div>
 
   <script src="/js/view.js"></script>
+  <script>
+    // Theme toggle initialization on view page
+    const themeBtn = document.getElementById('theme-toggle');
+    if (themeBtn) {
+      if (localStorage.getItem('vault_theme') === 'light') {
+        document.body.classList.add('light-theme');
+        themeBtn.textContent = '☀️';
+      }
+      themeBtn.addEventListener('click', () => {
+        const isLight = document.body.classList.toggle('light-theme');
+        themeBtn.textContent = isLight ? '☀️' : '🌙';
+        localStorage.setItem('vault_theme', isLight ? 'light' : 'dark');
+      });
+    }
+  </script>
 </body>
 </html>

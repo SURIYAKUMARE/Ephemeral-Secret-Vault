@@ -10,16 +10,25 @@ It allows users and automated systems to securely share temporary passwords, dat
 
 ### User Interface & Workflow Diagram
 <p align="center">
-  <img src="docs/images/vault-ui-screenshot.png" alt="Ephemeral Secret Vault UI" width="600">
+  <img src="docs/images/ui-mockup-create.jpg" alt="Ephemeral Secret Vault Cyberpunk UI" width="700">
 </p>
 
-*Figure 1: Ephemeral Secret Vault Interface with File Upload & Real-Time Byte Counter.*
+*Figure 1: Ephemeral Secret Vault 3-Column Cyberpunk UI with AES-256-GCM Encryption, File Drag & Drop, and Scraper Defense.*
+
+<p align="center">
+  <img src="docs/images/ui-mockup-success.jpg" alt="Ephemeral Secret Vault Success & Direct App Sharing" width="700">
+</p>
+
+*Figure 2: Instant Sharing Hub with WhatsApp, Slack, MS Teams, Discord, and Email integrations + Zero-Trace Guarantee.*
 
 <p align="center">
   <img src="docs/images/workflow-diagram.jpg" alt="Ephemeral Secret Vault Complete Workflow" width="750">
 </p>
 
-*Figure 2: Complete 7-Step Lifecycle: Ingestion, AES-GCM Encryption, Bot Shield, Atomic Reveal, and TTL Sweeper.*
+*Figure 3: Complete 7-Step Lifecycle: Ingestion, AES-GCM Encryption, Bot Shield, Atomic Reveal, and TTL Sweeper.*
+
+🌐 **Live Deployment:** [https://ephemeral-secret-vault.vercel.app](https://ephemeral-secret-vault.vercel.app)
+
 
 ## Table of Contents
 1. [Project Overview](#1-project-overview)
