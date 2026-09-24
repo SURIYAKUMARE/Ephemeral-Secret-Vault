@@ -41,11 +41,19 @@
   const revealedImage = document.getElementById('revealed-image');
   const downloadFileBtn = document.getElementById('download-file-btn');
 
+  // Code Inspector Elements
+  const codeInspectorContainer = document.getElementById('code-inspector-container');
+  const codeInspectorTitle = document.getElementById('code-inspector-title');
+  const codeLineNumbers = document.getElementById('code-line-numbers');
+  const codeLinesContent = document.getElementById('code-lines-content');
+  const copyCodeBtn = document.getElementById('copy-code-btn');
+
   // Metadata
   const secretId = vaultCard.dataset.id;
   const hasPassphrase = vaultCard.dataset.hasPassphrase === 'true';
 
   let decryptedFileData = null;
+  let decodedScriptText = '';
 
   function showToast(msg) {
     if (!toast) return;
@@ -161,12 +169,34 @@
         revealedFileName.textContent = data.file.name;
         revealedFileMeta.textContent = `${formatBytes(data.file.size)} • ${data.file.type || 'binary'}`;
         revealedFileIcon.innerHTML = getFileSvg(data.file.name, data.file.type || '');
-        downloadFileBtn.innerHTML = `${SVG.download} <span>Download ${data.file.name}</span>`;
+        downloadFileBtn.innerHTML = `${SVG.download} <span>Download ${data.file.name} (${formatBytes(data.file.size)})</span>`;
+
+        const ext = data.file.name.split('.').pop().toLowerCase();
+        const isCodeFile = ['py', 'js', 'ts', 'jsx', 'tsx', 'html', 'css', 'json', 'sh', 'c', 'cpp', 'rs', 'go', 'php', 'env', 'txt', 'sql', 'md', 'xml', 'yaml', 'yml'].includes(ext) ||
+                           (data.file.type && data.file.type.startsWith('text/')) ||
+                           (data.file.type && data.file.type.includes('json'));
 
         // Check if image for inline rendering
         if (data.file.type && data.file.type.startsWith('image/')) {
           revealedImage.src = data.file.data;
           imagePreviewContainer.classList.remove('hidden');
+          if (codeInspectorContainer) codeInspectorContainer.classList.add('hidden');
+        } else if (isCodeFile && codeInspectorContainer) {
+          try {
+            const rawBase64 = data.file.data.split(',')[1] || data.file.data;
+            decodedScriptText = decodeURIComponent(escape(atob(rawBase64)));
+            const lines = decodedScriptText.split('\n');
+            codeLineNumbers.textContent = lines.map((_, i) => i + 1).join('\n');
+            codeLinesContent.textContent = decodedScriptText;
+            codeInspectorTitle.textContent = `${data.file.name} (${lines.length} lines)`;
+            codeInspectorContainer.classList.remove('hidden');
+          } catch (e) {
+            codeInspectorContainer.classList.add('hidden');
+          }
+          imagePreviewContainer.classList.add('hidden');
+        } else {
+          imagePreviewContainer.classList.add('hidden');
+          if (codeInspectorContainer) codeInspectorContainer.classList.add('hidden');
         }
 
         revealedFileBox.classList.remove('hidden');
@@ -214,6 +244,23 @@
       showError('Failed to prepare file download.');
     }
   });
+
+  // Copy code from inspector
+  if (copyCodeBtn) {
+    copyCodeBtn.addEventListener('click', async () => {
+      if (!decodedScriptText) return;
+      try {
+        await navigator.clipboard.writeText(decodedScriptText);
+        copyCodeBtn.innerHTML = `${SVG.check} <span>Copied</span>`;
+        showToast('Script code copied to clipboard');
+        setTimeout(() => {
+          copyCodeBtn.innerHTML = `${SVG.copy} <span>Copy Code</span>`;
+        }, 2000);
+      } catch {
+        showToast('Failed to copy script code');
+      }
+    });
+  }
 
   // Copy secret text
   copySecretBtn.addEventListener('click', async () => {

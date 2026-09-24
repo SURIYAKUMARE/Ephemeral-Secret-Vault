@@ -124,8 +124,23 @@
             <img id="revealed-image" class="revealed-image-preview" alt="Decrypted Image Preview">
           </div>
 
+          <!-- Interactive Code Inspector (if script or code file e.g. surya.py) -->
+          <div id="code-inspector-container" class="code-inspector-container hidden">
+            <div class="code-inspector-header">
+              <span id="code-inspector-title">Script Source Code</span>
+              <button type="button" id="copy-code-btn" class="btn-copy-mini" style="font-size:0.75rem;padding:2px 8px;border:1px solid rgba(56,189,248,0.3);border-radius:4px;color:var(--text-main);" title="Copy Script Code">
+                <svg class="svg-icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <span>Copy Code</span>
+              </button>
+            </div>
+            <div class="code-inspector-body">
+              <div class="code-line-numbers" id="code-line-numbers"></div>
+              <pre class="code-lines-content" id="code-lines-content"></pre>
+            </div>
+          </div>
+
           <!-- Primary Download Button for File -->
-          <button type="button" id="download-file-btn" class="btn btn-primary">
+          <button type="button" id="download-file-btn" class="btn btn-primary" style="margin-top:0.75rem;">
             <svg class="svg-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
             <span>Download File</span>
           </button>

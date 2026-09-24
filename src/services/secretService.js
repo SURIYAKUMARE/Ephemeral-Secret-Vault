@@ -75,7 +75,11 @@ function createSecret({ secret, file = null, ttlSeconds = 3600, maxViews = 1, pa
     view_url: `${activeBaseUrl}/view/${id}`,
     expires_at: new Date(expiresAt).toISOString(),
     views_remaining: maxViews,
-    fingerprint: getFingerprint(contentToEncrypt)
+    fingerprint: getFingerprint(contentToEncrypt),
+    has_file: Boolean(file && file.name),
+    file_name: file ? file.name : null,
+    file_size: file ? (file.size || 0) : null,
+    file_type: file ? (file.type || 'application/octet-stream') : null
   };
 }
 

@@ -954,6 +954,252 @@ select:focus {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
+/* Delivery Modes & Success Screen Upgrades */
+.delivery-tabs {
+  display: flex;
+  background: rgba(4, 9, 20, 0.85);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 1.25rem;
+  gap: 4px;
+}
+
+.delivery-tab-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.delivery-tab-btn:hover {
+  color: #ffffff;
+}
+
+.delivery-tab-btn.active {
+  background: rgba(14, 165, 233, 0.2);
+  color: var(--cyan-bright);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  box-shadow: 0 0 15px rgba(14, 165, 233, 0.25);
+}
+
+.delivery-panel {
+  display: block;
+}
+
+.delivery-panel.hidden {
+  display: none !important;
+}
+
+/* File Package & Manifest Card */
+.file-manifest-card {
+  background: rgba(2, 6, 23, 0.9);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 14px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  text-align: left;
+}
+
+.file-manifest-header {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 0.85rem;
+}
+
+.file-manifest-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 10px;
+  background: rgba(14, 165, 233, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.file-manifest-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.file-manifest-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-manifest-sub {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.15rem;
+}
+
+.badge-tag {
+  display: inline-block;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--cyan-bright);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.package-download-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+@media (max-width: 580px) {
+  .package-download-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.btn-package {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(37, 99, 235, 0.2));
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #ffffff;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  text-align: center;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.btn-package:hover {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.35), rgba(37, 99, 235, 0.35));
+  border-color: var(--cyan-bright);
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+}
+
+.btn-package-sub {
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--text-dim);
+}
+
+/* QR Code Section */
+.qr-container {
+  background: rgba(2, 6, 23, 0.95);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-top: 1rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.qr-frame {
+  background: #ffffff;
+  padding: 0.75rem;
+  border-radius: 8px;
+  display: inline-block;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+.qr-hint {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+/* Interactive Code Inspector with Line Numbers */
+.code-inspector-container {
+  background: rgba(2, 6, 23, 0.95);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 12px;
+  margin-bottom: 1.25rem;
+  overflow: hidden;
+  text-align: left;
+}
+
+.code-inspector-header {
+  background: rgba(10, 18, 36, 0.9);
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+
+.code-inspector-body {
+  display: flex;
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+  max-height: 380px;
+  overflow: auto;
+  line-height: 1.5;
+}
+
+.code-line-numbers {
+  padding: 0.75rem 0.5rem;
+  text-align: right;
+  color: #475569;
+  user-select: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(2, 6, 23, 0.6);
+  min-width: 38px;
+}
+
+.code-lines-content {
+  padding: 0.75rem 1rem;
+  color: #38bdf8;
+  white-space: pre;
+  flex: 1;
+}
+
+/* Instructions card */
+.share-instructions {
+  background: rgba(10, 18, 36, 0.6);
+  border: 1px dashed rgba(56, 189, 248, 0.25);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  line-height: 1.45;
+  text-align: left;
+}
+
+.share-instructions strong {
+  color: var(--cyan-bright);
+}
+
 /* Metadata Rows */
 .meta-card {
   background: rgba(4, 9, 20, 0.8);
