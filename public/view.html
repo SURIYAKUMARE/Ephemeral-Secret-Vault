@@ -12,10 +12,12 @@
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <!-- Futuristic Cyber Navigation Bar -->
+  <!-- Enterprise Navigation Bar -->
   <nav class="navbar" role="navigation" aria-label="Main Navigation">
     <a href="/" class="nav-brand" title="Ephemeral Secret Vault">
-      <div class="nav-logo" aria-hidden="true">🔒</div>
+      <div class="nav-logo" aria-hidden="true">
+        <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+      </div>
       <span class="brand-text">Ephemeral <span class="brand-highlight">Secret Vault</span></span>
     </a>
 
@@ -28,16 +30,21 @@
     </div>
 
     <div class="nav-actions">
-      <button type="button" class="btn-icon" id="theme-toggle" aria-label="Toggle Dark/Light Mode" title="Toggle Theme">🌙</button>
+      <button type="button" class="btn-icon" id="theme-toggle" aria-label="Toggle Theme" title="Toggle Dark/Light Mode">
+        <svg id="theme-icon" class="svg-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </button>
       <a href="/" class="btn-nav-create" title="Create your own ephemeral secret">
-        <span>+ Create Secret</span>
+        <svg class="svg-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        <span>Create Secret</span>
       </a>
     </div>
   </nav>
 
   <div class="container">
     <header class="header">
-      <div class="vault-logo" aria-hidden="true">🔐</div>
+      <div class="vault-logo" aria-hidden="true">
+        <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+      </div>
       <h1>SECURE SECRET</h1>
       <p class="subtitle">You have received a confidential, self-destructing secret link.</p>
     </header>
@@ -55,13 +62,13 @@
       <!-- Pre-reveal Safe Landing Screen -->
       <section id="splash-section" aria-label="Pre-reveal notification">
         <div class="alert alert-warning">
-          <strong>🔥 Self-Destruction Warning:</strong>
+          <strong>Security Warning:</strong>
           <span>Once revealed, this secret will be permanently destroyed from storage. Zero copies will remain.</span>
         </div>
 
         <div class="meta-box">
           <div class="meta-row">
-            <span class="meta-label">Expires:</span>
+            <span class="meta-label">Expiration:</span>
             <span class="meta-value" id="expires-text">{{EXPIRES_AT}}</span>
           </div>
           <div class="meta-row">
@@ -88,21 +95,24 @@
         </p>
 
         <button type="button" id="burn-btn" class="btn btn-danger">
-          <span>Reveal & Destroy Secret</span>
+          <svg class="svg-icon" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
+          <span>Reveal &amp; Destroy Secret</span>
         </button>
       </section>
 
       <!-- Post-reveal Revealed Section -->
       <section id="revealed-section" class="hidden" aria-label="Revealed secret">
         <div id="burn-status-alert" class="alert alert-danger">
-          <strong id="burn-status-title">🔥 SECRET REVEALED &amp; DESTROYED</strong>
+          <strong id="burn-status-title">SECRET REVEALED &amp; PERMANENTLY DESTROYED</strong>
           <span id="burn-status-desc">This secret has now been permanently erased from the vault with zero-overwriting.</span>
         </div>
 
         <!-- Attached File View (if present) -->
         <div id="revealed-file-box" class="revealed-file-card hidden">
           <div class="revealed-file-header">
-            <div id="revealed-file-icon" class="revealed-file-icon">📄</div>
+            <div id="revealed-file-icon" class="revealed-file-icon">
+              <svg class="svg-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            </div>
             <div class="revealed-file-details">
               <div id="revealed-file-name" class="revealed-file-name">filename.ext</div>
               <div id="revealed-file-meta" class="revealed-file-size">0 KB</div>
@@ -116,7 +126,8 @@
 
           <!-- Primary Download Button for File -->
           <button type="button" id="download-file-btn" class="btn btn-primary">
-            <span>📥 Download File</span>
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span>Download File</span>
           </button>
         </div>
 
@@ -127,16 +138,21 @@
 
           <div class="copy-input-group">
             <button type="button" id="copy-secret-btn" class="btn btn-secondary">
-              📋 Copy Text
+              <svg class="svg-icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              <span>Copy Text</span>
             </button>
             <button type="button" id="download-text-btn" class="btn btn-secondary" title="Save text as a file">
-              📥 Save Text as File
+              <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+              <span>Save Text</span>
             </button>
           </div>
         </div>
 
         <div style="margin-top: 1.5rem;">
-          <a href="/" class="btn btn-secondary">🔒 Create a New Secret</a>
+          <a href="/" class="btn btn-secondary">
+            <svg class="svg-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>Create New Secret</span>
+          </a>
         </div>
       </section>
 
@@ -146,13 +162,16 @@
           <strong>Secret Unavailable</strong>
           <p style="margin-top: 0.5rem;">Secret not found, expired, or already destroyed.</p>
         </div>
-        <a href="/" class="btn btn-secondary">🔒 Create a New Secret</a>
+        <a href="/" class="btn btn-secondary">
+          <svg class="svg-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <span>Create New Secret</span>
+        </a>
       </section>
     </main>
 
     <!-- Floating Feedback Toast -->
     <div id="toast" class="toast" role="status" aria-live="polite">
-      <span id="toast-message">Copied to clipboard!</span>
+      <span id="toast-message">Copied to clipboard</span>
     </div>
 
     <footer class="footer">
@@ -168,14 +187,18 @@
   <script>
     // Theme toggle initialization on view page
     const themeBtn = document.getElementById('theme-toggle');
+    const moonSvg = '<svg class="svg-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+    const sunSvg = '<svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>';
     if (themeBtn) {
       if (localStorage.getItem('vault_theme') === 'light') {
         document.body.classList.add('light-theme');
-        themeBtn.textContent = '☀️';
+        themeBtn.innerHTML = sunSvg;
+      } else {
+        themeBtn.innerHTML = moonSvg;
       }
       themeBtn.addEventListener('click', () => {
         const isLight = document.body.classList.toggle('light-theme');
-        themeBtn.textContent = isLight ? '☀️' : '🌙';
+        themeBtn.innerHTML = isLight ? sunSvg : moonSvg;
         localStorage.setItem('vault_theme', isLight ? 'light' : 'dark');
       });
     }

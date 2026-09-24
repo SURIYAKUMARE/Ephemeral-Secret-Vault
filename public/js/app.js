@@ -1,6 +1,22 @@
 (() => {
   'use strict';
 
+  // SVG Icon Templates
+  const SVG_ICONS = {
+    eye: '<svg class="svg-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>',
+    eyeOff: '<svg class="svg-icon" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>',
+    moon: '<svg class="svg-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>',
+    sun: '<svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>',
+    copy: '<svg class="svg-icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>',
+    check: '<svg class="svg-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>',
+    lock: '<svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>',
+    spinner: '<svg class="svg-icon spinner" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>',
+    fileImage: '<svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>',
+    fileCode: '<svg class="svg-icon" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>',
+    fileKey: '<svg class="svg-icon" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3L22 7l-3-3"></path></svg>',
+    fileDoc: '<svg class="svg-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>'
+  };
+
   // DOM Elements
   const createForm = document.getElementById('create-form');
   const secretInput = document.getElementById('secret-input');
@@ -65,16 +81,16 @@
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 
-  function getFileIcon(name, mime) {
+  function getFileSvg(name, mime) {
     const ext = name.split('.').pop().toLowerCase();
-    if (mime.startsWith('image/')) return '🖼️';
-    if (ext === 'pdf') return '📄';
-    if (['doc', 'docx', 'odt', 'rtf'].includes(ext)) return '📝';
-    if (['xls', 'xlsx', 'csv'].includes(ext)) return '📊';
-    if (['py', 'js', 'ts', 'jsx', 'tsx', 'html', 'css', 'json', 'sh', 'c', 'cpp', 'rs', 'go', 'php'].includes(ext)) return '💻';
-    if (['pem', 'key', 'crt', 'cer', 'p12', 'env'].includes(ext)) return '🔑';
-    if (['zip', 'tar', 'gz', '7z', 'rar'].includes(ext)) return '📦';
-    return '📄';
+    if (mime.startsWith('image/')) return SVG_ICONS.fileImage;
+    if (['py', 'js', 'ts', 'jsx', 'tsx', 'html', 'css', 'json', 'sh', 'c', 'cpp', 'rs', 'go', 'php'].includes(ext)) {
+      return SVG_ICONS.fileCode;
+    }
+    if (['pem', 'key', 'crt', 'cer', 'p12', 'env'].includes(ext)) {
+      return SVG_ICONS.fileKey;
+    }
+    return SVG_ICONS.fileDoc;
   }
 
   function showToast(msg) {
@@ -118,7 +134,7 @@
     btnToggleEye.addEventListener('click', () => {
       const isPassword = passphraseInput.getAttribute('type') === 'password';
       passphraseInput.setAttribute('type', isPassword ? 'text' : 'password');
-      btnToggleEye.textContent = isPassword ? '🔒' : '👁️';
+      btnToggleEye.innerHTML = isPassword ? SVG_ICONS.eyeOff : SVG_ICONS.eye;
       btnToggleEye.setAttribute('aria-label', isPassword ? 'Hide passphrase' : 'Show passphrase');
     });
   }
@@ -128,14 +144,16 @@
     const savedTheme = localStorage.getItem('vault_theme');
     if (savedTheme === 'light') {
       document.body.classList.add('light-theme');
-      themeToggle.textContent = '☀️';
+      themeToggle.innerHTML = SVG_ICONS.sun;
+    } else {
+      themeToggle.innerHTML = SVG_ICONS.moon;
     }
 
     themeToggle.addEventListener('click', () => {
       const isLight = document.body.classList.toggle('light-theme');
-      themeToggle.textContent = isLight ? '☀️' : '🌙';
+      themeToggle.innerHTML = isLight ? SVG_ICONS.sun : SVG_ICONS.moon;
       localStorage.setItem('vault_theme', isLight ? 'light' : 'dark');
-      showToast(isLight ? 'Switched to Light Theme' : 'Switched to Cyber Cosmic Dark Theme');
+      showToast(isLight ? 'Light Theme Activated' : 'Dark Cyber Theme Activated');
     });
   }
 
@@ -185,7 +203,7 @@
       } else {
         fileThumb.classList.add('hidden');
         fileIcon.classList.remove('hidden');
-        fileIcon.textContent = getFileIcon(file.name, file.type || '');
+        fileIcon.innerHTML = getFileSvg(file.name, file.type || '');
       }
 
       filePreviewCard.classList.remove('hidden');
@@ -261,7 +279,7 @@
 
       const secretText = secretInput ? secretInput.value.trim() : '';
       if (!secretText && !currentFile) {
-        showError('Please enter a secret text note or attach a file.');
+        showError('Please enter confidential text or attach a file.');
         return;
       }
 
@@ -287,7 +305,7 @@
       }
 
       submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span>⏳ Encrypting & Sealing Vault...</span>';
+      submitBtn.innerHTML = `${SVG_ICONS.spinner} <span>Encrypting Payload...</span>`;
 
       try {
         const response = await fetch('/api/secret', {
@@ -310,18 +328,18 @@
         viewsDisplay.textContent = `${data.views_remaining} view${data.views_remaining > 1 ? 's' : ''}`;
         fingerprintDisplay.textContent = data.fingerprint;
 
-        // Setup Social Sharing Integrations
-        const shareText = `🔒 Confidential Secret: I've sent you a self-destructing secret link via Ephemeral Secret Vault.\n\nOpen link: ${data.view_url}\n\n⚠️ Notice: This link permanently self-destructs once viewed!`;
+        // Setup Social Sharing Integrations (Professional Templates)
+        const shareText = `Confidential Secret: A self-destructing secret has been generated via Ephemeral Secret Vault.\n\nAccess Link: ${data.view_url}\n\nSecurity Notice: This link permanently self-destructs upon access.`;
 
         // WhatsApp
         shareWhatsApp.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
 
         // Microsoft Teams
-        shareTeams.href = `https://teams.microsoft.com/share?href=${encodeURIComponent(data.view_url)}&msgText=${encodeURIComponent("🔒 I have shared a confidential self-destructing secret with you.")}`;
+        shareTeams.href = `https://teams.microsoft.com/share?href=${encodeURIComponent(data.view_url)}&msgText=${encodeURIComponent("A confidential self-destructing secret has been shared with you.")}`;
 
         // Email
-        const emailSubject = '🔒 Secure Self-Destructing Secret Link';
-        const emailBody = `Hello,\n\nI have shared a confidential secret with you via Ephemeral Secret Vault:\n\n${data.view_url}\n\n⚠️ IMPORTANT: This secret will be permanently destroyed from storage once viewed or when it expires. Zero copies remain after destruction.\n`;
+        const emailSubject = 'Secure Self-Destructing Secret Link';
+        const emailBody = `Hello,\n\nA confidential secret has been shared with you via Ephemeral Secret Vault:\n\n${data.view_url}\n\nSecurity Notice: This secret is permanently erased from storage once viewed or upon expiration. No records are retained.\n`;
         shareEmail.href = `mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
 
         // Hide form, show result
@@ -332,7 +350,7 @@
         showError(err.message);
       } finally {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '<span>🔒 Encrypt &amp; Generate Self-Destructing Link</span>';
+        submitBtn.innerHTML = `${SVG_ICONS.lock} <span>Encrypt &amp; Generate Secure Link</span>`;
       }
     });
   }
@@ -342,18 +360,18 @@
     copyBtn.addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText(linkOutput.value);
-        copyBtn.textContent = 'Copied!';
-        showToast('Link copied to clipboard!');
+        copyBtn.innerHTML = `${SVG_ICONS.check} <span>Copied</span>`;
+        showToast('Link copied to clipboard');
         setTimeout(() => {
-          copyBtn.textContent = '📋 Copy Link';
+          copyBtn.innerHTML = `${SVG_ICONS.copy} <span>Copy Link</span>`;
         }, 2000);
       } catch {
         linkOutput.select();
         document.execCommand('copy');
-        copyBtn.textContent = 'Copied!';
-        showToast('Link copied to clipboard!');
+        copyBtn.innerHTML = `${SVG_ICONS.check} <span>Copied</span>`;
+        showToast('Link copied to clipboard');
         setTimeout(() => {
-          copyBtn.textContent = '📋 Copy Link';
+          copyBtn.innerHTML = `${SVG_ICONS.copy} <span>Copy Link</span>`;
         }, 2000);
       }
     });
@@ -365,9 +383,9 @@
       const hash = fingerprintDisplay.textContent.trim();
       try {
         await navigator.clipboard.writeText(hash);
-        showToast('SHA-256 Fingerprint copied to clipboard!');
+        showToast('SHA-256 Digest copied');
       } catch {
-        showToast('Failed to copy fingerprint.');
+        showToast('Failed to copy fingerprint');
       }
     });
   }
@@ -375,12 +393,12 @@
   // Slack share handler (copies mrkdwn + launches Slack)
   if (shareSlack) {
     shareSlack.addEventListener('click', async () => {
-      const slackSnippet = `*🔒 Encrypted Self-Destructing Secret*\nView Link: <${activeSecretUrl}>\n> ⚠️ _This secret link self-destructs automatically once opened._`;
+      const slackSnippet = `*Encrypted Self-Destructing Secret*\nView Link: <${activeSecretUrl}>\n> _Notice: This secret self-destructs automatically once accessed._`;
       try {
         await navigator.clipboard.writeText(slackSnippet);
-        showToast('Slack-formatted message copied to clipboard!');
+        showToast('Slack-formatted link copied');
       } catch {
-        showToast('Failed to copy to clipboard.');
+        showToast('Failed to copy to clipboard');
       }
       window.open('https://slack.com/app_redirect', '_blank');
     });
@@ -389,12 +407,12 @@
   // Discord share handler (copies Discord markdown)
   if (shareDiscord) {
     shareDiscord.addEventListener('click', async () => {
-      const discordSnippet = `**🔒 Ephemeral Secret Vault**\n> **Secret Link:** ${activeSecretUrl}\n> ⚠️ *Warning: This link will self-destruct and permanently delete upon being opened.*`;
+      const discordSnippet = `**Ephemeral Secret Vault**\n> **Secret Link:** ${activeSecretUrl}\n> *Warning: This link will self-destruct and permanently delete upon access.*`;
       try {
         await navigator.clipboard.writeText(discordSnippet);
-        showToast('Discord markdown copied to clipboard!');
+        showToast('Discord markdown copied');
       } catch {
-        showToast('Failed to copy to clipboard.');
+        showToast('Failed to copy to clipboard');
       }
       window.open('https://discord.com/app', '_blank');
     });
@@ -407,13 +425,13 @@
         try {
           await navigator.share({
             title: 'Ephemeral Secret Vault',
-            text: '🔒 Here is a secure, self-destructing secret link:',
+            text: 'Confidential self-destructing secret link:',
             url: activeSecretUrl
           });
-          showToast('Shared successfully!');
+          showToast('Shared successfully');
         } catch (err) {
           if (err.name !== 'AbortError') {
-            showToast('Sharing cancelled or failed.');
+            showToast('Sharing cancelled or failed');
           }
         }
       }

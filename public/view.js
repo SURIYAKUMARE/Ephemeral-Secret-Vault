@@ -1,6 +1,18 @@
 (() => {
   'use strict';
 
+  // SVG Templates
+  const SVG = {
+    copy: '<svg class="svg-icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>',
+    check: '<svg class="svg-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>',
+    download: '<svg class="svg-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>',
+    spinner: '<svg class="svg-icon spinner" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>',
+    flame: '<svg class="svg-icon" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>',
+    fileImage: '<svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>',
+    fileCode: '<svg class="svg-icon" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>',
+    fileDoc: '<svg class="svg-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>'
+  };
+
   // DOM Elements
   const vaultCard = document.getElementById('vault-card');
   const splashSection = document.getElementById('splash-section');
@@ -63,16 +75,13 @@
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 
-  function getFileIcon(name, mime) {
+  function getFileSvg(name, mime) {
     const ext = name.split('.').pop().toLowerCase();
-    if (mime.startsWith('image/')) return '🖼️';
-    if (ext === 'pdf') return '📄';
-    if (['doc', 'docx', 'odt', 'rtf'].includes(ext)) return '📝';
-    if (['xls', 'xlsx', 'csv'].includes(ext)) return '📊';
-    if (['py', 'js', 'ts', 'jsx', 'tsx', 'html', 'css', 'json', 'sh', 'c', 'cpp', 'rs', 'go', 'php'].includes(ext)) return '💻';
-    if (['pem', 'key', 'crt', 'cer', 'p12', 'env'].includes(ext)) return '🔑';
-    if (['zip', 'tar', 'gz', '7z', 'rar'].includes(ext)) return '📦';
-    return '📄';
+    if (mime.startsWith('image/')) return SVG.fileImage;
+    if (['py', 'js', 'ts', 'jsx', 'tsx', 'html', 'css', 'json', 'sh', 'c', 'cpp', 'rs', 'go', 'php'].includes(ext)) {
+      return SVG.fileCode;
+    }
+    return SVG.fileDoc;
   }
 
   // Convert base64 data URL to Blob for download
@@ -105,7 +114,7 @@
   burnBtn.addEventListener('click', async () => {
     hideError();
     burnBtn.disabled = true;
-    burnBtn.innerHTML = '<span>⏳ Decrypting & Burning Vault Row...</span>';
+    burnBtn.innerHTML = `${SVG.spinner} <span>Decrypting &amp; Burning Vault Row...</span>`;
 
     const bodyPayload = {};
     if (hasPassphrase || (passphraseInput && passphraseInput.value)) {
@@ -124,7 +133,7 @@
       if (response.status === 401) {
         showError(data.error || 'Invalid passphrase.');
         burnBtn.disabled = false;
-        burnBtn.innerHTML = '<span>🔥 Reveal & Destroy Secret</span>';
+        burnBtn.innerHTML = `${SVG.flame} <span>Reveal &amp; Destroy Secret</span>`;
         if (passphraseInput) {
           passphraseInput.focus();
           passphraseInput.select();
@@ -151,8 +160,8 @@
         decryptedFileData = data.file;
         revealedFileName.textContent = data.file.name;
         revealedFileMeta.textContent = `${formatBytes(data.file.size)} • ${data.file.type || 'binary'}`;
-        revealedFileIcon.textContent = getFileIcon(data.file.name, data.file.type || '');
-        downloadFileBtn.innerHTML = `<span>📥 Download ${data.file.name}</span>`;
+        revealedFileIcon.innerHTML = getFileSvg(data.file.name, data.file.type || '');
+        downloadFileBtn.innerHTML = `${SVG.download} <span>Download ${data.file.name}</span>`;
 
         // Check if image for inline rendering
         if (data.file.type && data.file.type.startsWith('image/')) {
@@ -174,24 +183,23 @@
         secretDisplay.textContent = textContent;
         textDisplayGroup.classList.remove('hidden');
       } else {
-        // If file exists and text was just placeholder, hide raw text box
         textDisplayGroup.classList.add('hidden');
       }
 
       // Configure destruction alert
       if (data.burned || data.views_remaining === 0) {
         burnStatusAlert.className = 'alert alert-danger';
-        burnStatusTitle.textContent = '🔥 SECRET REVEALED & DESTROYED';
-        burnStatusDesc.textContent = 'This secret has now been permanently erased from the SQLite database with zero-overwriting. Zero traces remain.';
+        burnStatusTitle.textContent = 'SECRET DECRYPTED & PERMANENTLY BURNED';
+        burnStatusDesc.textContent = 'This secret has now been permanently erased from the vault database with zero-overwriting. Zero traces remain.';
       } else {
         burnStatusAlert.className = 'alert alert-warning';
-        burnStatusTitle.textContent = '⚠️ SECRET REVEALED';
+        burnStatusTitle.textContent = 'SECRET REVEALED';
         burnStatusDesc.textContent = `Warning: ${data.views_remaining} view${data.views_remaining > 1 ? 's' : ''} remaining before permanent destruction.`;
       }
     } catch (err) {
       showError(err.message);
       burnBtn.disabled = false;
-      burnBtn.innerHTML = '<span>🔥 Reveal & Destroy Secret</span>';
+      burnBtn.innerHTML = `${SVG.flame} <span>Reveal &amp; Destroy Secret</span>`;
     }
   });
 
@@ -201,7 +209,7 @@
     try {
       const blob = dataUrlToBlob(decryptedFileData.data);
       triggerDownload(blob, decryptedFileData.name);
-      showToast(`Downloaded ${decryptedFileData.name}!`);
+      showToast(`Downloaded ${decryptedFileData.name}`);
     } catch {
       showError('Failed to prepare file download.');
     }
@@ -211,10 +219,10 @@
   copySecretBtn.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(secretDisplay.textContent);
-      copySecretBtn.textContent = 'Copied!';
-      showToast('Text copied to clipboard!');
+      copySecretBtn.innerHTML = `${SVG.check} <span>Copied</span>`;
+      showToast('Text copied to clipboard');
       setTimeout(() => {
-        copySecretBtn.textContent = '📋 Copy Text';
+        copySecretBtn.innerHTML = `${SVG.copy} <span>Copy Text</span>`;
       }, 2000);
     } catch {
       const range = document.createRange();
@@ -223,10 +231,10 @@
       window.getSelection().addRange(range);
       document.execCommand('copy');
       window.getSelection().removeAllRanges();
-      copySecretBtn.textContent = 'Copied!';
-      showToast('Text copied to clipboard!');
+      copySecretBtn.innerHTML = `${SVG.check} <span>Copied</span>`;
+      showToast('Text copied to clipboard');
       setTimeout(() => {
-        copySecretBtn.textContent = '📋 Copy Text';
+        copySecretBtn.innerHTML = `${SVG.copy} <span>Copy Text</span>`;
       }, 2000);
     }
   });
@@ -236,6 +244,6 @@
     const content = secretDisplay.textContent;
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
     triggerDownload(blob, `secret-${secretId}.txt`);
-    showToast('Saved text as file!');
+    showToast('Saved text as file');
   });
 })();
