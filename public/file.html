@@ -69,6 +69,8 @@
       <div class="hero-badge">
         <span class="status-dot-pulse"></span>
         <span>SECURE • TEMPORARY • ENCRYPTED</span>
+        <span style="opacity:0.35;">•</span>
+        <span class="live-clock-pill"><span class="clock-dot"></span><span id="hero-live-clock">--:--:-- UTC</span></span>
       </div>
       <h1 class="hero-title">Universal <span class="text-glow-cyan">File Vault</span></h1>
       <p class="hero-subtitle">
@@ -210,6 +212,7 @@
                     <option value="259200">3 days</option>
                     <option value="604800">7 days (1 Week)</option>
                     <option value="custom">Custom Timeframe (Hours &amp; Minutes)...</option>
+                    <option value="datetime">Specific Calendar Date &amp; Time (Precise)...</option>
                   </select>
                   <div class="ttl-helper-text">
                     <span id="live-expiry-preview">Expires approximately: Today, 11:42 PM</span>
@@ -226,6 +229,18 @@
                         <label for="custom-ttl-minutes">Minutes</label>
                         <input type="number" id="custom-ttl-minutes" min="1" max="59" value="0">
                       </div>
+                    </div>
+                  </div>
+
+                  <!-- Calendar Date & Time Picker (Hidden unless Specific Calendar Date selected) -->
+                  <div id="custom-datetime-container" class="custom-datetime-container hidden">
+                    <label for="custom-datetime-picker" class="custom-datetime-label">
+                      <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                      <span>Select Exact Expiration Date &amp; Time:</span>
+                    </label>
+                    <input type="datetime-local" id="custom-datetime-picker" class="custom-datetime-input">
+                    <div id="custom-datetime-feedback" class="custom-datetime-feedback">
+                      Select a future date &amp; time (up to 7 days maximum).
                     </div>
                   </div>
                 </div>

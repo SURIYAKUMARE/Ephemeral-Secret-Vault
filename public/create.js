@@ -54,7 +54,11 @@
   const customTtlGroup = document.getElementById('custom-ttl-group');
   const customTtlHours = document.getElementById('custom-ttl-hours');
   const customTtlMinutes = document.getElementById('custom-ttl-minutes');
+  const customDatetimeContainer = document.getElementById('custom-datetime-container');
+  const customDatetimePicker = document.getElementById('custom-datetime-picker');
+  const customDatetimeFeedback = document.getElementById('custom-datetime-feedback');
   const liveExpiryPreview = document.getElementById('live-expiry-preview');
+  const heroLiveClock = document.getElementById('hero-live-clock');
   const viewsSelect = document.getElementById('views-select');
 
   // Passphrase Strength Meter
@@ -355,6 +359,32 @@
   // ==========================================================================
   // Expiration / TTL & Security Configuration Score
   // ==========================================================================
+  // Live Header System Clock Updater
+  function updateHeroLiveClock() {
+    if (!heroLiveClock) return;
+    const now = new Date();
+    heroLiveClock.textContent = `${now.toUTCString().split(' ').slice(4, 5)[0]} UTC`;
+  }
+  updateHeroLiveClock();
+  setInterval(updateHeroLiveClock, 1000);
+
+  // Initialize datetime picker min/max constraints
+  if (customDatetimePicker) {
+    const now = new Date();
+    const minDate = new Date(now.getTime() + (5 * 60 * 1000)); // +5 min
+    const maxDate = new Date(now.getTime() + (7 * 24 * 3600 * 1000)); // +7 days
+    const defaultDate = new Date(now.getTime() + (3600 * 1000)); // +1 hour
+
+    const toLocalIso = (d) => {
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    };
+
+    customDatetimePicker.min = toLocalIso(minDate);
+    customDatetimePicker.max = toLocalIso(maxDate);
+    customDatetimePicker.value = toLocalIso(defaultDate);
+  }
+
   function getSelectedTtlSeconds() {
     if (!ttlSelect) return 3600;
     const val = ttlSelect.value;
@@ -363,6 +393,14 @@
       const m = parseInt(customTtlMinutes.value, 10) || 0;
       const total = (h * 3600) + (m * 60);
       return Math.max(60, Math.min(total, 604800));
+    }
+    if (val === 'datetime') {
+      if (customDatetimePicker && customDatetimePicker.value) {
+        const targetMs = new Date(customDatetimePicker.value).getTime();
+        const diffSec = Math.floor((targetMs - Date.now()) / 1000);
+        return Math.max(60, Math.min(diffSec, 604800));
+      }
+      return 3600;
     }
     return parseInt(val, 10);
   }
@@ -373,10 +411,17 @@
     const now = new Date();
     const isToday = expiryDate.toDateString() === now.toDateString();
     const timeStr = expiryDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const datePrefix = isToday ? 'Today' : expiryDate.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    const datePrefix = isToday ? 'Today' : expiryDate.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
 
     if (liveExpiryPreview) {
       liveExpiryPreview.textContent = `Expires approximately: ${datePrefix}, ${timeStr}`;
+    }
+
+    if (customDatetimeFeedback && ttlSelect && ttlSelect.value === 'datetime') {
+      const hours = Math.floor(seconds / 3600);
+      const mins = Math.floor((seconds % 3600) / 60);
+      customDatetimeFeedback.textContent = `Valid expiration window: ${hours}h ${mins}m from now (${seconds.toLocaleString()} seconds)`;
+      customDatetimeFeedback.style.color = 'var(--cyan-glow)';
     }
 
     if (summaryExpiration) {
@@ -387,7 +432,7 @@
       } else if (seconds < 86400) {
         summaryExpiration.textContent = `${Math.round(seconds / 3600)} hours`;
       } else {
-        summaryExpiration.textContent = `${Math.round(seconds / 86400)} days`;
+        summaryExpiration.textContent = `${(seconds / 86400).toFixed(1)} days`;
       }
     }
   }
@@ -395,9 +440,14 @@
   if (ttlSelect) {
     ttlSelect.addEventListener('change', () => {
       if (ttlSelect.value === 'custom') {
-        customTtlGroup.classList.remove('hidden');
+        if (customTtlGroup) customTtlGroup.classList.remove('hidden');
+        if (customDatetimeContainer) customDatetimeContainer.classList.add('hidden');
+      } else if (ttlSelect.value === 'datetime') {
+        if (customTtlGroup) customTtlGroup.classList.add('hidden');
+        if (customDatetimeContainer) customDatetimeContainer.classList.remove('hidden');
       } else {
-        customTtlGroup.classList.add('hidden');
+        if (customTtlGroup) customTtlGroup.classList.add('hidden');
+        if (customDatetimeContainer) customDatetimeContainer.classList.add('hidden');
       }
       updateExpiryLivePreview();
       updateSecurityScore();
@@ -406,6 +456,12 @@
 
   if (customTtlHours) customTtlHours.addEventListener('input', updateExpiryLivePreview);
   if (customTtlMinutes) customTtlMinutes.addEventListener('input', updateExpiryLivePreview);
+  if (customDatetimePicker) {
+    customDatetimePicker.addEventListener('input', () => {
+      updateExpiryLivePreview();
+      updateSecurityScore();
+    });
+  }
 
   if (viewsSelect) {
     viewsSelect.addEventListener('change', () => {

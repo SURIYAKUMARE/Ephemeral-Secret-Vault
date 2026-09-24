@@ -2332,6 +2332,264 @@ body.light-theme .timer-progress-track {
 }
 
 /* ==========================================================================
+   Live System Clock & Custom Date/Time Picker
+   ========================================================================== */
+
+.live-clock-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.85rem;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 9999px;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  color: var(--cyan-glow);
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.1);
+}
+
+body.light-theme .live-clock-pill {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(2, 132, 199, 0.25);
+  color: var(--primary-blue);
+}
+
+.clock-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: pulse 2s infinite;
+}
+
+.custom-datetime-container {
+  margin-top: 0.85rem;
+  padding: 0.9rem;
+  background: rgba(4, 9, 20, 0.75);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 8px;
+}
+
+body.light-theme .custom-datetime-container {
+  background: rgba(241, 245, 249, 0.9);
+  border-color: rgba(2, 132, 199, 0.25);
+}
+
+.custom-datetime-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  margin-bottom: 0.45rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.custom-datetime-input {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(56, 189, 248, 0.22);
+  border-radius: 6px;
+  color: var(--text-main);
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  color-scheme: dark;
+}
+
+body.light-theme .custom-datetime-input {
+  background: #ffffff;
+  color: #0f172a;
+  border-color: rgba(2, 132, 199, 0.3);
+  color-scheme: light;
+}
+
+.custom-datetime-input:focus {
+  border-color: var(--cyan-glow);
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+}
+
+.custom-datetime-feedback {
+  margin-top: 0.5rem;
+  font-size: 0.78rem;
+  color: var(--cyan-glow);
+  font-family: var(--font-mono);
+}
+
+/* ==========================================================================
+   Custom Reveal Mode Selection & Controls
+   ========================================================================== */
+
+.custom-reveal-box {
+  margin: 1.25rem 0 0.5rem;
+  padding: 1.15rem;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(56, 189, 248, 0.22);
+  border-radius: 10px;
+}
+
+body.light-theme .custom-reveal-box {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(2, 132, 199, 0.22);
+}
+
+.custom-reveal-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.custom-reveal-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.reveal-mode-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+  margin-bottom: 0.9rem;
+}
+
+.reveal-mode-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.6rem 0.85rem;
+  background: rgba(10, 18, 36, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: var(--text-dim);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.reveal-mode-btn:hover {
+  color: var(--text-main);
+  border-color: var(--cyan-glow);
+}
+
+.reveal-mode-btn.active {
+  background: rgba(56, 189, 248, 0.12);
+  border-color: var(--cyan-glow);
+  color: var(--cyan-glow);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
+}
+
+body.light-theme .reveal-mode-btn.active {
+  background: rgba(2, 132, 199, 0.1);
+  border-color: var(--primary-blue);
+  color: var(--primary-blue);
+}
+
+/* Slide-to-Reveal Widget */
+.slide-reveal-track {
+  width: 100%;
+  height: 52px;
+  background: rgba(2, 6, 23, 0.9);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: 9999px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  user-select: none;
+  margin-top: 1rem;
+}
+
+.slide-reveal-text {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fca5a5;
+  letter-spacing: 0.05em;
+  pointer-events: none;
+  transition: opacity var(--transition-fast);
+}
+
+.slide-reveal-thumb {
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  bottom: 4px;
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  color: #ffffff;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+  transition: transform 0.05s ease-out;
+  touch-action: none;
+}
+
+.slide-reveal-thumb:active {
+  cursor: grabbing;
+}
+
+/* Secret Peek and Mask Toggle */
+.btn-secret-peek {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 6px;
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-secret-peek:hover {
+  color: var(--cyan-glow);
+  border-color: var(--cyan-glow);
+}
+
+.secret-display.masked {
+  filter: blur(8px);
+  user-select: none;
+  transition: filter 0.2s ease;
+}
+
+.btn-wipe-now {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 4px;
+  color: #fca5a5;
+  font-size: 0.72rem;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.btn-wipe-now:hover {
+  background: rgba(239, 68, 68, 0.25);
+  color: #ffffff;
+}
+
+/* ==========================================================================
    Responsive Breakpoints
    ========================================================================== */
 

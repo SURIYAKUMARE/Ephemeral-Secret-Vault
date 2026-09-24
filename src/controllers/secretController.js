@@ -59,6 +59,8 @@ function getSecretView(req, res, next) {
     const templatePath = path.join(publicDir, 'view.html');
     let html = fs.readFileSync(templatePath, 'utf8');
 
+    const createdIso = meta.created_at ? new Date(meta.created_at).toISOString() : new Date().toISOString();
+    const createdFormatted = meta.created_at ? new Date(meta.created_at).toLocaleString() : 'Just now';
     const expiresIso = new Date(meta.expires_at).toISOString();
     const expiresFormatted = new Date(meta.expires_at).toLocaleString();
     const badgeClass = meta.views_remaining === 1 ? 'badge-danger' : 'badge-success';
@@ -66,6 +68,8 @@ function getSecretView(req, res, next) {
 
     html = html
       .replace(/\{\{ID\}\}/g, id)
+      .replace(/\{\{CREATED_AT\}\}/g, createdFormatted)
+      .replace(/\{\{CREATED_ISO\}\}/g, createdIso)
       .replace(/\{\{EXPIRES_AT\}\}/g, expiresFormatted)
       .replace(/\{\{EXPIRES_ISO\}\}/g, expiresIso)
       .replace(/\{\{VIEWS_REMAINING\}\}/g, String(meta.views_remaining))

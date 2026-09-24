@@ -47,6 +47,8 @@
       <div class="hero-badge">
         <span class="status-dot-pulse"></span>
         <span>CONFIDENTIAL ACCESS PORTAL</span>
+        <span style="opacity:0.35;">•</span>
+        <span class="live-clock-pill"><span class="clock-dot"></span><span id="view-live-time">--:--:-- UTC</span></span>
       </div>
       <h1 class="hero-title">SECURE SECRET</h1>
       <p class="hero-subtitle">You have received a confidential, self-destructing secret package encrypted with AES-256-GCM.</p>
@@ -91,14 +93,28 @@
             </div>
           </div>
 
-          <!-- Vault Technical Parameters -->
+          <!-- Vault Technical Parameters with Full Date & Time -->
           <div class="meta-card">
             <div class="meta-item">
               <span class="meta-item-label">
                 <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                Expiration Time:
+                Generated Date &amp; Time:
+              </span>
+              <span class="meta-value" id="created-text">{{CREATED_AT}}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-item-label">
+                <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 10"></polyline></svg>
+                Expiration Date &amp; Time:
               </span>
               <span class="meta-value" id="expires-text">{{EXPIRES_AT}}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-item-label">
+                <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                Recipient Local Time:
+              </span>
+              <span class="meta-value" id="recipient-time">--:--:--</span>
             </div>
             <div class="meta-item">
               <span class="meta-item-label">
@@ -114,7 +130,7 @@
                 <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                 Cryptographic Storage:
               </span>
-              <span class="meta-value" style="font-size:0.75rem;color:var(--cyan-glow);">AES-256-GCM Authenticated • Zero Plaintext at Rest</span>
+              <span class="meta-value" style="font-size:0.75rem;color:var(--cyan-glow);">AES-256-GCM Authenticated • 256-bit Key • Zero Plaintext at Rest</span>
             </div>
           </div>
 
@@ -139,8 +155,37 @@
             </div>
           </div>
 
+          <!-- Custom Reveal Protection Selector -->
+          <div class="custom-reveal-box" id="custom-reveal-settings">
+            <div class="custom-reveal-title-row">
+              <span class="custom-reveal-title">
+                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                Custom Reveal Mode
+              </span>
+              <span class="badge-tag badge-cyan">Accidental Burn Shield</span>
+            </div>
+            <div class="reveal-mode-tabs" role="tablist">
+              <button type="button" class="reveal-mode-btn active" id="btn-mode-instant" aria-selected="true">
+                <svg class="svg-icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                <span>Instant 1-Click</span>
+              </button>
+              <button type="button" class="reveal-mode-btn" id="btn-mode-shield" aria-selected="false">
+                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                <span>Slide-to-Reveal</span>
+              </button>
+            </div>
+
+            <!-- Slide to Reveal Widget (Displayed when Slide-to-Reveal mode is chosen) -->
+            <div id="slide-reveal-widget" class="slide-reveal-track hidden">
+              <span class="slide-reveal-text">SLIDE TO REVEAL &amp; DESTROY &gt;&gt;&gt;</span>
+              <div id="slide-thumb" class="slide-reveal-thumb" tabindex="0" role="slider" aria-label="Slide across to reveal secret">
+                <svg class="svg-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </div>
+            </div>
+          </div>
+
           <!-- Primary Reveal Action Button -->
-          <button type="button" id="burn-btn" class="btn-action-primary" style="background:linear-gradient(135deg, #ef4444 0%, #dc2626 100%);box-shadow:0 4px 20px rgba(239, 68, 68, 0.4);margin-top:1.5rem;">
+          <button type="button" id="burn-btn" class="btn-action-primary" style="background:linear-gradient(135deg, #ef4444 0%, #dc2626 100%);box-shadow:0 4px 20px rgba(239, 68, 68, 0.4);margin-top:0.75rem;">
             <svg class="svg-icon" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
             <span>Reveal &amp; Destroy Secret</span>
           </button>
@@ -150,8 +195,11 @@
         <section id="revealed-section" class="hidden" aria-label="Revealed secret">
           <!-- Destruction Status Banner -->
           <div id="burn-status-alert" class="alert alert-danger" style="margin-bottom: 1.25rem;">
-            <div style="display:flex;flex-direction:column;gap:0.25rem;">
-              <strong id="burn-status-title">SECRET REVEALED &amp; PERMANENTLY DESTROYED</strong>
+            <div style="display:flex;flex-direction:column;gap:0.35rem;width:100%;">
+              <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+                <strong id="burn-status-title">SECRET REVEALED &amp; PERMANENTLY DESTROYED</strong>
+                <span id="burn-timestamp-badge" class="badge-tag hidden" style="background:rgba(239,68,68,0.2);color:#fca5a5;border:1px solid rgba(239,68,68,0.4);font-size:0.75rem;">Burned at: <strong id="burn-executed-time">--:--:--</strong></span>
+              </div>
               <span id="burn-status-desc" style="font-size:0.8rem;">This secret has now been permanently erased from the SQLite database with cryptographic zero-overwriting.</span>
             </div>
           </div>
@@ -199,7 +247,11 @@
           <div id="text-display-group" class="form-group">
             <div class="form-label-row">
               <label id="secret-text-label" for="secret-display">DECRYPTED SECRET CONTENT</label>
-              <div class="secret-metrics-chips" id="secret-metrics">
+              <div class="secret-metrics-chips" id="secret-metrics" style="display:flex;align-items:center;gap:0.5rem;">
+                <button type="button" id="btn-peek-secret" class="btn-secret-peek" title="Toggle Privacy Mask">
+                  <svg id="peek-icon" class="svg-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  <span id="peek-text">Hide (Mask)</span>
+                </button>
                 <span class="badge-tag" id="secret-metrics-chars">0 chars</span>
               </div>
             </div>
@@ -219,9 +271,15 @@
           </div>
 
           <!-- Memory Wipe Security Notice -->
-          <div class="file-security-notice" style="margin-top: 1.25rem;">
-            <svg class="svg-icon icon-padlock-mini" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            <span id="memory-wipe-note">Browser RAM Security: Decrypted buffer in browser memory will be flushed in 60s or upon closing this tab.</span>
+          <div class="file-security-notice" style="margin-top: 1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;">
+            <div style="display:flex;align-items:center;gap:0.5rem;flex:1;">
+              <svg class="svg-icon icon-padlock-mini" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <span id="memory-wipe-note">Browser RAM Security: Decrypted buffer in browser memory will be flushed in 60s or upon closing this tab.</span>
+            </div>
+            <button type="button" id="btn-wipe-now" class="btn-wipe-now" title="Instantly clear decrypted secret from browser RAM memory">
+              <svg class="svg-icon" style="width:14px;height:14px;" viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
+              <span>Wipe RAM Now</span>
+            </button>
           </div>
 
           <div style="margin-top: 1.5rem;">

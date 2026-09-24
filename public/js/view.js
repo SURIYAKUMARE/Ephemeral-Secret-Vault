@@ -32,11 +32,27 @@
   const toast = document.getElementById('toast');
   const toastMessage = document.getElementById('toast-message');
 
-  // Live Timer Elements
+  // Live Timer & Date-Time Elements
   const countdownTimer = document.getElementById('countdown-timer');
   const timerProgressFill = document.getElementById('timer-progress-fill');
   const secretMetricsChars = document.getElementById('secret-metrics-chars');
   const memoryWipeNote = document.getElementById('memory-wipe-note');
+  const viewLiveTime = document.getElementById('view-live-time');
+  const recipientTime = document.getElementById('recipient-time');
+  const burnTimestampBadge = document.getElementById('burn-timestamp-badge');
+  const burnExecutedTime = document.getElementById('burn-executed-time');
+
+  // Custom Reveal Protection Mode Elements
+  const btnModeInstant = document.getElementById('btn-mode-instant');
+  const btnModeShield = document.getElementById('btn-mode-shield');
+  const slideRevealWidget = document.getElementById('slide-reveal-widget');
+  const slideThumb = document.getElementById('slide-thumb');
+
+  // Secret Peek & RAM Wipe Controls
+  const btnPeekSecret = document.getElementById('btn-peek-secret');
+  const peekText = document.getElementById('peek-text');
+  const peekIcon = document.getElementById('peek-icon');
+  const btnWipeNow = document.getElementById('btn-wipe-now');
 
   // File Preview Elements
   const revealedFileBox = document.getElementById('revealed-file-box');
@@ -175,6 +191,129 @@
   initLiveCountdown();
 
   // ==========================================================================
+  // Live Date & Time Clock Updater
+  // ==========================================================================
+  function updateLiveClocks() {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString();
+    const dateStr = now.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+
+    if (viewLiveTime) {
+      viewLiveTime.textContent = `${now.toUTCString().split(' ').slice(4, 5)[0]} UTC`;
+    }
+    if (recipientTime) {
+      recipientTime.textContent = `${dateStr}, ${timeStr}`;
+    }
+  }
+  updateLiveClocks();
+  setInterval(updateLiveClocks, 1000);
+
+  // ==========================================================================
+  // Custom Reveal Mode (Instant 1-Click vs Slide-to-Reveal Accidental Shield)
+  // ==========================================================================
+  if (btnModeInstant && btnModeShield && slideRevealWidget && burnBtn) {
+    btnModeInstant.addEventListener('click', () => {
+      btnModeInstant.classList.add('active');
+      btnModeInstant.setAttribute('aria-selected', 'true');
+      btnModeShield.classList.remove('active');
+      btnModeShield.setAttribute('aria-selected', 'false');
+      slideRevealWidget.classList.add('hidden');
+      burnBtn.classList.remove('hidden');
+    });
+
+    btnModeShield.addEventListener('click', () => {
+      btnModeShield.classList.add('active');
+      btnModeShield.setAttribute('aria-selected', 'true');
+      btnModeInstant.classList.remove('active');
+      btnModeInstant.setAttribute('aria-selected', 'false');
+      slideRevealWidget.classList.remove('hidden');
+      burnBtn.classList.add('hidden');
+    });
+  }
+
+  // Interactive Slide-to-Reveal Slider
+  if (slideRevealWidget && slideThumb && burnBtn) {
+    let isDragging = false;
+    let startX = 0;
+    let maxSlide = 0;
+    let currentX = 0;
+
+    function cleanupSliderEvents() {
+      document.removeEventListener('pointermove', onPointerMove);
+      document.removeEventListener('pointerup', onPointerUp);
+      document.removeEventListener('touchmove', onTouchMove);
+      document.removeEventListener('touchend', onTouchEnd);
+    }
+
+    function onPointerDown(e) {
+      if (burnBtn.disabled) return;
+      isDragging = true;
+      startX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+      const trackRect = slideRevealWidget.getBoundingClientRect();
+      const thumbRect = slideThumb.getBoundingClientRect();
+      maxSlide = trackRect.width - thumbRect.width - 8;
+      slideThumb.style.transition = 'none';
+
+      document.addEventListener('pointermove', onPointerMove);
+      document.addEventListener('pointerup', onPointerUp);
+      document.addEventListener('touchmove', onTouchMove, { passive: false });
+      document.addEventListener('touchend', onTouchEnd);
+    }
+
+    function handleMove(clientX) {
+      if (!isDragging) return;
+      const deltaX = clientX - startX;
+      currentX = Math.max(0, Math.min(deltaX, maxSlide));
+      slideThumb.style.transform = `translateX(${currentX}px)`;
+
+      // If dragged past 85% of track, trigger confirmation
+      if (currentX >= maxSlide * 0.85) {
+        confirmSlide();
+      }
+    }
+
+    function onPointerMove(e) {
+      handleMove(e.clientX);
+    }
+
+    function onTouchMove(e) {
+      if (e.touches && e.touches[0]) {
+        e.preventDefault();
+        handleMove(e.touches[0].clientX);
+      }
+    }
+
+    function confirmSlide() {
+      if (!isDragging) return;
+      isDragging = false;
+      cleanupSliderEvents();
+      slideThumb.style.transition = 'transform 0.2s ease';
+      slideThumb.style.transform = `translateX(${maxSlide}px)`;
+      slideThumb.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+      const trackText = slideRevealWidget.querySelector('.slide-reveal-text');
+      if (trackText) trackText.textContent = 'SHIELD VERIFIED — DECRYPTING...';
+      setTimeout(() => {
+        burnBtn.click();
+      }, 120);
+    }
+
+    function onPointerUp() {
+      if (!isDragging) return;
+      isDragging = false;
+      cleanupSliderEvents();
+      slideThumb.style.transition = 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)';
+      slideThumb.style.transform = 'translateX(0px)';
+    }
+
+    function onTouchEnd() {
+      onPointerUp();
+    }
+
+    slideThumb.addEventListener('pointerdown', onPointerDown);
+    slideThumb.addEventListener('touchstart', onPointerDown, { passive: true });
+  }
+
+  // ==========================================================================
   // Burn & Reveal Secret Execution
   // ==========================================================================
   if (burnBtn) {
@@ -284,6 +423,15 @@
           textDisplayGroup.classList.add('hidden');
         }
 
+        // Record and display precise burn execution timestamp
+        const burnDate = new Date();
+        if (burnExecutedTime) {
+          burnExecutedTime.textContent = `${burnDate.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}, ${burnDate.toLocaleTimeString()}`;
+        }
+        if (burnTimestampBadge) {
+          burnTimestampBadge.classList.remove('hidden');
+        }
+
         // Configure destruction alert
         if (data.burned || data.views_remaining === 0) {
           burnStatusAlert.className = 'alert alert-danger';
@@ -303,11 +451,7 @@
             if (memorySeconds > 0) {
               memoryWipeNote.textContent = `Browser RAM Security: Decrypted buffer in browser memory will be flushed in ${memorySeconds}s or upon closing this tab.`;
             } else {
-              clearInterval(memoryWipeInterval);
-              memoryWipeNote.textContent = 'Browser RAM Security: Plaintext buffer has been cleared from browser memory.';
-              decryptedFileData = null;
-              decodedScriptText = '';
-              secretDisplay.textContent = '[Buffer wiped from memory]';
+              wipeBrowserRamNow();
             }
           }, 1000);
         }
@@ -384,5 +528,52 @@
       triggerDownload(blob, `secret-${secretId}.txt`);
       showToast('✓ Saved text note as file');
     });
+  }
+
+  // ==========================================================================
+  // Secret Privacy Peek & Mask Toggle
+  // ==========================================================================
+  let isSecretMasked = false;
+  if (btnPeekSecret && secretDisplay) {
+    btnPeekSecret.addEventListener('click', () => {
+      isSecretMasked = !isSecretMasked;
+      if (isSecretMasked) {
+        secretDisplay.classList.add('masked');
+        if (peekText) peekText.textContent = 'Show (Peek)';
+        if (peekIcon) {
+          peekIcon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+        }
+      } else {
+        secretDisplay.classList.remove('masked');
+        if (peekText) peekText.textContent = 'Hide (Mask)';
+        if (peekIcon) {
+          peekIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+        }
+      }
+    });
+  }
+
+  // ==========================================================================
+  // Immediate Browser RAM Memory Wipe
+  // ==========================================================================
+  function wipeBrowserRamNow() {
+    if (memoryWipeInterval) clearInterval(memoryWipeInterval);
+    decryptedFileData = null;
+    decodedScriptText = '';
+    if (secretDisplay) secretDisplay.textContent = '[Plaintext buffer securely wiped from browser RAM]';
+    if (imagePreviewContainer) imagePreviewContainer.classList.add('hidden');
+    if (codeInspectorContainer) codeInspectorContainer.classList.add('hidden');
+    if (revealedFileBox) revealedFileBox.classList.add('hidden');
+    if (memoryWipeNote) memoryWipeNote.textContent = 'Browser RAM Security: Decrypted buffer permanently wiped from browser memory.';
+    if (btnWipeNow) {
+      btnWipeNow.disabled = true;
+      btnWipeNow.innerHTML = '<span>✓ Wiped</span>';
+      btnWipeNow.style.opacity = '0.5';
+    }
+    showToast('✓ Browser RAM buffer wiped cleanly');
+  }
+
+  if (btnWipeNow) {
+    btnWipeNow.addEventListener('click', wipeBrowserRamNow);
   }
 })();
