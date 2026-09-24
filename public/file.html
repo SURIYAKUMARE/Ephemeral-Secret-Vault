@@ -94,6 +94,23 @@
       </div>
     </header>
 
+    <!-- Hero Picture & Visual File Vault Showcase -->
+    <div class="hero-visual-card" aria-label="Universal Confidential File Vault">
+      <img src="/images/vault-file-cyber.jpg" alt="Confidential Data Vault Door with File Streams" class="hero-visual-img" loading="eager">
+      <div class="hero-visual-overlay">
+        <div class="hero-visual-badges">
+          <span class="badge-tag badge-cyan">UNIVERSAL 10 MB PAYLOAD</span>
+          <span class="badge-tag" style="background:rgba(16,185,129,0.2);color:#6ee7b7;border:1px solid rgba(16,185,129,0.35);">ZERO STORAGE RESIDUE</span>
+          <span class="badge-tag" style="background:rgba(99,102,241,0.2);color:#a5b4fc;border:1px solid rgba(99,102,241,0.35);">ALL FILE TYPES</span>
+        </div>
+        <div class="hero-visual-title">
+          <svg class="svg-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          <span>Universal Confidential File Vault — Zero-Trace File Delivery</span>
+        </div>
+        <div class="hero-visual-meta">Code Scripts (surya.py, shell, js), PDFs, Office Docs, Keys &amp; Certificates</div>
+      </div>
+    </div>
+
     <!-- Main Secret Creation Workspace -->
     <div class="vault-workspace" id="create-workspace">
       <main class="main-card" role="main">
@@ -342,6 +359,10 @@
                 <span class="summary-label">Destruction Policy:</span>
                 <span class="summary-val">Hard delete upon allowed views or TTL expiration</span>
               </div>
+              <div class="summary-col" style="grid-column: span 2;">
+                <span class="summary-label">Pre-Encryption Integrity Digest (SHA-256):</span>
+                <span class="summary-val" id="live-sha-preview" style="font-family:var(--font-mono);font-size:0.75rem;color:var(--cyan-glow);">Waiting for file selection...</span>
+              </div>
             </div>
           </div>
 
@@ -470,6 +491,17 @@
                   <span>Share Link</span>
                 </button>
               </div>
+
+              <!-- Quick Switcher to File Download Option -->
+              <div style="margin-top:1.25rem;padding:0.75rem 1rem;background:rgba(15,23,42,0.6);border:1px solid rgba(56,189,248,0.2);border-radius:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;">
+                <div style="font-size:0.82rem;color:var(--text-dim);display:flex;align-items:center;gap:0.5rem;">
+                  <svg class="svg-icon" style="width:16px;height:16px;color:var(--cyan-glow);" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                  <span>Prefer to send a physical encrypted file capsule instead of a link?</span>
+                </div>
+                <button type="button" id="btn-quick-to-file" class="btn-tool-mini" style="color:var(--cyan-glow);border-color:rgba(56,189,248,0.35);">
+                  <span>Download Encrypted File &rarr;</span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -505,6 +537,17 @@
                   <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline></svg>
                   <span>Download Cryptographic Capsule (.vault)</span>
                   <span class="btn-package-sub">Offline JSON receipt &amp; proof</span>
+                </button>
+              </div>
+
+              <!-- Quick Switcher to Web Link Option -->
+              <div style="margin-top:1.25rem;padding:0.75rem 1rem;background:rgba(15,23,42,0.6);border:1px solid rgba(56,189,248,0.2);border-radius:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;">
+                <div style="font-size:0.82rem;color:var(--text-dim);display:flex;align-items:center;gap:0.5rem;">
+                  <svg class="svg-icon" style="width:16px;height:16px;color:var(--cyan-glow);" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                  <span>Need the direct web access link instead of the file?</span>
+                </div>
+                <button type="button" id="btn-quick-to-link" class="btn-tool-mini" style="color:var(--cyan-glow);border-color:rgba(56,189,248,0.35);">
+                  <span>View Web Access Link &rarr;</span>
                 </button>
               </div>
 
@@ -800,6 +843,30 @@
         </div>
       </div>
     </section>
+
+    <!-- Modals for Nav Links & Security Info -->
+    <div id="modal-security" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-security-title">
+      <div class="modal-card">
+        <button type="button" class="modal-close-btn" aria-label="Close modal">&times;</button>
+        <h3 id="modal-security-title" class="modal-title">Security Architecture &amp; Cryptographic Proof</h3>
+        <div class="modal-body">
+          <h4>Authenticated Cipher</h4>
+          <p>We use <strong>AES-256-GCM</strong> (Galois/Counter Mode), guaranteeing both confidentiality and tamper detection. Any bit manipulation immediately fails decryption.</p>
+
+          <h4>Zero Plaintext at Rest</h4>
+          <p>Plaintext secrets and uploaded files never touch the hard drive unencrypted. Even SQLite WAL write-ahead logs contain only encrypted ciphertext bytes.</p>
+
+          <h4>Scraper &amp; Crawler Shielding</h4>
+          <p>Automated link preview bots (Slackbot, Twitterbot, WhatsApp, Facebook, Discord) receive an isolated static preview shell. The secret is never decrypted by crawlers.</p>
+
+          <h4>Zero-Knowledge Passphrase</h4>
+          <p>If you set a passphrase, the key is derived using PBKDF2 with 100,000 iterations and a cryptographically secure per-secret salt.</p>
+
+          <h4>Permanent Zero Overwriting</h4>
+          <p>The database runs with <code>PRAGMA secure_delete = ON;</code> ensuring deleted table cells are physically overwritten with zeros rather than merely marked as free.</p>
+        </div>
+      </div>
+    </div>
 
     <!-- Floating Feedback Toast -->
     <div id="toast" class="toast" role="status" aria-live="polite">

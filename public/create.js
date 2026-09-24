@@ -74,6 +74,7 @@
   const factorPassphrase = document.getElementById('factor-passphrase');
   const summaryExpiration = document.getElementById('summary-expiration');
   const summaryViews = document.getElementById('summary-views');
+  const liveShaPreview = document.getElementById('live-sha-preview');
 
   // Delivery Tabs & Result Screen
   const resultSection = document.getElementById('result-section');
@@ -262,15 +263,37 @@
       }
     }
 
-    // Format detection badge & status indicator
-    const format = detectSecretFormat(text);
-    if (format && detectedFormatBadge) {
-      detectedFormatBadge.textContent = `Detected format: ${format}`;
-      detectedFormatBadge.classList.remove('hidden');
-      if (secretStatusIndicator) secretStatusIndicator.classList.remove('hidden');
-    } else {
-      if (detectedFormatBadge) detectedFormatBadge.classList.add('hidden');
-      if (secretStatusIndicator) secretStatusIndicator.classList.add('hidden');
+    // Update Live SHA-256 Digest preview
+    if (liveShaPreview) {
+      if (chars > 0) {
+        computeSha256Digest(text).then((hash) => {
+          if (hash && liveShaPreview) {
+            liveShaPreview.textContent = `${hash.slice(0, 32)}... (Pre-Verified)`;
+            liveShaPreview.style.color = 'var(--cyan-glow)';
+          }
+        });
+      } else if (!currentFile) {
+        liveShaPreview.textContent = 'Waiting for secret input...';
+        liveShaPreview.style.color = 'var(--text-muted)';
+      }
+    }
+  }
+
+  // Live Cryptographic SHA-256 Digest Calculator
+  async function computeSha256Digest(strOrBuffer) {
+    try {
+      if (!window.crypto || !window.crypto.subtle) return null;
+      let dataBuffer;
+      if (typeof strOrBuffer === 'string') {
+        dataBuffer = new TextEncoder().encode(strOrBuffer);
+      } else {
+        dataBuffer = strOrBuffer;
+      }
+      const hashBuffer = await window.crypto.subtle.digest('SHA-256', dataBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+    } catch {
+      return null;
     }
   }
 
@@ -389,20 +412,26 @@
     if (!ttlSelect) return 3600;
     const val = ttlSelect.value;
     if (val === 'custom') {
-      const h = parseInt(customTtlHours.value, 10) || 0;
-      const m = parseInt(customTtlMinutes.value, 10) || 0;
+      const h = parseInt(customTtlHours ? customTtlHours.value : '0', 10) || 0;
+      const m = parseInt(customTtlMinutes ? customTtlMinutes.value : '0', 10) || 0;
       const total = (h * 3600) + (m * 60);
+      if (isNaN(total) || total < 60) return 60;
       return Math.max(60, Math.min(total, 604800));
     }
     if (val === 'datetime') {
       if (customDatetimePicker && customDatetimePicker.value) {
         const targetMs = new Date(customDatetimePicker.value).getTime();
-        const diffSec = Math.floor((targetMs - Date.now()) / 1000);
-        return Math.max(60, Math.min(diffSec, 604800));
+        if (!isNaN(targetMs)) {
+          const diffSec = Math.floor((targetMs - Date.now()) / 1000);
+          if (!isNaN(diffSec) && diffSec >= 60) {
+            return Math.max(60, Math.min(diffSec, 604800));
+          }
+        }
       }
       return 3600;
     }
-    return parseInt(val, 10);
+    const parsed = parseInt(val, 10);
+    return (!isNaN(parsed) && parsed >= 60 && parsed <= 604800) ? parsed : 3600;
   }
 
   function updateExpiryLivePreview() {
@@ -642,6 +671,15 @@
 
       filePreviewCard.classList.remove('hidden');
       dropzone.classList.add('hidden');
+
+      if (liveShaPreview && file) {
+        file.arrayBuffer().then((buf) => computeSha256Digest(buf)).then((hash) => {
+          if (hash && liveShaPreview) {
+            liveShaPreview.textContent = `${hash.slice(0, 32)}... (${file.name})`;
+            liveShaPreview.style.color = 'var(--cyan-glow)';
+          }
+        }).catch(() => {});
+      }
     };
 
     reader.onerror = () => {
@@ -720,6 +758,16 @@
       panelDeliveryFile.classList.remove('hidden');
       panelDeliveryLink.classList.add('hidden');
     });
+
+    const btnQuickToFile = document.getElementById('btn-quick-to-file');
+    const btnQuickToLink = document.getElementById('btn-quick-to-link');
+
+    if (btnQuickToFile) {
+      btnQuickToFile.addEventListener('click', () => tabDeliveryFile.click());
+    }
+    if (btnQuickToLink) {
+      btnQuickToLink.addEventListener('click', () => tabDeliveryLink.click());
+    }
   }
 
   // QR Code Rendering & Toggle
@@ -780,6 +828,20 @@
   // ==========================================================================
   // Form Submission & Secret Creation
   // ==========================================================================
+  function setSubmitLoading(loading, message) {
+    if (!submitBtn) return;
+    submitBtn.disabled = loading;
+    const isFilePage = document.body.dataset.page === 'file' || window.location.pathname.startsWith('/file');
+    const defaultText = isFilePage ? 'Encrypt &amp; Generate Secure File Link' : 'Encrypt &amp; Generate Secure Link';
+    const label = message || defaultText;
+    const icon = loading ? SVG_ICONS.spinner : (isFilePage
+      ? '<svg class="svg-icon btn-icon-lock" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>'
+      : '<svg class="svg-icon btn-icon-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>');
+    const arrow = loading ? '' : '<svg class="svg-icon btn-arrow-right" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
+
+    submitBtn.innerHTML = `${icon} <span id="submit-btn-text">${label}</span> ${arrow}`;
+  }
+
   if (createForm) {
     createForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -809,18 +871,26 @@
         max_views: maxViews
       };
 
-      if (secretText) payload.secret = secretText;
-      if (currentFile) payload.file = currentFile;
-      if (passphrase) payload.passphrase = passphrase;
+      if (secretText) {
+        payload.secret = secretText;
+      } else if (currentFile) {
+        payload.secret = `[Attached Confidential File: ${currentFile.name}]`;
+      }
 
-      // Premium interactive CTA sequence
-      submitBtn.disabled = true;
-      submitBtnText.textContent = 'Encrypting...';
-      submitBtn.querySelector('.btn-icon-lock').outerHTML = SVG_ICONS.spinner;
+      if (currentFile) {
+        payload.file = currentFile;
+      }
+
+      if (passphrase) {
+        payload.passphrase = passphrase;
+      }
+
+      // Safe interactive CTA sequence without destroying DOM references
+      setSubmitLoading(true, 'Encrypting & Generating Vault...');
 
       try {
         await new Promise((r) => setTimeout(r, 200));
-        submitBtnText.textContent = 'Generating Secure Link...';
+        setSubmitLoading(true, 'Generating Secure Link & Capsule...');
 
         const response = await fetch('/api/secret', {
           method: 'POST',
@@ -833,8 +903,6 @@
         if (!response.ok) {
           throw new Error(data.error || 'Failed to create secret.');
         }
-
-        submitBtnText.textContent = 'Vault Created ✓';
 
         // Store active runtime data
         activeSecretData = data;
@@ -882,15 +950,12 @@
         if (currentFile && tabDeliveryFile && panelDeliveryFile) {
           tabDeliveryFile.click();
         }
+
+        showToast('✓ Vault created successfully');
       } catch (err) {
         showError(err.message || 'Unable to create the vault. Please try again.');
       } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = `
-          <svg class="svg-icon btn-icon-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-          <span id="submit-btn-text">Encrypt &amp; Generate Secure Link</span>
-          <svg class="svg-icon btn-arrow-right" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-        `;
+        setSubmitLoading(false);
       }
     });
   }
@@ -1322,6 +1387,11 @@
       updateExpiryLivePreview();
       updateSecurityScore();
 
+      if (liveShaPreview) {
+        liveShaPreview.textContent = 'Waiting for secret input...';
+        liveShaPreview.style.color = 'var(--text-muted)';
+      }
+
       resultSection.classList.add('hidden');
       createForm.classList.remove('hidden');
       hideError();
@@ -1474,12 +1544,7 @@
   if (navHelp) {
     navHelp.addEventListener('click', (e) => {
       e.preventDefault();
-      const secSection = document.getElementById('security');
-      if (secSection) {
-        secSection.scrollIntoView({ behavior: 'smooth' });
-      } else {
-        openModal('modal-security');
-      }
+      openModal('modal-security');
     });
   }
 
