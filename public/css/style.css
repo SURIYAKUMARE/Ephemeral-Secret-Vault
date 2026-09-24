@@ -313,23 +313,11 @@ body::before {
   line-height: 1.55;
 }
 
-/* 3-Column Layout */
+/* Centered Primary Vault Container */
 .vault-layout {
-  display: grid;
-  grid-template-columns: 280px 1fr 280px;
-  gap: 1.75rem;
-  align-items: start;
-}
-
-@media (max-width: 1080px) {
-  .vault-layout {
-    grid-template-columns: 1fr;
-    max-width: 640px;
-    margin: 0 auto;
-  }
-  .side-features {
-    display: none !important;
-  }
+  max-width: 680px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 /* Side Feature Columns */
