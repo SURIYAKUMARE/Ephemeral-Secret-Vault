@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node src/server.js",
-    "test": "node --test \"tests/*.test.js\"",
+    "test": "node --test --test-concurrency=1 \"tests/*.test.js\"",
     "test:race": "node --test \"tests/race.test.js\"",
     "bench": "node scripts/bench.js",
     "gen-key": "node scripts/gen-key.js"
