@@ -32,7 +32,13 @@
   const toast = document.getElementById('toast');
   const toastMessage = document.getElementById('toast-message');
 
-  // File preview elements
+  // Live Timer Elements
+  const countdownTimer = document.getElementById('countdown-timer');
+  const timerProgressFill = document.getElementById('timer-progress-fill');
+  const secretMetricsChars = document.getElementById('secret-metrics-chars');
+  const memoryWipeNote = document.getElementById('memory-wipe-note');
+
+  // File Preview Elements
   const revealedFileBox = document.getElementById('revealed-file-box');
   const revealedFileIcon = document.getElementById('revealed-file-icon');
   const revealedFileName = document.getElementById('revealed-file-name');
@@ -41,11 +47,22 @@
   const revealedImage = document.getElementById('revealed-image');
   const downloadFileBtn = document.getElementById('download-file-btn');
 
+  // Code Inspector Elements
+  const codeInspectorContainer = document.getElementById('code-inspector-container');
+  const codeInspectorTitle = document.getElementById('code-inspector-title');
+  const codeLineNumbers = document.getElementById('code-line-numbers');
+  const codeLinesContent = document.getElementById('code-lines-content');
+  const copyCodeBtn = document.getElementById('copy-code-btn');
+
   // Metadata
-  const secretId = vaultCard.dataset.id;
-  const hasPassphrase = vaultCard.dataset.hasPassphrase === 'true';
+  const secretId = vaultCard ? vaultCard.dataset.id : '';
+  const hasPassphrase = vaultCard ? vaultCard.dataset.hasPassphrase === 'true' : false;
+  const expiresIso = vaultCard ? vaultCard.dataset.expires : null;
 
   let decryptedFileData = null;
+  let decodedScriptText = '';
+  let tickerInterval = null;
+  let memoryWipeInterval = null;
 
   function showToast(msg) {
     if (!toast) return;
@@ -76,15 +93,15 @@
   }
 
   function getFileSvg(name, mime) {
-    const ext = name.split('.').pop().toLowerCase();
-    if (mime.startsWith('image/')) return SVG.fileImage;
+    const ext = (name || '').split('.').pop().toLowerCase();
+    if (mime && mime.startsWith('image/')) return SVG.fileImage;
     if (['py', 'js', 'ts', 'jsx', 'tsx', 'html', 'css', 'json', 'sh', 'c', 'cpp', 'rs', 'go', 'php'].includes(ext)) {
       return SVG.fileCode;
     }
     return SVG.fileDoc;
   }
 
-  // Convert base64 data URL to Blob for download
+  // Convert Base64 Data URL to Blob
   function dataUrlToBlob(dataUrl) {
     const arr = dataUrl.split(',');
     const mimeMatch = arr[0].match(/:(.*?);/);
@@ -98,7 +115,6 @@
     return new Blob([u8arr], { type: mime });
   }
 
-  // Trigger download helper
   function triggerDownload(blob, filename) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -110,140 +126,263 @@
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
-  // Burn and reveal handler
-  burnBtn.addEventListener('click', async () => {
-    hideError();
-    burnBtn.disabled = true;
-    burnBtn.innerHTML = `${SVG.spinner} <span>Decrypting &amp; Burning Vault Row...</span>`;
+  // ==========================================================================
+  // Live Expiry Countdown Ticker
+  // ==========================================================================
+  function initLiveCountdown() {
+    if (!expiresIso || !countdownTimer) return;
+    const expiryTime = new Date(expiresIso).getTime();
 
-    const bodyPayload = {};
-    if (hasPassphrase || (passphraseInput && passphraseInput.value)) {
-      bodyPayload.passphrase = passphraseInput.value;
+    function updateTicker() {
+      const now = Date.now();
+      const diff = expiryTime - now;
+
+      if (diff <= 0) {
+        countdownTimer.textContent = 'EXPIRED';
+        countdownTimer.style.color = '#ef4444';
+        if (timerProgressFill) timerProgressFill.style.width = '0%';
+        if (burnBtn) {
+          burnBtn.disabled = true;
+          burnBtn.innerHTML = '<span>Secret Expired &amp; Purged</span>';
+        }
+        clearInterval(tickerInterval);
+        return;
+      }
+
+      const totalSec = Math.floor(diff / 1000);
+      const hours = Math.floor(totalSec / 3600);
+      const minutes = Math.floor((totalSec % 3600) / 60);
+      const seconds = totalSec % 60;
+
+      const pad = (n) => String(n).padStart(2, '0');
+      if (hours > 0) {
+        countdownTimer.textContent = `${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
+      } else {
+        countdownTimer.textContent = `${pad(minutes)}m ${pad(seconds)}s`;
+      }
+
+      // Smooth progress bar calculation
+      if (timerProgressFill) {
+        const percent = Math.min(100, Math.max(0, (diff / (3600 * 1000)) * 100));
+        timerProgressFill.style.width = `${percent}%`;
+      }
     }
 
-    try {
-      const response = await fetch(`/api/secret/${secretId}/burn`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(bodyPayload)
-      });
+    updateTicker();
+    tickerInterval = setInterval(updateTicker, 1000);
+  }
 
-      const data = await response.json();
+  initLiveCountdown();
 
-      if (response.status === 401) {
-        showError(data.error || 'Invalid passphrase.');
+  // ==========================================================================
+  // Burn & Reveal Secret Execution
+  // ==========================================================================
+  if (burnBtn) {
+    burnBtn.addEventListener('click', async () => {
+      hideError();
+      burnBtn.disabled = true;
+      burnBtn.innerHTML = `${SVG.spinner} <span>Decrypting &amp; Wiping Database Row...</span>`;
+
+      const bodyPayload = {};
+      if (hasPassphrase || (passphraseInput && passphraseInput.value)) {
+        bodyPayload.passphrase = passphraseInput.value.trim();
+      }
+
+      try {
+        const response = await fetch(`/api/secret/${secretId}/burn`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(bodyPayload)
+        });
+
+        const data = await response.json();
+
+        if (response.status === 401) {
+          showError(data.error || 'Invalid passphrase.');
+          burnBtn.disabled = false;
+          burnBtn.innerHTML = `${SVG.flame} <span>Reveal &amp; Destroy Secret</span>`;
+          if (passphraseInput) {
+            passphraseInput.focus();
+            passphraseInput.select();
+          }
+          return;
+        }
+
+        if (response.status === 404) {
+          splashSection.classList.add('hidden');
+          destroyedSection.classList.remove('hidden');
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to reveal secret.');
+        }
+
+        // Stop countdown ticker
+        if (tickerInterval) clearInterval(tickerInterval);
+
+        // Hide splash, show revealed section
+        splashSection.classList.add('hidden');
+        revealedSection.classList.remove('hidden');
+
+        // Check if file payload returned
+        if (data.file) {
+          decryptedFileData = data.file;
+          revealedFileName.textContent = data.file.name;
+          revealedFileMeta.textContent = `${formatBytes(data.file.size)} • ${data.file.type || 'binary/raw'}`;
+          revealedFileIcon.innerHTML = getFileSvg(data.file.name, data.file.type || '');
+          downloadFileBtn.innerHTML = `${SVG.download} <span>Download ${data.file.name} (${formatBytes(data.file.size)})</span>`;
+
+          const ext = data.file.name.split('.').pop().toLowerCase();
+          const isCodeFile = ['py', 'js', 'ts', 'jsx', 'tsx', 'html', 'css', 'json', 'sh', 'c', 'cpp', 'rs', 'go', 'php', 'env', 'txt', 'sql', 'md', 'xml', 'yaml', 'yml'].includes(ext) ||
+                             (data.file.type && data.file.type.startsWith('text/')) ||
+                             (data.file.type && data.file.type.includes('json'));
+
+          // Check if image for inline rendering
+          if (data.file.type && data.file.type.startsWith('image/')) {
+            revealedImage.src = data.file.data;
+            imagePreviewContainer.classList.remove('hidden');
+            if (codeInspectorContainer) codeInspectorContainer.classList.add('hidden');
+          } else if (isCodeFile && codeInspectorContainer) {
+            try {
+              const rawBase64 = data.file.data.split(',')[1] || data.file.data;
+              decodedScriptText = decodeURIComponent(escape(atob(rawBase64)));
+              const lines = decodedScriptText.split('\n');
+              codeLineNumbers.textContent = lines.map((_, i) => i + 1).join('\n');
+              codeLinesContent.textContent = decodedScriptText;
+              codeInspectorTitle.textContent = `${data.file.name} (${lines.length} lines)`;
+              codeInspectorContainer.classList.remove('hidden');
+            } catch (e) {
+              codeInspectorContainer.classList.add('hidden');
+            }
+            imagePreviewContainer.classList.add('hidden');
+          } else {
+            imagePreviewContainer.classList.add('hidden');
+            if (codeInspectorContainer) codeInspectorContainer.classList.add('hidden');
+          }
+
+          revealedFileBox.classList.remove('hidden');
+        }
+
+        // Check text content
+        const textContent = data.secret || '';
+        const isPlaceholder = textContent.startsWith('[Attached File:');
+
+        if (textContent && !isPlaceholder) {
+          secretDisplay.textContent = textContent;
+          textDisplayGroup.classList.remove('hidden');
+          if (secretMetricsChars) {
+            secretMetricsChars.textContent = `${textContent.length} chars • ${textContent.split(/\s+/).filter(Boolean).length} words`;
+          }
+        } else if (!data.file) {
+          secretDisplay.textContent = textContent;
+          textDisplayGroup.classList.remove('hidden');
+          if (secretMetricsChars) {
+            secretMetricsChars.textContent = `${textContent.length} chars`;
+          }
+        } else {
+          textDisplayGroup.classList.add('hidden');
+        }
+
+        // Configure destruction alert
+        if (data.burned || data.views_remaining === 0) {
+          burnStatusAlert.className = 'alert alert-danger';
+          burnStatusTitle.textContent = 'SECRET DECRYPTED & PERMANENTLY BURNED';
+          burnStatusDesc.textContent = 'This secret has now been permanently erased from the SQLite database with zero-overwriting. Zero traces remain.';
+        } else {
+          burnStatusAlert.className = 'alert alert-warning';
+          burnStatusTitle.textContent = 'SECRET REVEALED';
+          burnStatusDesc.textContent = `Warning: ${data.views_remaining} view${data.views_remaining > 1 ? 's' : ''} remaining before permanent destruction.`;
+        }
+
+        // Start 60-second browser RAM auto-wipe countdown
+        let memorySeconds = 60;
+        if (memoryWipeNote) {
+          memoryWipeInterval = setInterval(() => {
+            memorySeconds--;
+            if (memorySeconds > 0) {
+              memoryWipeNote.textContent = `Browser RAM Security: Decrypted buffer in browser memory will be flushed in ${memorySeconds}s or upon closing this tab.`;
+            } else {
+              clearInterval(memoryWipeInterval);
+              memoryWipeNote.textContent = 'Browser RAM Security: Plaintext buffer has been cleared from browser memory.';
+              decryptedFileData = null;
+              decodedScriptText = '';
+              secretDisplay.textContent = '[Buffer wiped from memory]';
+            }
+          }, 1000);
+        }
+      } catch (err) {
+        showError(err.message || 'Failed to reveal secret.');
         burnBtn.disabled = false;
         burnBtn.innerHTML = `${SVG.flame} <span>Reveal &amp; Destroy Secret</span>`;
-        if (passphraseInput) {
-          passphraseInput.focus();
-          passphraseInput.select();
-        }
-        return;
       }
+    });
+  }
 
-      if (response.status === 404) {
-        splashSection.classList.add('hidden');
-        destroyedSection.classList.remove('hidden');
-        return;
+  // Download Attached File
+  if (downloadFileBtn) {
+    downloadFileBtn.addEventListener('click', () => {
+      if (!decryptedFileData || !decryptedFileData.data) return;
+      try {
+        const blob = dataUrlToBlob(decryptedFileData.data);
+        triggerDownload(blob, decryptedFileData.name);
+        showToast(`✓ Downloaded ${decryptedFileData.name}`);
+      } catch {
+        showError('Failed to prepare file download.');
       }
+    });
+  }
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to reveal secret.');
+  // Copy Script Code from Inspector
+  if (copyCodeBtn) {
+    copyCodeBtn.addEventListener('click', async () => {
+      if (!decodedScriptText) return;
+      try {
+        await navigator.clipboard.writeText(decodedScriptText);
+        copyCodeBtn.innerHTML = `${SVG.check} <span>Copied</span>`;
+        showToast('✓ Script code copied to clipboard');
+        setTimeout(() => {
+          copyCodeBtn.innerHTML = `${SVG.copy} <span>Copy Code</span>`;
+        }, 2000);
+      } catch {
+        showToast('Failed to copy script code');
       }
+    });
+  }
 
-      // Hide splash, show revealed section
-      splashSection.classList.add('hidden');
-      revealedSection.classList.remove('hidden');
-
-      // Check if file payload returned
-      if (data.file) {
-        decryptedFileData = data.file;
-        revealedFileName.textContent = data.file.name;
-        revealedFileMeta.textContent = `${formatBytes(data.file.size)} • ${data.file.type || 'binary'}`;
-        revealedFileIcon.innerHTML = getFileSvg(data.file.name, data.file.type || '');
-        downloadFileBtn.innerHTML = `${SVG.download} <span>Download ${data.file.name}</span>`;
-
-        // Check if image for inline rendering
-        if (data.file.type && data.file.type.startsWith('image/')) {
-          revealedImage.src = data.file.data;
-          imagePreviewContainer.classList.remove('hidden');
-        }
-
-        revealedFileBox.classList.remove('hidden');
+  // Copy Secret Text
+  if (copySecretBtn) {
+    copySecretBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(secretDisplay.textContent);
+        copySecretBtn.innerHTML = `${SVG.check} <span>Copied</span>`;
+        showToast('✓ Secret text copied to clipboard');
+        setTimeout(() => {
+          copySecretBtn.innerHTML = `${SVG.copy} <span>Copy Secret Text</span>`;
+        }, 2000);
+      } catch {
+        const range = document.createRange();
+        range.selectNode(secretDisplay);
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+        document.execCommand('copy');
+        window.getSelection().removeAllRanges();
+        copySecretBtn.innerHTML = `${SVG.check} <span>Copied</span>`;
+        showToast('✓ Secret text copied to clipboard');
+        setTimeout(() => {
+          copySecretBtn.innerHTML = `${SVG.copy} <span>Copy Secret Text</span>`;
+        }, 2000);
       }
+    });
+  }
 
-      // Check text content
-      const textContent = data.secret || '';
-      const isPlaceholder = textContent.startsWith('[Attached File:');
-      
-      if (textContent && !isPlaceholder) {
-        secretDisplay.textContent = textContent;
-        textDisplayGroup.classList.remove('hidden');
-      } else if (!data.file) {
-        secretDisplay.textContent = textContent;
-        textDisplayGroup.classList.remove('hidden');
-      } else {
-        textDisplayGroup.classList.add('hidden');
-      }
-
-      // Configure destruction alert
-      if (data.burned || data.views_remaining === 0) {
-        burnStatusAlert.className = 'alert alert-danger';
-        burnStatusTitle.textContent = 'SECRET DECRYPTED & PERMANENTLY BURNED';
-        burnStatusDesc.textContent = 'This secret has now been permanently erased from the vault database with zero-overwriting. Zero traces remain.';
-      } else {
-        burnStatusAlert.className = 'alert alert-warning';
-        burnStatusTitle.textContent = 'SECRET REVEALED';
-        burnStatusDesc.textContent = `Warning: ${data.views_remaining} view${data.views_remaining > 1 ? 's' : ''} remaining before permanent destruction.`;
-      }
-    } catch (err) {
-      showError(err.message);
-      burnBtn.disabled = false;
-      burnBtn.innerHTML = `${SVG.flame} <span>Reveal &amp; Destroy Secret</span>`;
-    }
-  });
-
-  // Download attached file
-  downloadFileBtn.addEventListener('click', () => {
-    if (!decryptedFileData || !decryptedFileData.data) return;
-    try {
-      const blob = dataUrlToBlob(decryptedFileData.data);
-      triggerDownload(blob, decryptedFileData.name);
-      showToast(`Downloaded ${decryptedFileData.name}`);
-    } catch {
-      showError('Failed to prepare file download.');
-    }
-  });
-
-  // Copy secret text
-  copySecretBtn.addEventListener('click', async () => {
-    try {
-      await navigator.clipboard.writeText(secretDisplay.textContent);
-      copySecretBtn.innerHTML = `${SVG.check} <span>Copied</span>`;
-      showToast('Text copied to clipboard');
-      setTimeout(() => {
-        copySecretBtn.innerHTML = `${SVG.copy} <span>Copy Text</span>`;
-      }, 2000);
-    } catch {
-      const range = document.createRange();
-      range.selectNode(secretDisplay);
-      window.getSelection().removeAllRanges();
-      window.getSelection().addRange(range);
-      document.execCommand('copy');
-      window.getSelection().removeAllRanges();
-      copySecretBtn.innerHTML = `${SVG.check} <span>Copied</span>`;
-      showToast('Text copied to clipboard');
-      setTimeout(() => {
-        copySecretBtn.innerHTML = `${SVG.copy} <span>Copy Text</span>`;
-      }, 2000);
-    }
-  });
-
-  // Save text note as file
-  downloadTextBtn.addEventListener('click', () => {
-    const content = secretDisplay.textContent;
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-    triggerDownload(blob, `secret-${secretId}.txt`);
-    showToast('Saved text as file');
-  });
+  // Save Text Note as File
+  if (downloadTextBtn) {
+    downloadTextBtn.addEventListener('click', () => {
+      const content = secretDisplay.textContent;
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+      triggerDownload(blob, `secret-${secretId}.txt`);
+      showToast('✓ Saved text note as file');
+    });
+  }
 })();

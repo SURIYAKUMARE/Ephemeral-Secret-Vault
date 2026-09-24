@@ -11,11 +11,11 @@
   <title>Ephemeral Secret Vault — Self-Destructing Secret &amp; File Sharing</title>
   <link rel="stylesheet" href="/css/style.css">
 </head>
-<body>
-  <!-- Enterprise Navigation Bar -->
+<body id="top">
+  <!-- Enterprise Navigation Bar with Live Scroll-Spy -->
   <nav class="navbar" role="navigation" aria-label="Main Navigation">
     <div class="nav-container">
-      <a href="/" class="nav-brand" title="Ephemeral Secret Vault">
+      <a href="#top" class="nav-brand" title="Ephemeral Secret Vault">
         <div class="nav-logo" aria-hidden="true">
           <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
         </div>
@@ -23,12 +23,12 @@
       </a>
 
       <!-- Desktop Navigation Links -->
-      <div class="nav-links">
-        <a href="/" class="nav-link active">Home</a>
-        <a href="#how-it-works" class="nav-link" id="nav-how-it-works">How It Works</a>
-        <a href="#security" class="nav-link" id="nav-security">Security</a>
-        <a href="#features" class="nav-link" id="nav-features">Features</a>
-        <a href="#faq" class="nav-link" id="nav-faq">FAQ</a>
+      <div class="nav-links" id="desktop-nav-links">
+        <a href="#top" class="nav-link active" data-section="top">Home</a>
+        <a href="#how-it-works" class="nav-link" data-section="how-it-works">How It Works</a>
+        <a href="#security" class="nav-link" data-section="security">Security</a>
+        <a href="#features" class="nav-link" data-section="features">Features</a>
+        <a href="#faq" class="nav-link" data-section="faq">FAQ</a>
       </div>
 
       <!-- Action Items & Mobile Menu Trigger -->
@@ -52,11 +52,11 @@
 
     <!-- Mobile Drawer Menu -->
     <div id="mobile-nav-drawer" class="mobile-nav-drawer hidden">
-      <a href="/" class="mobile-nav-link active">Home</a>
-      <a href="#how-it-works" class="mobile-nav-link" id="mobile-nav-how">How It Works</a>
-      <a href="#security" class="mobile-nav-link" id="mobile-nav-security">Security Architecture</a>
-      <a href="#features" class="mobile-nav-link" id="mobile-nav-features">Features &amp; Specs</a>
-      <a href="#faq" class="mobile-nav-link" id="mobile-nav-faq">Frequently Asked Questions</a>
+      <a href="#top" class="mobile-nav-link active">Home</a>
+      <a href="#how-it-works" class="mobile-nav-link">How It Works</a>
+      <a href="#security" class="mobile-nav-link">Security Architecture</a>
+      <a href="#features" class="mobile-nav-link">Features &amp; Specifications</a>
+      <a href="#faq" class="mobile-nav-link">Frequently Asked Questions</a>
     </div>
   </nav>
 
@@ -116,7 +116,7 @@
           <!-- Input Mode Switcher -->
           <div class="tab-container" role="tablist">
             <button type="button" class="tab-btn active" id="tab-text" role="tab" aria-selected="true">
-              <svg class="svg-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+              <svg class="svg-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
               <span>Document / Secret Text</span>
             </button>
             <button type="button" class="tab-btn" id="tab-file" role="tab" aria-selected="false">
@@ -181,7 +181,7 @@
                 <svg class="svg-icon" style="width:2.75rem;height:2.75rem;stroke:var(--cyan-glow);" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
               </div>
               <div class="dropzone-title">Drop confidential file or click to browse</div>
-              <div class="dropzone-desc">PDF • DOCX • TXT • PY • ZIP • Images • Certificates</div>
+              <div class="dropzone-desc">PDF • DOCX • TXT • PY (surya.py) • ZIP • Images • Certificates</div>
               <div class="dropzone-limit">Maximum size: 10 MB</div>
             </div>
 
@@ -227,13 +227,18 @@
                     <span class="field-hint">Auto-purged upon expiry</span>
                   </div>
                   <select id="ttl-select" name="ttl_seconds">
+                    <option value="60">1 minute (Ultra-Fast Burn)</option>
+                    <option value="300">5 minutes</option>
                     <option value="600">10 minutes</option>
+                    <option value="900">15 minutes</option>
                     <option value="1800">30 minutes</option>
-                    <option value="3600" selected>1 hour (Default)</option>
-                    <option value="21600">6 hours</option>
-                    <option value="86400">24 hours</option>
-                    <option value="604800">7 days</option>
-                    <option value="custom">Custom Timeframe...</option>
+                    <option value="3600" selected>1 hour (Default Recommendation)</option>
+                    <option value="14400">4 hours</option>
+                    <option value="43200">12 hours</option>
+                    <option value="86400">24 hours (1 Day)</option>
+                    <option value="259200">3 days</option>
+                    <option value="604800">7 days (1 Week)</option>
+                    <option value="custom">Custom Timeframe (Hours &amp; Minutes)...</option>
                   </select>
                   <div class="ttl-helper-text">
                     <span id="live-expiry-preview">Expires approximately: Today, 11:42 PM</span>
@@ -579,8 +584,51 @@
       </main>
     </div>
 
-    <!-- Trust / Security Feature Cards (Section 19) -->
-    <section class="security-cards-section" aria-labelledby="security-cards-title">
+    <!-- ON-PAGE SECTION 1: HOW IT WORKS (#how-it-works) -->
+    <section id="how-it-works" class="page-section" aria-labelledby="how-it-works-title">
+      <div class="section-badge-center">
+        <span>OPERATING MODEL</span>
+      </div>
+      <h3 id="how-it-works-title" class="section-title-center">How Ephemeral Secret Vault Works</h3>
+      <p class="section-subtitle-center">An end-to-end zero-trace architecture from client transmission to disk zero-overwriting.</p>
+
+      <div class="how-steps-grid">
+        <div class="how-step-card">
+          <div class="how-step-num">01</div>
+          <div class="how-step-content">
+            <h4>Payload Submission</h4>
+            <p>You enter sensitive credentials, confidential API keys, or attach any file (documents, images, or Python scripts like <code>surya.py</code>) up to 10 MB.</p>
+          </div>
+        </div>
+
+        <div class="how-step-card">
+          <div class="how-step-num">02</div>
+          <div class="how-step-content">
+            <h4>In-Memory AES-256-GCM Encryption</h4>
+            <p>The server immediately encrypts the payload in memory with a fresh 12-byte IV and 16-byte authentication tag. No plaintext ever touches storage or logs.</p>
+          </div>
+        </div>
+
+        <div class="how-step-card">
+          <div class="how-step-num">03</div>
+          <div class="how-step-content">
+            <h4>Dual Delivery Distribution</h4>
+            <p>Share via an unguessable 12-character URL (with 1-click WhatsApp, Slack, Teams, and QR Code) or download an offline self-extracting <code>.html</code> vault package.</p>
+          </div>
+        </div>
+
+        <div class="how-step-card">
+          <div class="how-step-num">04</div>
+          <div class="how-step-content">
+            <h4>Single-Use Atomic Destruction</h4>
+            <p>The recipient opens the link or file and clicks "Reveal &amp; Destroy". Upon decryption, the SQLite database row is overwritten with zeros using <code>PRAGMA secure_delete = ON;</code>.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ON-PAGE SECTION 2: SECURITY & CRYPTOGRAPHY (#security) -->
+    <section id="security" class="page-section" aria-labelledby="security-cards-title">
       <div class="section-badge-center">
         <span>SECURITY FOUNDATION</span>
       </div>
@@ -614,7 +662,7 @@
 
         <div class="spec-card">
           <div class="spec-card-icon icon-green">
-            <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8" y2="16"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg>
+            <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
           </div>
           <h4 class="spec-card-title">4. Scraper Defense</h4>
           <p class="spec-card-desc">GET requests from bots (Slack, WhatsApp, Discord) receive a safe static landing shell with 0 DB burns.</p>
@@ -636,17 +684,9 @@
           <p class="spec-card-desc">Autonomous background sweeper purges expired secrets and checkpoints the WAL database.</p>
         </div>
       </div>
-    </section>
 
-    <!-- Security Explanation Section ("Why Your Secret Is Safe") (Section 20) -->
-    <section class="security-pillars-section" aria-labelledby="pillars-title">
-      <div class="section-badge-center">
-        <span>SECURITY ARCHITECTURE</span>
-      </div>
-      <h3 id="pillars-title" class="section-title-center">Why Your Secret Is Safe</h3>
-      <p class="section-subtitle-center">Technically accurate, verifiable zero-knowledge guarantees.</p>
-
-      <div class="pillars-grid">
+      <!-- Security Pillars (3 Columns) -->
+      <div class="pillars-grid" style="margin-top: 2rem;">
         <div class="pillar-card">
           <div class="pillar-num">01</div>
           <h4 class="pillar-title">Encrypted at Rest</h4>
@@ -669,6 +709,110 @@
           <p class="pillar-desc">
             The secret becomes permanently unavailable after successful reveal or expiration. Deleted blocks are zero-overwritten in memory and storage with no retention.
           </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ON-PAGE SECTION 3: FEATURES & SPECS (#features) -->
+    <section id="features" class="page-section" aria-labelledby="features-title">
+      <div class="section-badge-center">
+        <span>SYSTEM SPECIFICATIONS</span>
+      </div>
+      <h3 id="features-title" class="section-title-center">Platform Capabilities &amp; Specifications</h3>
+      <p class="section-subtitle-center">Designed for engineering teams, security professionals, and zero-trust operations.</p>
+
+      <div class="specs-grid">
+        <div class="spec-box">
+          <div class="spec-box-header">
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <h4>Universal File Upload Engine</h4>
+          </div>
+          <p>Upload any file up to 10 MB: Python scripts (<code>surya.py</code>), Shell scripts, JSON keys, SSH certificates, Word documents, PDFs, and images with automatic type detection and in-browser script inspector.</p>
+        </div>
+
+        <div class="spec-box">
+          <div class="spec-box-header">
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <h4>Dual Delivery: Web Link &amp; Encrypted File</h4>
+          </div>
+          <p>Share secrets via short non-guessable URLs or download an offline self-extracting single-file HTML vault package (or <code>.vault</code> cryptographic capsule) that can be sent directly as a chat attachment.</p>
+        </div>
+
+        <div class="spec-box">
+          <div class="spec-box-header">
+            <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+            <h4>1-Click Multi-Platform Sharing</h4>
+          </div>
+          <p>Direct pre-formatted sharing for WhatsApp, Slack (with rich mrkdwn), Microsoft Teams, Discord, Email, and mobile device QR code camera scanning.</p>
+        </div>
+
+        <div class="spec-box">
+          <div class="spec-box-header">
+            <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3L22 7l-3-3"></path></svg>
+            <h4>Zero-Knowledge Passphrase</h4>
+          </div>
+          <p>Optional secondary key protection derived via PBKDF2 with 100,000 iterations and per-secret cryptographic salt. Even server administrators cannot decrypt the payload without the passphrase.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ON-PAGE SECTION 4: FREQUENTLY ASKED QUESTIONS (#faq) -->
+    <section id="faq" class="page-section" aria-labelledby="faq-title">
+      <div class="section-badge-center">
+        <span>QUESTIONS &amp; ANSWERS</span>
+      </div>
+      <h3 id="faq-title" class="section-title-center">Frequently Asked Questions</h3>
+      <p class="section-subtitle-center">Everything you need to know about our cryptographic guarantees and self-destructing behavior.</p>
+
+      <div class="faq-accordion-list" id="faq-accordion">
+        <div class="faq-item">
+          <button type="button" class="faq-question-btn" aria-expanded="false">
+            <span>Can a burned secret ever be recovered from backups or disk?</span>
+            <svg class="svg-icon faq-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <div class="faq-answer-body hidden">
+            <p>No. When a secret is consumed or expires, its database row is hard-deleted from SQLite with <code>PRAGMA secure_delete = ON;</code>, physically overwriting the allocated storage cells with zeros. There are zero backups, logs, or disk traces containing the decrypted secret.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button type="button" class="faq-question-btn" aria-expanded="false">
+            <span>Does posting the link into Slack or WhatsApp trigger accidental destruction?</span>
+            <svg class="svg-icon faq-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <div class="faq-answer-body hidden">
+            <p>No. Our automated Scraper Defense detects crawlers from Slack, WhatsApp, Twitter, Facebook, and Discord, serving them a safe static preview shell without touching or decrementing the secret. Destruction only occurs upon an authenticated human POST action.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button type="button" class="faq-question-btn" aria-expanded="false">
+            <span>What happens if the recipient never opens the secret link?</span>
+            <svg class="svg-icon faq-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <div class="faq-answer-body hidden">
+            <p>Our background sweeper service periodically inspects expiration timestamps and permanently purges any secret that has passed its TTL, checkpoints the database WAL, and releases the space.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button type="button" class="faq-question-btn" aria-expanded="false">
+            <span>How does the downloadable offline portable vault (.html) work?</span>
+            <svg class="svg-icon faq-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <div class="faq-answer-body hidden">
+            <p>When you choose "Download Portable Vault", the browser builds a self-contained single-file HTML capsule containing the encrypted payload. You can attach this file directly in WhatsApp or Slack. The recipient opens it in their browser offline, extracts the file or secret, and the in-memory buffer is flushed.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button type="button" class="faq-question-btn" aria-expanded="false">
+            <span>Is plaintext data ever logged or visible to server administrators?</span>
+            <svg class="svg-icon faq-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <div class="faq-answer-body hidden">
+            <p>Never. The server never logs request bodies containing secrets. Only a 12-character ID and cryptographic metadata are logged. Plaintext exists strictly in ephemeral RAM during encryption/decryption.</p>
+          </div>
         </div>
       </div>
     </section>
@@ -729,7 +873,7 @@
           <p>Automated deep-linking for WhatsApp, Slack (with formatted mrkdwn), Microsoft Teams, Discord, and Email.</p>
 
           <h4>Configurable Lifecycles</h4>
-          <p>Set custom expiration timeframes from 10 minutes up to 7 days, with view limits from 1 up to 10 views.</p>
+          <p>Set custom expiration timeframes from 1 minute up to 7 days, with view limits from 1 up to 10 views.</p>
         </div>
       </div>
     </div>
@@ -757,7 +901,7 @@
       <span id="toast-message">Copied to clipboard</span>
     </div>
 
-    <!-- Enterprise Security Footer (Section 27) -->
+    <!-- Enterprise Security Footer -->
     <footer class="footer-enterprise" role="contentinfo">
       <div class="footer-trust-strip">
         <span>AES-256-GCM Authenticated</span>
@@ -772,10 +916,10 @@
       </div>
 
       <div class="footer-links-row">
-        <a href="#how-it-works" class="footer-link" id="footer-how">How It Works</a>
-        <a href="#security" class="footer-link" id="footer-security">Security Architecture</a>
-        <a href="#features" class="footer-link" id="footer-features">Features</a>
-        <a href="#faq" class="footer-link" id="footer-faq">FAQ</a>
+        <a href="#how-it-works" class="footer-link">How It Works</a>
+        <a href="#security" class="footer-link">Security Architecture</a>
+        <a href="#features" class="footer-link">Features</a>
+        <a href="#faq" class="footer-link">FAQ</a>
         <a href="https://github.com/SURIYAKUMARE/Ephemeral-Secret-Vault.git" target="_blank" rel="noopener noreferrer" class="footer-link">
           <svg class="svg-icon icon-github" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
           <span>GitHub</span>

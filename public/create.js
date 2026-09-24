@@ -1228,7 +1228,108 @@
   }
 
   // ==========================================================================
-  // Modal Dialogs System
+  // Scroll-Spy & On-Page Navigation
+  // ==========================================================================
+  const navSections = [
+    { id: 'top', element: document.getElementById('top') || document.getElementById('create-workspace') },
+    { id: 'how-it-works', element: document.getElementById('how-it-works') },
+    { id: 'security', element: document.getElementById('security') },
+    { id: 'features', element: document.getElementById('features') },
+    { id: 'faq', element: document.getElementById('faq') }
+  ].filter(s => s.element !== null);
+
+  const desktopNavLinks = document.querySelectorAll('#desktop-nav-links .nav-link');
+  const mobileNavLinks = document.querySelectorAll('.mobile-nav-drawer .mobile-nav-link');
+
+  function setActiveNavLink(sectionId) {
+    desktopNavLinks.forEach((link) => {
+      const target = link.getAttribute('data-section') || link.getAttribute('href')?.replace('#', '');
+      if (target === sectionId || (sectionId === 'create-workspace' && target === 'top') || (sectionId === 'top' && target === 'create-workspace')) {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
+      }
+    });
+
+    mobileNavLinks.forEach((link) => {
+      const target = link.getAttribute('data-section') || link.getAttribute('href')?.replace('#', '');
+      if (target === sectionId || (sectionId === 'create-workspace' && target === 'top') || (sectionId === 'top' && target === 'create-workspace')) {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
+      }
+    });
+  }
+
+  // Smooth scroll & auto-close mobile drawer
+  mobileNavLinks.forEach((link) => {
+    link.addEventListener('click', () => {
+      if (mobileNavDrawer) mobileNavDrawer.classList.add('hidden');
+      if (btnMobileMenu) btnMobileMenu.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  // IntersectionObserver for Scroll-Spy
+  if ('IntersectionObserver' in window && navSections.length > 0) {
+    const observerOptions = {
+      root: null,
+      rootMargin: '-20% 0px -65% 0px',
+      threshold: 0
+    };
+
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveNavLink(entry.target.id);
+        }
+      });
+    }, observerOptions);
+
+    navSections.forEach(s => sectionObserver.observe(s.element));
+  } else {
+    // Fallback scroll listener
+    window.addEventListener('scroll', () => {
+      const scrollPos = window.scrollY + 120;
+      for (let i = navSections.length - 1; i >= 0; i--) {
+        const sec = navSections[i];
+        if (sec.element.offsetTop <= scrollPos) {
+          setActiveNavLink(sec.id);
+          break;
+        }
+      }
+    }, { passive: true });
+  }
+
+  // ==========================================================================
+  // Interactive FAQ Accordion
+  // ==========================================================================
+  const faqButtons = document.querySelectorAll('#faq-accordion .faq-question-btn');
+  faqButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+      const item = btn.closest('.faq-item');
+      const answer = item ? item.querySelector('.faq-answer-body') : null;
+
+      // Close other accordion items
+      faqButtons.forEach((otherBtn) => {
+        if (otherBtn !== btn) {
+          otherBtn.setAttribute('aria-expanded', 'false');
+          const otherItem = otherBtn.closest('.faq-item');
+          const otherAns = otherItem ? otherItem.querySelector('.faq-answer-body') : null;
+          if (otherAns) otherAns.classList.add('hidden');
+        }
+      });
+
+      // Toggle current item
+      btn.setAttribute('aria-expanded', isExpanded ? 'false' : 'true');
+      if (answer) {
+        answer.classList.toggle('hidden', isExpanded);
+      }
+    });
+  });
+
+  // ==========================================================================
+  // Modal Dialogs System & Quick Help
   // ==========================================================================
   function openModal(id) {
     const modal = document.getElementById(id);
@@ -1241,66 +1342,17 @@
     });
   }
 
-  if (document.getElementById('nav-how-it-works')) {
-    document.getElementById('nav-how-it-works').addEventListener('click', (e) => {
-      e.preventDefault();
-      openModal('modal-how-it-works');
-    });
-  }
-
-  if (document.getElementById('nav-security')) {
-    document.getElementById('nav-security').addEventListener('click', (e) => {
-      e.preventDefault();
-      openModal('modal-security');
-    });
-  }
-
-  if (document.getElementById('nav-features')) {
-    document.getElementById('nav-features').addEventListener('click', (e) => {
-      e.preventDefault();
-      openModal('modal-features');
-    });
-  }
-
-  if (document.getElementById('nav-faq')) {
-    document.getElementById('nav-faq').addEventListener('click', (e) => {
-      e.preventDefault();
-      openModal('modal-faq');
-    });
-  }
-
   if (navHelp) {
     navHelp.addEventListener('click', (e) => {
       e.preventDefault();
-      openModal('modal-security');
+      const secSection = document.getElementById('security');
+      if (secSection) {
+        secSection.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        openModal('modal-security');
+      }
     });
   }
-
-  // Footer & Mobile modal hooks
-  const footerHow = document.getElementById('footer-how');
-  if (footerHow) footerHow.addEventListener('click', (e) => { e.preventDefault(); openModal('modal-how-it-works'); });
-
-  const footerSec = document.getElementById('footer-security');
-  if (footerSec) footerSec.addEventListener('click', (e) => { e.preventDefault(); openModal('modal-security'); });
-
-  const footerFeat = document.getElementById('footer-features');
-  if (footerFeat) footerFeat.addEventListener('click', (e) => { e.preventDefault(); openModal('modal-features'); });
-
-  const footerFaq = document.getElementById('footer-faq');
-  if (footerFaq) footerFaq.addEventListener('click', (e) => { e.preventDefault(); openModal('modal-faq'); });
-
-  // Mobile menu items
-  const mobHow = document.getElementById('mobile-nav-how');
-  if (mobHow) mobHow.addEventListener('click', (e) => { e.preventDefault(); mobileNavDrawer.classList.add('hidden'); openModal('modal-how-it-works'); });
-
-  const mobSec = document.getElementById('mobile-nav-security');
-  if (mobSec) mobSec.addEventListener('click', (e) => { e.preventDefault(); mobileNavDrawer.classList.add('hidden'); openModal('modal-security'); });
-
-  const mobFeat = document.getElementById('mobile-nav-features');
-  if (mobFeat) mobFeat.addEventListener('click', (e) => { e.preventDefault(); mobileNavDrawer.classList.add('hidden'); openModal('modal-features'); });
-
-  const mobFaq = document.getElementById('mobile-nav-faq');
-  if (mobFaq) mobFaq.addEventListener('click', (e) => { e.preventDefault(); mobileNavDrawer.classList.add('hidden'); openModal('modal-faq'); });
 
   // Close modals on overlay / close button click
   document.querySelectorAll('.modal-overlay').forEach((overlay) => {

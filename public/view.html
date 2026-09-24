@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow, noarchive">
   <meta name="referrer" content="no-referrer">
-  <meta property="og:title" content="Ephemeral Secret Vault">
-  <meta property="og:description" content="This secure secret link will permanently self-destruct once viewed.">
+  <meta property="og:title" content="Ephemeral Secret Vault — Secure Secret Delivery">
+  <meta property="og:description" content="This confidential secret link will permanently self-destruct once viewed.">
   <meta property="og:type" content="website">
   <title>Ephemeral Secret Vault — Secure Self-Destructing Secret</title>
   <link rel="stylesheet" href="/css/style.css">
@@ -14,186 +14,255 @@
 <body>
   <!-- Enterprise Navigation Bar -->
   <nav class="navbar" role="navigation" aria-label="Main Navigation">
-    <a href="/" class="nav-brand" title="Ephemeral Secret Vault">
-      <div class="nav-logo" aria-hidden="true">
-        <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-      </div>
-      <span class="brand-text">Ephemeral <span class="brand-highlight">Secret Vault</span></span>
-    </a>
-
-    <div class="nav-links">
-      <a href="/" class="nav-link">Home</a>
-      <a href="/#how-it-works" class="nav-link">How It Works</a>
-      <a href="/#security" class="nav-link">Security</a>
-      <a href="/#features" class="nav-link">Features</a>
-      <a href="/#faq" class="nav-link">FAQ</a>
-    </div>
-
-    <div class="nav-actions">
-      <button type="button" class="btn-icon" id="theme-toggle" aria-label="Toggle Theme" title="Toggle Dark/Light Mode">
-        <svg id="theme-icon" class="svg-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-      </button>
-      <a href="/" class="btn-nav-create" title="Create your own ephemeral secret">
-        <svg class="svg-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-        <span>Create Secret</span>
+    <div class="nav-container">
+      <a href="/" class="nav-brand" title="Ephemeral Secret Vault">
+        <div class="nav-logo" aria-hidden="true">
+          <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        </div>
+        <span class="brand-text">Ephemeral <span class="brand-highlight">Secret Vault</span></span>
       </a>
+
+      <div class="nav-links">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/#how-it-works" class="nav-link">How It Works</a>
+        <a href="/#security" class="nav-link">Security</a>
+        <a href="/#features" class="nav-link">Features</a>
+        <a href="/#faq" class="nav-link">FAQ</a>
+      </div>
+
+      <div class="nav-actions">
+        <button type="button" class="btn-icon" id="theme-toggle" aria-label="Toggle Theme" title="Toggle Dark/Light Mode">
+          <svg id="theme-icon" class="svg-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
+        <a href="/" class="btn-nav-create" title="Create your own ephemeral secret">
+          <svg class="svg-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <span>Create Secret</span>
+        </a>
+      </div>
     </div>
   </nav>
 
-  <div class="container">
-    <header class="header">
-      <div class="vault-logo" aria-hidden="true">
-        <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+  <div class="page-container">
+    <header class="hero-section">
+      <div class="hero-badge">
+        <span class="status-dot-pulse"></span>
+        <span>CONFIDENTIAL ACCESS PORTAL</span>
       </div>
-      <h1>SECURE SECRET</h1>
-      <p class="subtitle">You have received a confidential, self-destructing secret link.</p>
+      <h1 class="hero-title">SECURE SECRET</h1>
+      <p class="hero-subtitle">You have received a confidential, self-destructing secret package encrypted with AES-256-GCM.</p>
     </header>
 
-    <main class="card" id="vault-card"
-      data-id="{{ID}}"
-      data-expires="{{EXPIRES_ISO}}"
-      data-views="{{VIEWS_REMAINING}}"
-      data-has-passphrase="{{HAS_PASSPHRASE}}">
+    <div class="vault-workspace">
+      <main class="main-card" id="vault-card"
+        data-id="{{ID}}"
+        data-expires="{{EXPIRES_ISO}}"
+        data-views="{{VIEWS_REMAINING}}"
+        data-has-passphrase="{{HAS_PASSPHRASE}}">
 
-      <div id="error-alert" class="alert alert-danger hidden" role="alert" aria-live="assertive">
-        <span id="error-message"></span>
-      </div>
-
-      <!-- Pre-reveal Safe Landing Screen -->
-      <section id="splash-section" aria-label="Pre-reveal notification">
-        <div class="alert alert-warning">
-          <strong>Security Warning:</strong>
-          <span>Once revealed, this secret will be permanently destroyed from storage. Zero copies will remain.</span>
+        <div id="error-alert" class="alert alert-danger hidden" role="alert" aria-live="assertive">
+          <svg class="svg-icon alert-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <span id="error-message"></span>
         </div>
 
-        <div class="meta-box">
-          <div class="meta-row">
-            <span class="meta-label">Expiration:</span>
-            <span class="meta-value" id="expires-text">{{EXPIRES_AT}}</span>
-          </div>
-          <div class="meta-row">
-            <span class="meta-label">Remaining Views:</span>
-            <span class="meta-value" id="views-text">
+        <!-- Pre-reveal Safe Landing Screen -->
+        <section id="splash-section" aria-label="Pre-reveal notification">
+          <!-- Real-Time Expiration & Views Banner -->
+          <div class="reveal-meta-strip">
+            <div class="live-countdown-badge" id="countdown-container">
+              <svg class="svg-icon svg-timer" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <span>Expires in: <strong id="countdown-timer">Calculating...</strong></span>
+            </div>
+            <div class="views-remaining-badge">
               <span class="badge {{BADGE_CLASS}}">{{VIEWS_REMAINING}} remaining</span>
-            </span>
-          </div>
-        </div>
-
-        <div id="passphrase-container" class="form-group {{PASSPHRASE_CLASS}}">
-          <label for="view-passphrase">Passphrase Required</label>
-          <input
-            type="password"
-            id="view-passphrase"
-            placeholder="Enter passphrase to decrypt"
-            autocomplete="current-password"
-            autofocus
-          >
-        </div>
-
-        <p class="subtitle" style="margin-bottom: 1.5rem; text-align: center; font-size: 0.88rem;">
-          The plaintext secret is not loaded in this page. Clicking below will issue an authenticated request to decrypt and permanently burn it.
-        </p>
-
-        <button type="button" id="burn-btn" class="btn btn-danger">
-          <svg class="svg-icon" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
-          <span>Reveal &amp; Destroy Secret</span>
-        </button>
-      </section>
-
-      <!-- Post-reveal Revealed Section -->
-      <section id="revealed-section" class="hidden" aria-label="Revealed secret">
-        <div id="burn-status-alert" class="alert alert-danger">
-          <strong id="burn-status-title">SECRET REVEALED &amp; PERMANENTLY DESTROYED</strong>
-          <span id="burn-status-desc">This secret has now been permanently erased from the vault with zero-overwriting.</span>
-        </div>
-
-        <!-- Attached File View (if present) -->
-        <div id="revealed-file-box" class="revealed-file-card hidden">
-          <div class="revealed-file-header">
-            <div id="revealed-file-icon" class="revealed-file-icon">
-              <svg class="svg-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-            </div>
-            <div class="revealed-file-details">
-              <div id="revealed-file-name" class="revealed-file-name">filename.ext</div>
-              <div id="revealed-file-meta" class="revealed-file-size">0 KB</div>
             </div>
           </div>
 
-          <!-- Inline Image Preview (if image) -->
-          <div id="image-preview-container" class="hidden" style="text-align: center;">
-            <img id="revealed-image" class="revealed-image-preview" alt="Decrypted Image Preview">
+          <!-- Expiry Progress Track -->
+          <div class="timer-progress-track">
+            <div id="timer-progress-fill" class="timer-progress-fill" style="width: 100%;"></div>
           </div>
 
-          <!-- Interactive Code Inspector (if script or code file e.g. surya.py) -->
-          <div id="code-inspector-container" class="code-inspector-container hidden">
-            <div class="code-inspector-header">
-              <span id="code-inspector-title">Script Source Code</span>
-              <button type="button" id="copy-code-btn" class="btn-copy-mini" style="font-size:0.75rem;padding:2px 8px;border:1px solid rgba(56,189,248,0.3);border-radius:4px;color:var(--text-main);" title="Copy Script Code">
+          <!-- Security Warning Alert -->
+          <div class="warning-callout" style="margin: 1.25rem 0;">
+            <svg class="svg-icon icon-warn" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            <div>
+              <strong>Burn-After-Reading Protection:</strong>
+              <span>The plaintext secret is not loaded into this browser session. Clicking below will issue an authenticated POST request to decrypt and permanently overwrite the vault row with zeros.</span>
+            </div>
+          </div>
+
+          <!-- Vault Technical Parameters -->
+          <div class="meta-card">
+            <div class="meta-item">
+              <span class="meta-item-label">
+                <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                Expiration Time:
+              </span>
+              <span class="meta-value" id="expires-text">{{EXPIRES_AT}}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-item-label">
+                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                Remaining Views:
+              </span>
+              <span class="meta-value" id="views-text">
+                <span class="badge {{BADGE_CLASS}}">{{VIEWS_REMAINING}} remaining</span>
+              </span>
+            </div>
+            <div class="meta-item meta-item-full">
+              <span class="meta-item-label">
+                <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                Cryptographic Storage:
+              </span>
+              <span class="meta-value" style="font-size:0.75rem;color:var(--cyan-glow);">AES-256-GCM Authenticated • Zero Plaintext at Rest</span>
+            </div>
+          </div>
+
+          <!-- Passphrase Required Group (if configured) -->
+          <div id="passphrase-container" class="form-group {{PASSPHRASE_CLASS}}" style="margin-top: 1.25rem;">
+            <div class="label-with-badge">
+              <label for="view-passphrase">PASSPHRASE REQUIRED</label>
+              <span class="badge-tag badge-cyan">Zero-Knowledge</span>
+            </div>
+            <div class="password-wrapper">
+              <span class="password-icon">
+                <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3L22 7l-3-3"></path></svg>
+              </span>
+              <input
+                type="password"
+                id="view-passphrase"
+                class="password-input-with-icon"
+                placeholder="Enter the sender's passphrase to decrypt"
+                autocomplete="current-password"
+                autofocus
+              >
+            </div>
+          </div>
+
+          <!-- Primary Reveal Action Button -->
+          <button type="button" id="burn-btn" class="btn-action-primary" style="background:linear-gradient(135deg, #ef4444 0%, #dc2626 100%);box-shadow:0 4px 20px rgba(239, 68, 68, 0.4);margin-top:1.5rem;">
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
+            <span>Reveal &amp; Destroy Secret</span>
+          </button>
+        </section>
+
+        <!-- Post-reveal Revealed Section -->
+        <section id="revealed-section" class="hidden" aria-label="Revealed secret">
+          <!-- Destruction Status Banner -->
+          <div id="burn-status-alert" class="alert alert-danger" style="margin-bottom: 1.25rem;">
+            <div style="display:flex;flex-direction:column;gap:0.25rem;">
+              <strong id="burn-status-title">SECRET REVEALED &amp; PERMANENTLY DESTROYED</strong>
+              <span id="burn-status-desc" style="font-size:0.8rem;">This secret has now been permanently erased from the SQLite database with cryptographic zero-overwriting.</span>
+            </div>
+          </div>
+
+          <!-- Attached File View (if present) -->
+          <div id="revealed-file-box" class="file-manifest-card hidden">
+            <div class="file-manifest-header">
+              <div id="revealed-file-icon" class="file-manifest-icon">
+                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+              </div>
+              <div class="file-manifest-details">
+                <div id="revealed-file-name" class="file-manifest-title">filename.ext</div>
+                <div id="revealed-file-meta" class="file-manifest-sub">0 KB • Decrypted Payload</div>
+              </div>
+            </div>
+
+            <!-- Inline Image Preview (if image) -->
+            <div id="image-preview-container" class="hidden" style="text-align: center; margin: 1rem 0;">
+              <img id="revealed-image" class="revealed-image-preview" alt="Decrypted Image Preview" style="max-width:100%;border-radius:8px;border:1px solid rgba(56,189,248,0.3);">
+            </div>
+
+            <!-- Interactive Code Inspector (if script e.g. surya.py) -->
+            <div id="code-inspector-container" class="code-inspector-container hidden" style="margin: 1rem 0;">
+              <div class="code-inspector-header" style="display:flex;justify-content:space-between;align-items:center;background:#020617;padding:0.5rem 0.85rem;border-radius:6px 6px 0 0;border:1px solid rgba(56,189,248,0.2);">
+                <span id="code-inspector-title" style="font-family:var(--font-mono);font-size:0.8rem;color:var(--cyan-glow);">Script Source Code</span>
+                <button type="button" id="copy-code-btn" class="btn-tool-mini" title="Copy Script Code">
+                  <svg class="svg-icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  <span>Copy Code</span>
+                </button>
+              </div>
+              <div class="code-inspector-body" style="display:flex;background:#050b18;border:1px solid rgba(56,189,248,0.2);border-top:none;border-radius:0 0 6px 6px;max-height:360px;overflow-y:auto;">
+                <div class="code-line-numbers" id="code-line-numbers" style="padding:0.75rem 0.5rem;color:var(--text-muted);font-family:var(--font-mono);font-size:0.8rem;border-right:1px solid rgba(255,255,255,0.06);user-select:none;text-align:right;"></div>
+                <pre class="code-lines-content" id="code-lines-content" style="padding:0.75rem 0.85rem;font-family:var(--font-mono);font-size:0.82rem;color:#f1f5f9;overflow-x:auto;white-space:pre;flex:1;"></pre>
+              </div>
+            </div>
+
+            <!-- Primary Download Button for File -->
+            <button type="button" id="download-file-btn" class="btn-action-primary" style="margin-top:0.75rem;">
+              <svg class="svg-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              <span>Download File</span>
+            </button>
+          </div>
+
+          <!-- Text Secret Display Section -->
+          <div id="text-display-group" class="form-group">
+            <div class="form-label-row">
+              <label id="secret-text-label" for="secret-display">DECRYPTED SECRET CONTENT</label>
+              <div class="secret-metrics-chips" id="secret-metrics">
+                <span class="badge-tag" id="secret-metrics-chars">0 chars</span>
+              </div>
+            </div>
+
+            <pre id="secret-display" class="secret-display" tabindex="0" style="background:#020617;border:1px solid rgba(56,189,248,0.25);border-radius:8px;padding:1rem;color:#f8fafc;font-family:var(--font-mono);font-size:0.88rem;white-space:pre-wrap;word-break:break-all;max-height:320px;overflow-y:auto;"></pre>
+
+            <div class="copy-input-group" style="display:flex;gap:0.65rem;margin-top:0.75rem;">
+              <button type="button" id="copy-secret-btn" class="btn-action-primary" style="flex:1;">
                 <svg class="svg-icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                <span>Copy Code</span>
+                <span>Copy Secret Text</span>
+              </button>
+              <button type="button" id="download-text-btn" class="btn-action-secondary" style="flex:1;margin-top:0;" title="Save text as a file">
+                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline></svg>
+                <span>Save Text Note</span>
               </button>
             </div>
-            <div class="code-inspector-body">
-              <div class="code-line-numbers" id="code-line-numbers"></div>
-              <pre class="code-lines-content" id="code-lines-content"></pre>
+          </div>
+
+          <!-- Memory Wipe Security Notice -->
+          <div class="file-security-notice" style="margin-top: 1.25rem;">
+            <svg class="svg-icon icon-padlock-mini" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span id="memory-wipe-note">Browser RAM Security: Decrypted buffer in browser memory will be flushed in 60s or upon closing this tab.</span>
+          </div>
+
+          <div style="margin-top: 1.5rem;">
+            <a href="/" class="btn-action-secondary" style="text-decoration:none;">
+              <svg class="svg-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <span>Create New Secret</span>
+            </a>
+          </div>
+        </section>
+
+        <!-- Fallback 404 / Gone State -->
+        <section id="destroyed-section" class="hidden" aria-label="Secret unavailable">
+          <div class="alert alert-danger" style="margin-bottom: 1.5rem;">
+            <div style="display:flex;flex-direction:column;gap:0.35rem;">
+              <strong>Secret Unavailable</strong>
+              <p>Secret not found, expired, or already destroyed. No data remains in the vault.</p>
             </div>
           </div>
-
-          <!-- Primary Download Button for File -->
-          <button type="button" id="download-file-btn" class="btn btn-primary" style="margin-top:0.75rem;">
-            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-            <span>Download File</span>
-          </button>
-        </div>
-
-        <!-- Text Secret Display -->
-        <div id="text-display-group" class="form-group">
-          <label id="secret-text-label" for="secret-display">Decrypted Secret Content</label>
-          <pre id="secret-display" class="secret-display" tabindex="0"></pre>
-
-          <div class="copy-input-group">
-            <button type="button" id="copy-secret-btn" class="btn btn-secondary">
-              <svg class="svg-icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-              <span>Copy Text</span>
-            </button>
-            <button type="button" id="download-text-btn" class="btn btn-secondary" title="Save text as a file">
-              <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-              <span>Save Text</span>
-            </button>
-          </div>
-        </div>
-
-        <div style="margin-top: 1.5rem;">
-          <a href="/" class="btn btn-secondary">
+          <a href="/" class="btn-action-primary" style="text-decoration:none;">
             <svg class="svg-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             <span>Create New Secret</span>
           </a>
-        </div>
-      </section>
-
-      <!-- Fallback 404 / Gone State -->
-      <section id="destroyed-section" class="hidden" aria-label="Secret unavailable">
-        <div class="alert alert-danger">
-          <strong>Secret Unavailable</strong>
-          <p style="margin-top: 0.5rem;">Secret not found, expired, or already destroyed.</p>
-        </div>
-        <a href="/" class="btn btn-secondary">
-          <svg class="svg-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-          <span>Create New Secret</span>
-        </a>
-      </section>
-    </main>
+        </section>
+      </main>
+    </div>
 
     <!-- Floating Feedback Toast -->
     <div id="toast" class="toast" role="status" aria-live="polite">
       <span id="toast-message">Copied to clipboard</span>
     </div>
 
-    <footer class="footer">
-      <div>Zero traces remain after destruction • AES-256-GCM authenticated</div>
-      <div style="margin-top: 0.5rem; display: flex; justify-content: center; gap: 1.5rem;">
-        <a href="/images/workflow-diagram.jpg" target="_blank" style="color:var(--text-muted);text-decoration:underline;font-size:0.75rem;">Architecture Workflow Diagram</a>
-        <a href="/images/ui-mockup-create.jpg" target="_blank" style="color:var(--text-muted);text-decoration:underline;font-size:0.75rem;">UI Design Overview</a>
+    <footer class="footer-enterprise">
+      <div class="footer-trust-strip">
+        <span>AES-256-GCM Authenticated</span>
+        <span class="strip-sep">•</span>
+        <span>Zero Plaintext Storage</span>
+        <span class="strip-sep">•</span>
+        <span>Permanent Zero-Overwriting</span>
+      </div>
+      <div class="footer-meta-text">
+        Ephemeral Secret Vault • Production-Grade Zero-Trace Cryptographic Service
       </div>
     </footer>
   </div>

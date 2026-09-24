@@ -2019,10 +2019,326 @@ body.light-theme .security-flow-pipeline {
 }
 
 /* ==========================================================================
+   Landing Page Sections & Feature Blocks
+   ========================================================================== */
+
+.page-section {
+  scroll-margin-top: 85px;
+  padding: 3.5rem 0 1.5rem;
+  border-top: 1px solid rgba(56, 189, 248, 0.12);
+  margin-top: 2rem;
+}
+
+body.light-theme .page-section {
+  border-top-color: rgba(14, 165, 233, 0.18);
+}
+
+.section-badge-center {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+}
+
+.section-badge-center span {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cyan-glow);
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  padding: 0.3rem 0.85rem;
+  border-radius: 9999px;
+}
+
+body.light-theme .section-badge-center span {
+  background: rgba(2, 132, 199, 0.08);
+  border-color: rgba(2, 132, 199, 0.28);
+  color: var(--primary-blue);
+}
+
+.section-title-center {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--text-main);
+  text-align: center;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.section-subtitle-center {
+  font-size: 0.95rem;
+  color: var(--text-dim);
+  text-align: center;
+  max-width: 620px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.55;
+}
+
+/* How It Works Steps Grid */
+.how-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+.how-step-card {
+  background: var(--bg-card);
+  border: 1px solid var(--bg-card-border);
+  border-radius: 12px;
+  padding: 1.5rem 1.25rem;
+  position: relative;
+  transition: all var(--transition-normal);
+  display: flex;
+  flex-direction: column;
+}
+
+.how-step-card:hover {
+  border-color: rgba(56, 189, 248, 0.38);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3), 0 0 15px rgba(56, 189, 248, 0.12);
+}
+
+.how-step-num {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--cyan-glow);
+  opacity: 0.85;
+  margin-bottom: 0.75rem;
+}
+
+body.light-theme .how-step-num {
+  color: var(--primary-blue);
+}
+
+.how-step-content h4 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+}
+
+.how-step-content p {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.55;
+}
+
+/* System Specifications Grid */
+.specs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+}
+
+.spec-box {
+  background: var(--bg-card);
+  border: 1px solid var(--bg-card-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all var(--transition-normal);
+}
+
+.spec-box:hover {
+  border-color: rgba(56, 189, 248, 0.38);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.spec-box-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.65rem;
+}
+
+.spec-box-header svg {
+  width: 22px;
+  height: 22px;
+  color: var(--cyan-glow);
+  flex-shrink: 0;
+}
+
+body.light-theme .spec-box-header svg {
+  color: var(--primary-blue);
+}
+
+.spec-box-header h4 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.spec-box p {
+  font-size: 0.86rem;
+  color: var(--text-dim);
+  line-height: 1.55;
+}
+
+.spec-box p code {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  background: rgba(56, 189, 248, 0.1);
+  color: var(--cyan-glow);
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+}
+
+body.light-theme .spec-box p code {
+  background: rgba(2, 132, 199, 0.08);
+  color: var(--primary-blue);
+}
+
+/* FAQ Accordion */
+.faq-accordion-list {
+  max-width: 820px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.faq-item {
+  background: var(--bg-card);
+  border: 1px solid var(--bg-card-border);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.faq-item:hover {
+  border-color: rgba(56, 189, 248, 0.32);
+}
+
+.faq-question-btn {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 1.1rem 1.35rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  font-family: var(--font-family);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-main);
+  text-align: left;
+  transition: color var(--transition-fast);
+}
+
+.faq-question-btn:hover {
+  color: var(--cyan-glow);
+}
+
+body.light-theme .faq-question-btn:hover {
+  color: var(--primary-blue);
+}
+
+.faq-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: transform var(--transition-normal), color var(--transition-fast);
+}
+
+.faq-question-btn:hover .faq-icon {
+  color: var(--cyan-glow);
+}
+
+.faq-question-btn[aria-expanded="true"] .faq-icon,
+.faq-icon.rotated {
+  transform: rotate(180deg);
+  color: var(--cyan-glow);
+}
+
+body.light-theme .faq-question-btn[aria-expanded="true"] .faq-icon,
+body.light-theme .faq-icon.rotated {
+  color: var(--primary-blue);
+}
+
+.faq-answer-body {
+  padding: 0 1.35rem 1.15rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 0.85rem;
+}
+
+body.light-theme .faq-answer-body {
+  border-top-color: rgba(0, 0, 0, 0.06);
+}
+
+.faq-answer-body p {
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+.faq-answer-body code {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  background: rgba(56, 189, 248, 0.1);
+  color: var(--cyan-glow);
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+}
+
+body.light-theme .faq-answer-body code {
+  background: rgba(2, 132, 199, 0.08);
+  color: var(--primary-blue);
+}
+
+.faq-answer-body.hidden {
+  display: none;
+}
+
+/* Live Countdown Timer Badge & Progress */
+.live-countdown-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.75rem;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 9999px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: #fbbf24;
+}
+
+.timer-progress-track {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+body.light-theme .timer-progress-track {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.timer-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #38bdf8, #f59e0b);
+  width: 100%;
+  transition: width 1s linear;
+}
+
+/* ==========================================================================
    Responsive Breakpoints
    ========================================================================== */
 
 @media (max-width: 900px) {
+  .how-steps-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
   .feature-cards-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -2056,6 +2372,9 @@ body.light-theme .security-flow-pipeline {
   .feature-cards-grid {
     grid-template-columns: 1fr;
   }
+  .specs-grid {
+    grid-template-columns: 1fr;
+  }
   .config-summary-grid {
     grid-template-columns: 1fr;
   }
@@ -2072,6 +2391,9 @@ body.light-theme .security-flow-pipeline {
 }
 
 @media (max-width: 480px) {
+  .how-steps-grid {
+    grid-template-columns: 1fr;
+  }
   .page-container {
     padding: 1.5rem 1rem 3rem;
   }
