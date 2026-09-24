@@ -490,29 +490,61 @@
   }
 
   // ==========================================================================
-  // Tab Switching (Text vs File Input)
+  // Tab Switching (Text vs File Input - Never Mingled)
   // ==========================================================================
+  const textSection = document.getElementById('text-section');
+  const fileDropzoneGroup = document.getElementById('file-dropzone-group');
+
   if (tabText && tabFile) {
-    tabText.addEventListener('click', () => {
+    tabText.addEventListener('click', (e) => {
+      if (tabText.tagName === 'A' && tabText.getAttribute('href') !== '#' && !e.ctrlKey && !e.metaKey) {
+        if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
+          e.preventDefault();
+        } else {
+          return; // Let browser navigate to /
+        }
+      }
       tabText.classList.add('active');
       tabFile.classList.remove('active');
       tabText.setAttribute('aria-selected', 'true');
       tabFile.setAttribute('aria-selected', 'false');
+      if (textSection) {
+        textSection.classList.remove('hidden');
+        textSection.style.display = '';
+      }
+      if (fileDropzoneGroup) {
+        fileDropzoneGroup.classList.add('hidden');
+        fileDropzoneGroup.style.display = 'none';
+      }
       if (tabHelperText) {
-        tabHelperText.textContent = 'Perfect for passwords, API keys, credentials, tokens and environment variables.';
+        tabHelperText.textContent = 'Dedicated text mode for passwords, API keys, credentials, tokens and environment variables.';
       }
       if (secretInput) secretInput.focus();
     });
 
-    tabFile.addEventListener('click', () => {
+    tabFile.addEventListener('click', (e) => {
+      if (tabFile.tagName === 'A' && tabFile.getAttribute('href') !== '#' && !e.ctrlKey && !e.metaKey) {
+        if (window.location.pathname.startsWith('/file')) {
+          e.preventDefault();
+        } else {
+          return; // Let browser navigate to /file
+        }
+      }
       tabFile.classList.add('active');
       tabText.classList.remove('active');
       tabFile.setAttribute('aria-selected', 'true');
       tabText.setAttribute('aria-selected', 'false');
-      if (tabHelperText) {
-        tabHelperText.textContent = 'Encrypt and share confidential documents, code scripts and images securely.';
+      if (fileDropzoneGroup) {
+        fileDropzoneGroup.classList.remove('hidden');
+        fileDropzoneGroup.style.display = '';
       }
-      if (dropzone) dropzone.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (textSection) {
+        textSection.classList.add('hidden');
+        textSection.style.display = 'none';
+      }
+      if (tabHelperText) {
+        tabHelperText.textContent = 'Upload any confidential file up to 10 MB: Python scripts (surya.py), Shell, JSON keys, Word, PDF, or images.';
+      }
     });
   }
 
@@ -697,10 +729,19 @@
       e.preventDefault();
       hideError();
 
+      const isFilePage = document.body.dataset.page === 'file' || window.location.pathname.startsWith('/file');
       const secretText = secretInput ? secretInput.value.trim() : '';
-      if (!secretText && !currentFile) {
-        showError('Enter a secret or attach a file before creating the vault.');
-        return;
+
+      if (isFilePage) {
+        if (!currentFile) {
+          showError('Please select or drop a confidential file to encrypt.');
+          return;
+        }
+      } else {
+        if (!secretText && !currentFile) {
+          showError('Please enter confidential credentials or secret text before encrypting.');
+          return;
+        }
       }
 
       const ttlSeconds = getSelectedTtlSeconds();
@@ -781,6 +822,10 @@
         createForm.classList.add('hidden');
         resultSection.classList.remove('hidden');
         resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+        if (currentFile && tabDeliveryFile && panelDeliveryFile) {
+          tabDeliveryFile.click();
+        }
       } catch (err) {
         showError(err.message || 'Unable to create the vault. Please try again.');
       } finally {
@@ -1241,22 +1286,50 @@
   const desktopNavLinks = document.querySelectorAll('#desktop-nav-links .nav-link');
   const mobileNavLinks = document.querySelectorAll('.mobile-nav-drawer .mobile-nav-link');
 
+  const isFilePage = document.body.dataset.page === 'file' || window.location.pathname.startsWith('/file');
+
   function setActiveNavLink(sectionId) {
+    const isTopSection = sectionId === 'top' || sectionId === 'create-workspace';
+
     desktopNavLinks.forEach((link) => {
-      const target = link.getAttribute('data-section') || link.getAttribute('href')?.replace('#', '');
-      if (target === sectionId || (sectionId === 'create-workspace' && target === 'top') || (sectionId === 'top' && target === 'create-workspace')) {
-        link.classList.add('active');
+      const navType = link.getAttribute('data-nav');
+      const targetSec = link.getAttribute('data-section') || link.getAttribute('href')?.replace('#', '').replace('/#', '');
+
+      if (isTopSection) {
+        if (isFilePage && navType === 'file') {
+          link.classList.add('active');
+        } else if (!isFilePage && navType === 'text') {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
       } else {
-        link.classList.remove('active');
+        if (targetSec === sectionId) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
       }
     });
 
     mobileNavLinks.forEach((link) => {
-      const target = link.getAttribute('data-section') || link.getAttribute('href')?.replace('#', '');
-      if (target === sectionId || (sectionId === 'create-workspace' && target === 'top') || (sectionId === 'top' && target === 'create-workspace')) {
-        link.classList.add('active');
+      const navType = link.getAttribute('data-nav');
+      const targetSec = link.getAttribute('data-section') || link.getAttribute('href')?.replace('#', '').replace('/#', '');
+
+      if (isTopSection) {
+        if (isFilePage && navType === 'file') {
+          link.classList.add('active');
+        } else if (!isFilePage && navType === 'text') {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
       } else {
-        link.classList.remove('active');
+        if (targetSec === sectionId) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
       }
     });
   }

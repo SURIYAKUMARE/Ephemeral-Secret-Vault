@@ -5,17 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow, noarchive">
   <meta name="referrer" content="no-referrer">
-  <meta property="og:title" content="Ephemeral Secret Vault — Enterprise Secret Sharing">
-  <meta property="og:description" content="Share sensitive credentials, tokens, or confidential files securely. Encrypted with AES-256-GCM and permanently destroyed after viewing.">
+  <meta property="og:title" content="Ephemeral Secret Vault — Confidential File Sharing">
+  <meta property="og:description" content="Encrypt and share confidential files, code scripts (surya.py), PDFs, documents, or keys. Encrypted with AES-256-GCM and permanently destroyed after viewing.">
   <meta property="og:type" content="website">
-  <title>Ephemeral Secret Vault — Self-Destructing Secret &amp; File Sharing</title>
+  <title>Universal File Vault — Ephemeral Secret Vault</title>
   <link rel="stylesheet" href="/css/style.css">
 </head>
-<body id="top">
+<body id="top" data-page="file">
   <!-- Enterprise Navigation Bar with Live Scroll-Spy -->
   <nav class="navbar" role="navigation" aria-label="Main Navigation">
     <div class="nav-container">
-      <a href="#top" class="nav-brand" title="Ephemeral Secret Vault">
+      <a href="/" class="nav-brand" title="Ephemeral Secret Vault">
         <div class="nav-logo" aria-hidden="true">
           <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
         </div>
@@ -24,12 +24,12 @@
 
       <!-- Desktop Navigation Links -->
       <div class="nav-links" id="desktop-nav-links">
-        <a href="/" class="nav-link active" data-nav="text">Secret Text</a>
-        <a href="/file" class="nav-link" data-nav="file">File Vault</a>
-        <a href="#how-it-works" class="nav-link" data-section="how-it-works">How It Works</a>
-        <a href="#security" class="nav-link" data-section="security">Security</a>
-        <a href="#features" class="nav-link" data-section="features">Features</a>
-        <a href="#faq" class="nav-link" data-section="faq">FAQ</a>
+        <a href="/" class="nav-link" data-nav="text">Secret Text</a>
+        <a href="/file" class="nav-link active" data-nav="file">File Vault</a>
+        <a href="/#how-it-works" class="nav-link" data-section="how-it-works">How It Works</a>
+        <a href="/#security" class="nav-link" data-section="security">Security</a>
+        <a href="/#features" class="nav-link" data-section="features">Features</a>
+        <a href="/#faq" class="nav-link" data-section="faq">FAQ</a>
       </div>
 
       <!-- Action Items & Mobile Menu Trigger -->
@@ -41,9 +41,9 @@
           <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
           <span class="desktop-only">Security Info</span>
         </button>
-        <a href="#create-workspace" class="btn-nav-create" id="btn-nav-create-cta" title="Create a new ephemeral secret">
-          <svg class="svg-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-          <span>Create Secret</span>
+        <a href="#create-workspace" class="btn-nav-create" id="btn-nav-create-cta" title="Encrypt a confidential file">
+          <svg class="svg-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          <span>Upload File</span>
         </a>
         <button type="button" class="btn-hamburger mobile-only" id="btn-mobile-menu" aria-label="Toggle navigation menu" aria-expanded="false">
           <svg class="svg-icon hamburger-icon" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
@@ -53,12 +53,12 @@
 
     <!-- Mobile Drawer Menu -->
     <div id="mobile-nav-drawer" class="mobile-nav-drawer hidden">
-      <a href="/" class="mobile-nav-link active" data-nav="text">Secret Text</a>
-      <a href="/file" class="mobile-nav-link" data-nav="file">File Vault</a>
-      <a href="#how-it-works" class="mobile-nav-link">How It Works</a>
-      <a href="#security" class="mobile-nav-link">Security Architecture</a>
-      <a href="#features" class="mobile-nav-link">Features &amp; Specifications</a>
-      <a href="#faq" class="mobile-nav-link">Frequently Asked Questions</a>
+      <a href="/" class="mobile-nav-link" data-nav="text">Secret Text</a>
+      <a href="/file" class="mobile-nav-link active" data-nav="file">File Vault</a>
+      <a href="/#how-it-works" class="mobile-nav-link">How It Works</a>
+      <a href="/#security" class="mobile-nav-link">Security Architecture</a>
+      <a href="/#features" class="mobile-nav-link">Features &amp; Specifications</a>
+      <a href="/#faq" class="mobile-nav-link">Frequently Asked Questions</a>
     </div>
   </nav>
 
@@ -68,26 +68,26 @@
     <header class="hero-section">
       <div class="hero-badge">
         <span class="status-dot-pulse"></span>
-        <span>SECURE • TEMPORARY • PRIVATE</span>
+        <span>SECURE • TEMPORARY • ENCRYPTED</span>
       </div>
-      <h1 class="hero-title">Create a <span class="text-glow-cyan">Secret Vault</span></h1>
+      <h1 class="hero-title">Universal <span class="text-glow-cyan">File Vault</span></h1>
       <p class="hero-subtitle">
-        Encrypt sensitive information and generate a secure, self-destructing link that expires automatically.
+        Upload any confidential file up to 10 MB (code scripts like surya.py, documents, images, keys) with zero-trace destruction.
       </p>
 
       <!-- Trust Indicators -->
       <div class="trust-indicator-row">
         <div class="trust-pill">
           <svg class="svg-icon trust-pill-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          <span>AES-256-GCM</span>
+          <span>AES-256-GCM File Cipher</span>
         </div>
         <div class="trust-pill">
           <svg class="svg-icon trust-pill-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          <span>Zero Plaintext Storage</span>
+          <span>Universal 10 MB Limit</span>
         </div>
         <div class="trust-pill">
           <svg class="svg-icon trust-pill-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          <span>Automatic Destruction</span>
+          <span>Permanent Zero Overwriting</span>
         </div>
       </div>
     </header>
@@ -98,8 +98,8 @@
         <!-- Card Header with Real-Time Security Status -->
         <div class="card-header-row">
           <div>
-            <h2 class="card-title">CREATE SECURE TEXT SECRET</h2>
-            <p class="card-desc">Protect passwords, API keys, private keys, environment variables, and confidential notes.</p>
+            <h2 class="card-title">ENCRYPT &amp; SHARE CONFIDENTIAL FILE</h2>
+            <p class="card-desc">Universal zero-trace encryption for code scripts (surya.py), documents, certificates, and images up to 10 MB.</p>
           </div>
           <div class="security-status-indicator" id="system-status-indicator">
             <span class="status-dot green-pulse"></span>
@@ -114,14 +114,14 @@
         </div>
 
         <!-- Secret Creation Form -->
-        <form id="create-form" aria-label="Create a secure secret or share a file">
+        <form id="create-form" aria-label="Upload and encrypt a confidential file">
           <!-- Input Mode Switcher (Separate Dedicated Pages) -->
           <div class="tab-container" role="tablist">
-            <a href="/" class="tab-btn active" id="tab-text" role="tab" aria-selected="true" style="text-decoration:none;">
+            <a href="/" class="tab-btn" id="tab-text" role="tab" aria-selected="false" style="text-decoration:none;">
               <svg class="svg-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
               <span>Secret Text / Credentials</span>
             </a>
-            <a href="/file" class="tab-btn" id="tab-file" role="tab" aria-selected="false" style="text-decoration:none;">
+            <a href="/file" class="tab-btn active" id="tab-file" role="tab" aria-selected="true" style="text-decoration:none;">
               <svg class="svg-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
               <span>Universal File Vault</span>
             </a>
@@ -129,48 +129,17 @@
 
           <!-- Tab Helper Descriptions -->
           <div class="tab-helper-row">
-            <span id="tab-helper-text" class="tab-helper">Dedicated text mode for passwords, API keys, credentials, tokens and environment variables.</span>
+            <span id="tab-helper-text" class="tab-helper">Upload any confidential file up to 10 MB: Python scripts (surya.py), Shell, JSON keys, Word, PDF, or images.</span>
           </div>
 
-          <!-- Secret Textarea Section -->
-          <div id="text-section" class="form-group">
-            <div class="form-label-row">
-              <div class="label-with-badge">
-                <label for="secret-input">SECRET CONTENT</label>
-                <span id="detected-format-badge" class="badge-format hidden" aria-live="polite">Detected: API Key</span>
-              </div>
-              <div class="textarea-actions">
-                <span class="char-counter" id="byte-counter" aria-live="polite">0 / 10,240 bytes</span>
-                <button type="button" id="btn-clear-secret" class="btn-tool-mini hidden" title="Clear content" aria-label="Clear secret content">
-                  <svg class="svg-icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                  <span>Clear</span>
-                </button>
-                <button type="button" id="btn-toggle-secret-view" class="btn-tool-mini" title="Toggle visibility" aria-label="Mask or unmask content">
-                  <svg id="secret-visibility-icon" class="svg-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                  <span id="secret-visibility-text">Mask</span>
-                </button>
-              </div>
-            </div>
-
-            <div class="textarea-wrapper">
-              <textarea
-                id="secret-input"
-                name="secret"
-                placeholder="Paste your password, API key, private key, .env variables, credentials or confidential notes..."
-                spellcheck="false"
-                autofocus
-              ></textarea>
-            </div>
-
-            <!-- Secure Input Indicator -->
-            <div id="secret-status-indicator" class="secret-status-indicator hidden">
-              <svg class="svg-icon icon-verified" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              <span>Content detected • Ready for AES-256-GCM encryption</span>
-            </div>
+          <!-- Hidden Text Section (Preserved for compatibility, hidden to avoid mingling) -->
+          <div id="text-section" class="form-group hidden" style="display:none;" aria-hidden="true">
+            <textarea id="secret-input" name="secret" placeholder=""></textarea>
+            <span class="char-counter" id="byte-counter"></span>
           </div>
 
-          <!-- Universal File Upload Section (Separated on /file page - Not mingled) -->
-          <div id="file-dropzone-group" class="form-group hidden" style="display:none;" aria-hidden="true">
+          <!-- Universal File Upload Section (Primary & Visible) -->
+          <div id="file-dropzone-group" class="form-group">
             <div class="form-label-row">
               <label>CONFIDENTIAL FILE UPLOAD</label>
               <span class="char-counter">Encrypted up to 10 MB</span>
@@ -220,9 +189,9 @@
             </button>
 
             <!-- Collapsible Body -->
-            <div id="advanced-options-panel" class="accordion-body">
+            <div id="advanced-options-panel" class="advanced-panel">
               <div class="form-row">
-                <!-- Expiration / TTL Selector -->
+                <!-- Expiration (TTL) Selector with Granular Options -->
                 <div class="form-group">
                   <div class="label-with-hint">
                     <label for="ttl-select">EXPIRATION (TTL)</label>
@@ -234,7 +203,7 @@
                     <option value="600">10 minutes</option>
                     <option value="900">15 minutes</option>
                     <option value="1800">30 minutes</option>
-                    <option value="3600" selected>1 hour (Default Recommendation)</option>
+                    <option value="3600" selected>1 hour (Recommended)</option>
                     <option value="14400">4 hours</option>
                     <option value="43200">12 hours</option>
                     <option value="86400">24 hours (1 Day)</option>
@@ -298,45 +267,43 @@
                     placeholder="Enter an optional passphrase (recipient must provide to decrypt)"
                     autocomplete="new-password"
                   >
-                  <button type="button" id="btn-toggle-eye" class="btn-toggle-eye" title="Toggle passphrase visibility" aria-label="Show or hide passphrase">
-                    <svg id="eye-icon" class="svg-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  <button type="button" id="btn-toggle-eye" class="password-toggle-btn" aria-label="Show passphrase">
+                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                   </button>
                 </div>
 
                 <!-- Passphrase Strength Meter -->
-                <div id="passphrase-strength-container" class="passphrase-strength-container hidden">
-                  <div class="strength-bar-track">
-                    <div id="passphrase-strength-bar" class="strength-bar-fill"></div>
+                <div id="passphrase-strength-container" class="strength-meter-container hidden">
+                  <div class="strength-meter-track">
+                    <div id="passphrase-strength-bar" class="strength-meter-fill"></div>
                   </div>
-                  <div class="strength-label-row">
-                    <span>Strength: <strong id="passphrase-strength-text">Weak</strong></span>
-                    <span class="passphrase-hint">Use a separate secure channel to share the passphrase.</span>
+                  <div class="strength-meter-label">
+                    <span>Passphrase Complexity:</span>
+                    <strong id="passphrase-strength-text">Medium</strong>
                   </div>
+                </div>
+              </div>
+
+              <!-- Real-Time Security Configuration Score Bar -->
+              <div class="security-score-card">
+                <div class="score-header">
+                  <span class="score-title">Configuration Security Level:</span>
+                  <span class="score-level-badge" id="security-score-label">Strong (80%)</span>
+                </div>
+                <div class="score-track">
+                  <div id="security-score-bar" class="score-fill" style="width: 80%;"></div>
+                </div>
+                <div class="score-factors">
+                  <span id="factor-encryption" class="factor-item factor-active">✓ AES-256-GCM authenticated</span>
+                  <span id="factor-views" class="factor-item factor-active">✓ 1 view burn</span>
+                  <span id="factor-ttl" class="factor-item factor-active">✓ Short expiration</span>
+                  <span id="factor-passphrase" class="factor-item factor-inactive">+ Optional Passphrase</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Secret Security Score / Configuration Meter -->
-          <div class="security-score-card">
-            <div class="score-header-row">
-              <span class="score-title">SECURITY CONFIGURATION</span>
-              <span class="score-value" id="security-score-label">Strong (90%)</span>
-            </div>
-            <div class="score-bar-track">
-              <div class="score-bar-fill" id="security-score-bar" style="width: 90%;"></div>
-            </div>
-            <div class="score-factors-grid" id="security-score-factors">
-              <span class="factor-item factor-active">✓ AES-256-GCM</span>
-              <span class="factor-item factor-active" id="factor-views">✓ 1 view burn</span>
-              <span class="factor-item factor-active" id="factor-ttl">✓ TTL enabled</span>
-              <span class="factor-item factor-active">✓ Non-guessable URL</span>
-              <span class="factor-item factor-active">✓ Hard SQLite purge</span>
-              <span class="factor-item factor-inactive" id="factor-passphrase">+ Optional Passphrase</span>
-            </div>
-          </div>
-
-          <!-- Live Vault Configuration Summary Box -->
+          <!-- Configuration Summary Box -->
           <div class="config-summary-box">
             <div class="config-summary-title">YOUR VAULT CONFIGURATION</div>
             <div class="config-summary-grid">
@@ -365,8 +332,8 @@
 
           <!-- Main CTA Submit Button -->
           <button type="submit" id="submit-btn" class="btn-action-primary">
-            <svg class="svg-icon btn-icon-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            <span id="submit-btn-text">Encrypt &amp; Generate Secure Link</span>
+            <svg class="svg-icon btn-icon-lock" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            <span id="submit-btn-text">Encrypt &amp; Generate Secure File Link</span>
             <svg class="svg-icon btn-arrow-right" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
           </button>
         </form>
@@ -375,7 +342,7 @@
         <div class="security-flow-pipeline">
           <div class="flow-step">
             <div class="flow-icon"><svg class="svg-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></div>
-            <span class="flow-label">Your Secret</span>
+            <span class="flow-label">Your File</span>
           </div>
           <div class="flow-arrow">→</div>
           <div class="flow-step">
@@ -410,7 +377,7 @@
             <div class="success-badge-circle">
               <svg class="svg-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
-            <h2 class="success-title">Vault Created <span class="success-title-highlight">Successfully</span></h2>
+            <h2 class="success-title">File Vault Created <span class="success-title-highlight">Successfully</span></h2>
             <p class="success-desc">Encrypted with AES-256-GCM. Select your preferred delivery method below.</p>
           </div>
 
@@ -431,7 +398,7 @@
             <div class="link-box-container">
               <div class="link-box-label">
                 <svg class="svg-icon" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                <span>SELF-DESTRUCTING SECRET LINK</span>
+                <span>SELF-DESTRUCTING FILE LINK</span>
               </div>
               <div class="link-input-group">
                 <input type="text" id="link-output" class="link-input-field" readonly aria-label="Generated secret view URL">
@@ -580,7 +547,7 @@
           <!-- Reset Button -->
           <button type="button" id="reset-btn" class="btn-action-secondary">
             <svg class="svg-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            <span>Create Another Secret</span>
+            <span>Encrypt Another File</span>
           </button>
         </section>
       </main>
@@ -591,15 +558,15 @@
       <div class="section-badge-center">
         <span>OPERATING MODEL</span>
       </div>
-      <h3 id="how-it-works-title" class="section-title-center">How Ephemeral Secret Vault Works</h3>
+      <h3 id="how-it-works-title" class="section-title-center">How Confidential File Encryption Works</h3>
       <p class="section-subtitle-center">An end-to-end zero-trace architecture from client transmission to disk zero-overwriting.</p>
 
       <div class="how-steps-grid">
         <div class="how-step-card">
           <div class="how-step-num">01</div>
           <div class="how-step-content">
-            <h4>Payload Submission</h4>
-            <p>You enter sensitive credentials, confidential API keys, or attach any file (documents, images, or Python scripts like <code>surya.py</code>) up to 10 MB.</p>
+            <h4>Universal File Selection</h4>
+            <p>Select any confidential file (Python scripts like <code>surya.py</code>, SSH keys, certificates, DOCX, PDF, or images) up to 10 MB.</p>
           </div>
         </div>
 
@@ -607,7 +574,7 @@
           <div class="how-step-num">02</div>
           <div class="how-step-content">
             <h4>In-Memory AES-256-GCM Encryption</h4>
-            <p>The server immediately encrypts the payload in memory with a fresh 12-byte IV and 16-byte authentication tag. No plaintext ever touches storage or logs.</p>
+            <p>The file is immediately encrypted in memory with a fresh 12-byte IV and 16-byte authentication tag. No plaintext ever touches storage or logs.</p>
           </div>
         </div>
 
@@ -651,7 +618,7 @@
             <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4l3 3"></path></svg>
           </div>
           <h4 class="spec-card-title">2. Unique IV</h4>
-          <p class="spec-card-desc">Fresh 12-byte cryptographic initialization vector generated for every individual secret.</p>
+          <p class="spec-card-desc">Fresh 12-byte cryptographic initialization vector generated for every individual file.</p>
         </div>
 
         <div class="spec-card">
@@ -693,7 +660,7 @@
           <div class="pillar-num">01</div>
           <h4 class="pillar-title">Encrypted at Rest</h4>
           <p class="pillar-desc">
-            Your secret is never stored as readable plaintext. Ciphertext, salt, IV, and auth tag are isolated in a hardened SQLite WAL database with cryptographic zero-delete.
+            Your file is never stored as readable plaintext. Ciphertext, salt, IV, and auth tag are isolated in a hardened SQLite WAL database with cryptographic zero-delete.
           </p>
         </div>
 
@@ -701,7 +668,7 @@
           <div class="pillar-num">02</div>
           <h4 class="pillar-title">Human-Controlled Reveal</h4>
           <p class="pillar-desc">
-            Opening the link loads a safe landing page. The plaintext secret is only decrypted upon an explicit, authenticated POST request initiated by a human recipient.
+            Opening the link loads a safe landing page. The plaintext file is only decrypted upon an explicit, authenticated POST request initiated by a human recipient.
           </p>
         </div>
 
@@ -819,85 +786,6 @@
       </div>
     </section>
 
-    <!-- Modals for Nav Links & Help -->
-    <!-- Modal: How It Works -->
-    <div id="modal-how-it-works" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-how-it-works-title">
-      <div class="modal-card">
-        <button type="button" class="modal-close-btn" aria-label="Close modal">&times;</button>
-        <h3 id="modal-how-it-works-title" class="modal-title">Architecture &amp; Operating Model</h3>
-        <div class="modal-body">
-          <h4>1. In-Memory Encryption</h4>
-          <p>When you submit a secret note or upload a file, it is immediately encrypted in server memory with <strong>AES-256-GCM</strong>. Only ciphertext, a 12-byte IV, and a 16-byte authentication tag are persisted in SQLite.</p>
-          
-          <h4>2. Secure Distribution</h4>
-          <p>A 12-character non-guessable random URL is generated. You can share it directly via 1-click integrations for WhatsApp, Slack, MS Teams, Discord, or Email.</p>
-
-          <h4>3. Atomic Single-Use Reveal</h4>
-          <p>Recipients view a safe pre-reveal landing page. Clicking "Reveal &amp; Destroy Secret" issues an authenticated POST request that decrypts the secret and immediately deletes the database row.</p>
-
-          <h4>4. Hardware-Level Zero Overwrite</h4>
-          <p>The database runs with <code>PRAGMA secure_delete = ON;</code> ensuring deleted table cells are physically overwritten with zeros rather than merely marked as free.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal: Security -->
-    <div id="modal-security" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-security-title">
-      <div class="modal-card">
-        <button type="button" class="modal-close-btn" aria-label="Close modal">&times;</button>
-        <h3 id="modal-security-title" class="modal-title">Security Architecture &amp; Cryptographic Proof</h3>
-        <div class="modal-body">
-          <h4>Authenticated Cipher</h4>
-          <p>We use <strong>AES-256-GCM</strong> (Galois/Counter Mode), guaranteeing both confidentiality and tamper detection. Any bit manipulation immediately fails decryption.</p>
-
-          <h4>Zero Plaintext at Rest</h4>
-          <p>Plaintext secrets and uploaded files never touch the hard drive unencrypted. Even SQLite WAL write-ahead logs contain only encrypted ciphertext bytes.</p>
-
-          <h4>Scraper &amp; Crawler Shielding</h4>
-          <p>Automated link preview bots (Slackbot, Twitterbot, WhatsApp, Facebook, Discord) receive an isolated static preview shell. The secret is never decrypted by crawlers.</p>
-
-          <h4>Zero-Knowledge Passphrase</h4>
-          <p>If you set a passphrase, the key is derived using PBKDF2 with 100,000 iterations and a cryptographically secure per-secret salt.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal: Features -->
-    <div id="modal-features" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-features-title">
-      <div class="modal-card">
-        <button type="button" class="modal-close-btn" aria-label="Close modal">&times;</button>
-        <h3 id="modal-features-title" class="modal-title">System Capabilities &amp; Specifications</h3>
-        <div class="modal-body">
-          <h4>Universal File Support</h4>
-          <p>Upload any file type up to 10 MB: images (PNG, JPG), PDF documents, Word/DOCX files, source code (<code>surya.py</code>, JS, Python, Shell), and certificates.</p>
-
-          <h4>Instant 1-Click App Sharing</h4>
-          <p>Automated deep-linking for WhatsApp, Slack (with formatted mrkdwn), Microsoft Teams, Discord, and Email.</p>
-
-          <h4>Configurable Lifecycles</h4>
-          <p>Set custom expiration timeframes from 1 minute up to 7 days, with view limits from 1 up to 10 views.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal: FAQ -->
-    <div id="modal-faq" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-faq-title">
-      <div class="modal-card">
-        <button type="button" class="modal-close-btn" aria-label="Close modal">&times;</button>
-        <h3 id="modal-faq-title" class="modal-title">Frequently Asked Questions</h3>
-        <div class="modal-body">
-          <h4>Can a burned secret ever be recovered?</h4>
-          <p>No. When a secret burns, its database row is hard-deleted from SQLite and zero-overwritten. There are no backups, logs, or caches containing the decrypted payload.</p>
-
-          <h4>What happens if the recipient never opens the link?</h4>
-          <p>Our background sweeper service periodically purges all secrets that have passed their TTL expiration date. The data is wiped automatically.</p>
-
-          <h4>Does pasting into Slack or WhatsApp trigger accidental destruction?</h4>
-          <p>No. Automated bot requests for unfurling / link previews are served a harmless static shell. Destruction only occurs upon an authenticated human POST action.</p>
-        </div>
-      </div>
-    </div>
-
     <!-- Floating Feedback Toast -->
     <div id="toast" class="toast" role="status" aria-live="polite">
       <span id="toast-message">Copied to clipboard</span>
@@ -918,10 +806,10 @@
       </div>
 
       <div class="footer-links-row">
-        <a href="#how-it-works" class="footer-link">How It Works</a>
-        <a href="#security" class="footer-link">Security Architecture</a>
-        <a href="#features" class="footer-link">Features</a>
-        <a href="#faq" class="footer-link">FAQ</a>
+        <a href="/#how-it-works" class="footer-link">How It Works</a>
+        <a href="/#security" class="footer-link">Security Architecture</a>
+        <a href="/#features" class="footer-link">Features</a>
+        <a href="/#faq" class="footer-link">FAQ</a>
         <a href="https://github.com/SURIYAKUMARE/Ephemeral-Secret-Vault.git" target="_blank" rel="noopener noreferrer" class="footer-link">
           <svg class="svg-icon icon-github" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
           <span>GitHub</span>

@@ -24,7 +24,8 @@
 
       <!-- Desktop Navigation Links -->
       <div class="nav-links" id="desktop-nav-links">
-        <a href="#top" class="nav-link active" data-section="top">Home</a>
+        <a href="/" class="nav-link active" data-nav="text">Secret Text</a>
+        <a href="/file" class="nav-link" data-nav="file">File Vault</a>
         <a href="#how-it-works" class="nav-link" data-section="how-it-works">How It Works</a>
         <a href="#security" class="nav-link" data-section="security">Security</a>
         <a href="#features" class="nav-link" data-section="features">Features</a>
@@ -52,7 +53,8 @@
 
     <!-- Mobile Drawer Menu -->
     <div id="mobile-nav-drawer" class="mobile-nav-drawer hidden">
-      <a href="#top" class="mobile-nav-link active">Home</a>
+      <a href="/" class="mobile-nav-link active" data-nav="text">Secret Text</a>
+      <a href="/file" class="mobile-nav-link" data-nav="file">File Vault</a>
       <a href="#how-it-works" class="mobile-nav-link">How It Works</a>
       <a href="#security" class="mobile-nav-link">Security Architecture</a>
       <a href="#features" class="mobile-nav-link">Features &amp; Specifications</a>
@@ -96,8 +98,8 @@
         <!-- Card Header with Real-Time Security Status -->
         <div class="card-header-row">
           <div>
-            <h2 class="card-title">CREATE SECURE SECRET</h2>
-            <p class="card-desc">Protect passwords, API keys, private keys, credentials and confidential files.</p>
+            <h2 class="card-title">CREATE SECURE TEXT SECRET</h2>
+            <p class="card-desc">Protect passwords, API keys, private keys, environment variables, and confidential notes.</p>
           </div>
           <div class="security-status-indicator" id="system-status-indicator">
             <span class="status-dot green-pulse"></span>
@@ -113,21 +115,21 @@
 
         <!-- Secret Creation Form -->
         <form id="create-form" aria-label="Create a secure secret or share a file">
-          <!-- Input Mode Switcher -->
+          <!-- Input Mode Switcher (Separate Dedicated Pages) -->
           <div class="tab-container" role="tablist">
-            <button type="button" class="tab-btn active" id="tab-text" role="tab" aria-selected="true">
+            <a href="/" class="tab-btn active" id="tab-text" role="tab" aria-selected="true" style="text-decoration:none;">
               <svg class="svg-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-              <span>Document / Secret Text</span>
-            </button>
-            <button type="button" class="tab-btn" id="tab-file" role="tab" aria-selected="false">
+              <span>Secret Text / Credentials</span>
+            </a>
+            <a href="/file" class="tab-btn" id="tab-file" role="tab" aria-selected="false" style="text-decoration:none;">
               <svg class="svg-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-              <span>Universal File Upload</span>
-            </button>
+              <span>Universal File Vault</span>
+            </a>
           </div>
 
           <!-- Tab Helper Descriptions -->
           <div class="tab-helper-row">
-            <span id="tab-helper-text" class="tab-helper">Perfect for passwords, API keys, credentials, tokens and environment variables.</span>
+            <span id="tab-helper-text" class="tab-helper">Dedicated text mode for passwords, API keys, credentials, tokens and environment variables.</span>
           </div>
 
           <!-- Secret Textarea Section -->
@@ -167,8 +169,8 @@
             </div>
           </div>
 
-          <!-- Universal File Upload Section -->
-          <div id="file-dropzone-group" class="form-group">
+          <!-- Universal File Upload Section (Separated on /file page - Not mingled) -->
+          <div id="file-dropzone-group" class="form-group hidden" style="display:none;" aria-hidden="true">
             <div class="form-label-row">
               <label>CONFIDENTIAL FILE UPLOAD</label>
               <span class="char-counter">Encrypted up to 10 MB</span>

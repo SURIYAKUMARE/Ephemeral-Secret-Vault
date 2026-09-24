@@ -9,12 +9,20 @@ const publicDir = path.join(process.cwd(), 'public');
 // Health check
 router.get('/health', secretController.health);
 
-// Landing / Home page
-router.get('/', (req, res) => {
+// Landing / Text Secret page
+router.get(['/', '/text'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
   const indexFile = path.join(publicDir, 'index.html');
   res.sendFile(indexFile);
+});
+
+// Dedicated Universal File Vault page
+router.get('/file', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+  const filePage = path.join(publicDir, 'file.html');
+  res.sendFile(filePage);
 });
 
 // Safe view splash page
