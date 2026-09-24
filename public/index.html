@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow, noarchive">
   <meta name="referrer" content="no-referrer">
-  <meta property="og:title" content="Ephemeral Secret Vault">
+  <meta property="og:title" content="Ephemeral Secret Vault — Enterprise Secret Sharing">
   <meta property="og:description" content="Share sensitive credentials, tokens, or confidential files securely. Encrypted with AES-256-GCM and permanently destroyed after viewing.">
   <meta property="og:type" content="website">
   <title>Ephemeral Secret Vault — Self-Destructing Secret &amp; File Sharing</title>
@@ -14,62 +14,100 @@
 <body>
   <!-- Enterprise Navigation Bar -->
   <nav class="navbar" role="navigation" aria-label="Main Navigation">
-    <a href="/" class="nav-brand" title="Ephemeral Secret Vault">
-      <div class="nav-logo" aria-hidden="true">
-        <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-      </div>
-      <span class="brand-text">Ephemeral <span class="brand-highlight">Secret Vault</span></span>
-    </a>
+    <div class="nav-container">
+      <a href="/" class="nav-brand" title="Ephemeral Secret Vault">
+        <div class="nav-logo" aria-hidden="true">
+          <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        </div>
+        <span class="brand-text">Ephemeral <span class="brand-highlight">Secret Vault</span></span>
+      </a>
 
-    <div class="nav-links">
-      <a href="/" class="nav-link active">Home</a>
-      <a href="#how-it-works" class="nav-link" id="nav-how-it-works">How It Works</a>
-      <a href="#security" class="nav-link" id="nav-security">Security</a>
-      <a href="#features" class="nav-link" id="nav-features">Features</a>
-      <a href="#faq" class="nav-link" id="nav-faq">FAQ</a>
+      <!-- Desktop Navigation Links -->
+      <div class="nav-links">
+        <a href="/" class="nav-link active">Home</a>
+        <a href="#how-it-works" class="nav-link" id="nav-how-it-works">How It Works</a>
+        <a href="#security" class="nav-link" id="nav-security">Security</a>
+        <a href="#features" class="nav-link" id="nav-features">Features</a>
+        <a href="#faq" class="nav-link" id="nav-faq">FAQ</a>
+      </div>
+
+      <!-- Action Items & Mobile Menu Trigger -->
+      <div class="nav-actions">
+        <button type="button" class="btn-icon" id="theme-toggle" aria-label="Toggle Theme" title="Toggle Dark/Light Mode">
+          <svg id="theme-icon" class="svg-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
+        <button type="button" class="btn-nav-info" id="nav-help" title="Security &amp; Architecture Documentation">
+          <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          <span class="desktop-only">Security Info</span>
+        </button>
+        <a href="#create-workspace" class="btn-nav-create" id="btn-nav-create-cta" title="Create a new ephemeral secret">
+          <svg class="svg-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <span>Create Secret</span>
+        </a>
+        <button type="button" class="btn-hamburger mobile-only" id="btn-mobile-menu" aria-label="Toggle navigation menu" aria-expanded="false">
+          <svg class="svg-icon hamburger-icon" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+      </div>
     </div>
 
-    <div class="nav-actions">
-      <button type="button" class="btn-icon" id="theme-toggle" aria-label="Toggle Theme" title="Toggle Dark/Light Mode">
-        <svg id="theme-icon" class="svg-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-      </button>
-      <a href="/" class="btn-nav-create" title="Create a new ephemeral secret">
-        <svg class="svg-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-        <span>Create Secret</span>
-      </a>
+    <!-- Mobile Drawer Menu -->
+    <div id="mobile-nav-drawer" class="mobile-nav-drawer hidden">
+      <a href="/" class="mobile-nav-link active">Home</a>
+      <a href="#how-it-works" class="mobile-nav-link" id="mobile-nav-how">How It Works</a>
+      <a href="#security" class="mobile-nav-link" id="mobile-nav-security">Security Architecture</a>
+      <a href="#features" class="mobile-nav-link" id="mobile-nav-features">Features &amp; Specs</a>
+      <a href="#faq" class="mobile-nav-link" id="mobile-nav-faq">Frequently Asked Questions</a>
     </div>
   </nav>
 
   <!-- Main Application Container -->
   <div class="page-container">
-    <!-- Hero Header -->
+    <!-- Security Status / Trust Header -->
     <header class="hero-section">
-      <div class="hero-pills">
-        <span class="hero-pill">
-          <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-          SECURE
-        </span>
-        <span class="hero-pill">
-          <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-          TIME-BOUND
-        </span>
-        <span class="hero-pill">
-          <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-          ZERO-TRACE
-        </span>
+      <div class="hero-badge">
+        <span class="status-dot-pulse"></span>
+        <span>SECURE • TEMPORARY • PRIVATE</span>
       </div>
-      <h1 class="hero-title">EPHEMERAL SECRET <span class="text-glow-cyan">VAULT</span></h1>
+      <h1 class="hero-title">Create a <span class="text-glow-cyan">Secret Vault</span></h1>
       <p class="hero-subtitle">
-        Share credentials, private keys, or confidential files securely. Encrypted at rest with AES-256-GCM and permanently destroyed after viewing.
+        Encrypt sensitive information and generate a secure, self-destructing link that expires automatically.
       </p>
+
+      <!-- Trust Indicators -->
+      <div class="trust-indicator-row">
+        <div class="trust-pill">
+          <svg class="svg-icon trust-pill-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>AES-256-GCM</span>
+        </div>
+        <div class="trust-pill">
+          <svg class="svg-icon trust-pill-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Zero Plaintext Storage</span>
+        </div>
+        <div class="trust-pill">
+          <svg class="svg-icon trust-pill-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Automatic Destruction</span>
+        </div>
+      </div>
     </header>
 
-    <!-- Centered Vault Layout -->
-    <div class="vault-layout">
-      <!-- Center Column: Primary Secret Creation Card -->
+    <!-- Main Secret Creation Workspace -->
+    <div class="vault-workspace" id="create-workspace">
       <main class="main-card" role="main">
+        <!-- Card Header with Real-Time Security Status -->
+        <div class="card-header-row">
+          <div>
+            <h2 class="card-title">CREATE SECURE SECRET</h2>
+            <p class="card-desc">Protect passwords, API keys, private keys, credentials and confidential files.</p>
+          </div>
+          <div class="security-status-indicator" id="system-status-indicator">
+            <span class="status-dot green-pulse"></span>
+            <span class="status-text">Ready to Encrypt</span>
+          </div>
+        </div>
+
         <!-- Error Banner -->
         <div id="error-alert" class="alert alert-danger hidden" role="alert" aria-live="assertive">
+          <svg class="svg-icon alert-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
           <span id="error-message"></span>
         </div>
 
@@ -78,8 +116,8 @@
           <!-- Input Mode Switcher -->
           <div class="tab-container" role="tablist">
             <button type="button" class="tab-btn active" id="tab-text" role="tab" aria-selected="true">
-              <svg class="svg-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-              <span>Secret Text / Credentials</span>
+              <svg class="svg-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+              <span>Document / Secret Text</span>
             </button>
             <button type="button" class="tab-btn" id="tab-file" role="tab" aria-selected="false">
               <svg class="svg-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
@@ -87,35 +125,64 @@
             </button>
           </div>
 
-          <!-- Text Secret Section -->
-          <div id="text-section" class="form-group">
-            <div class="form-label-row">
-              <label for="secret-input">SECRET TEXT / CREDENTIALS</label>
-              <span class="char-counter" id="byte-counter" aria-live="polite">0 / 10,240 bytes</span>
-            </div>
-            <textarea
-              id="secret-input"
-              name="secret"
-              placeholder="Paste temporary passwords, credentials, API keys, private tokens, .env variables, or confidential notes..."
-              spellcheck="false"
-              autofocus
-            ></textarea>
+          <!-- Tab Helper Descriptions -->
+          <div class="tab-helper-row">
+            <span id="tab-helper-text" class="tab-helper">Perfect for passwords, API keys, credentials, tokens and environment variables.</span>
           </div>
 
-          <!-- Universal File Upload Dropzone -->
-          <div id="file-dropzone-group" class="form-group">
+          <!-- Secret Textarea Section -->
+          <div id="text-section" class="form-group">
             <div class="form-label-row">
-              <label>ATTACH CONFIDENTIAL FILE (OPTIONAL OR STANDALONE)</label>
-              <span class="char-counter">Documents, Images, Scripts up to 10 MB</span>
+              <div class="label-with-badge">
+                <label for="secret-input">SECRET CONTENT</label>
+                <span id="detected-format-badge" class="badge-format hidden" aria-live="polite">Detected: API Key</span>
+              </div>
+              <div class="textarea-actions">
+                <span class="char-counter" id="byte-counter" aria-live="polite">0 / 10,240 bytes</span>
+                <button type="button" id="btn-clear-secret" class="btn-tool-mini hidden" title="Clear content" aria-label="Clear secret content">
+                  <svg class="svg-icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  <span>Clear</span>
+                </button>
+                <button type="button" id="btn-toggle-secret-view" class="btn-tool-mini" title="Toggle visibility" aria-label="Mask or unmask content">
+                  <svg id="secret-visibility-icon" class="svg-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  <span id="secret-visibility-text">Mask</span>
+                </button>
+              </div>
             </div>
 
+            <div class="textarea-wrapper">
+              <textarea
+                id="secret-input"
+                name="secret"
+                placeholder="Paste your password, API key, private key, .env variables, credentials or confidential notes..."
+                spellcheck="false"
+                autofocus
+              ></textarea>
+            </div>
+
+            <!-- Secure Input Indicator -->
+            <div id="secret-status-indicator" class="secret-status-indicator hidden">
+              <svg class="svg-icon icon-verified" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Content detected • Ready for AES-256-GCM encryption</span>
+            </div>
+          </div>
+
+          <!-- Universal File Upload Section -->
+          <div id="file-dropzone-group" class="form-group">
+            <div class="form-label-row">
+              <label>CONFIDENTIAL FILE UPLOAD</label>
+              <span class="char-counter">Encrypted up to 10 MB</span>
+            </div>
+
+            <!-- Drag & Drop Zone -->
             <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="File upload dropzone">
               <input type="file" id="file-input" class="hidden-file-input" accept="*/*">
               <div class="dropzone-icon" id="dropzone-icon">
-                <svg class="svg-icon" style="width:2.5rem;height:2.5rem;stroke:var(--cyan-glow);" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                <svg class="svg-icon" style="width:2.75rem;height:2.75rem;stroke:var(--cyan-glow);" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
               </div>
-              <div class="dropzone-title">Select or drag and drop any file here</div>
-              <div class="dropzone-desc">Supports PDF documents, DOCX, Python scripts (surya.py), certificates, images, archives, and binaries</div>
+              <div class="dropzone-title">Drop confidential file or click to browse</div>
+              <div class="dropzone-desc">PDF • DOCX • TXT • PY • ZIP • Images • Certificates</div>
+              <div class="dropzone-limit">Maximum size: 10 MB</div>
             </div>
 
             <!-- File Selected Preview Card -->
@@ -127,74 +194,210 @@
               <div class="file-preview-info">
                 <div id="file-name" class="file-preview-name">filename.ext</div>
                 <div class="file-preview-size">
-                  <span id="file-size">0 KB</span> • <span id="file-type">text/plain</span>
+                  <span id="file-size">0 KB</span> • <span id="file-type">text/plain</span> • <span class="text-success">✓ Ready for encryption</span>
                 </div>
               </div>
               <button type="button" id="btn-remove-file" class="btn-file-remove" title="Remove attached file" aria-label="Remove file">&times;</button>
             </div>
-          </div>
 
-          <!-- Configuration Grid (Expiration & View Limit) -->
-          <div class="form-row">
-            <div class="form-group">
-              <label for="ttl-select">EXPIRATION (TTL)</label>
-              <select id="ttl-select" name="ttl_seconds">
-                <option value="60">1 minute</option>
-                <option value="300">5 minutes</option>
-                <option value="900">15 minutes</option>
-                <option value="3600" selected>1 hour</option>
-                <option value="86400">24 hours</option>
-                <option value="604800">7 days</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label for="views-select">MAXIMUM VIEWS</label>
-              <select id="views-select" name="max_views">
-                <option value="1" selected>1 view (Self-destruct on view)</option>
-                <option value="2">2 views</option>
-                <option value="3">3 views</option>
-                <option value="5">5 views</option>
-                <option value="10">10 views</option>
-              </select>
+            <!-- File Security Information -->
+            <div class="file-security-notice">
+              <svg class="svg-icon icon-padlock-mini" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              <span><strong>Secure File Handling:</strong> Your file is encrypted with AES-256-GCM before being stored. Only encrypted ciphertext bytes are retained by the vault.</span>
             </div>
           </div>
 
-          <!-- Optional Passphrase Protection -->
-          <div class="form-group">
-            <label for="passphrase-input">OPTIONAL PASSPHRASE (ZERO-KNOWLEDGE PROTECTION)</label>
-            <div class="password-wrapper">
-              <span class="password-icon">
-                <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3L22 7l-3-3"></path></svg>
-              </span>
-              <input
-                type="password"
-                id="passphrase-input"
-                name="passphrase"
-                class="password-input-with-icon"
-                placeholder="Optional passphrase required by recipient to decrypt"
-                autocomplete="new-password"
-              >
-              <button type="button" id="btn-toggle-eye" class="btn-toggle-eye" title="Toggle passphrase visibility" aria-label="Show or hide passphrase">
-                <svg id="eye-icon" class="svg-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-              </button>
+          <!-- Collapsible Advanced Security Options Accordion -->
+          <div class="advanced-accordion-container">
+            <button type="button" id="btn-toggle-advanced" class="btn-accordion-toggle" aria-expanded="true">
+              <div class="accordion-title-row">
+                <svg class="svg-icon icon-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <span>Advanced Security Options</span>
+              </div>
+              <svg id="advanced-chevron" class="svg-icon chevron-icon rotated" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+
+            <!-- Collapsible Body -->
+            <div id="advanced-options-panel" class="accordion-body">
+              <div class="form-row">
+                <!-- Expiration / TTL Selector -->
+                <div class="form-group">
+                  <div class="label-with-hint">
+                    <label for="ttl-select">EXPIRATION (TTL)</label>
+                    <span class="field-hint">Auto-purged upon expiry</span>
+                  </div>
+                  <select id="ttl-select" name="ttl_seconds">
+                    <option value="600">10 minutes</option>
+                    <option value="1800">30 minutes</option>
+                    <option value="3600" selected>1 hour (Default)</option>
+                    <option value="21600">6 hours</option>
+                    <option value="86400">24 hours</option>
+                    <option value="604800">7 days</option>
+                    <option value="custom">Custom Timeframe...</option>
+                  </select>
+                  <div class="ttl-helper-text">
+                    <span id="live-expiry-preview">Expires approximately: Today, 11:42 PM</span>
+                  </div>
+
+                  <!-- Custom TTL Inputs (Hidden unless Custom selected) -->
+                  <div id="custom-ttl-group" class="custom-ttl-box hidden">
+                    <div class="custom-ttl-inputs">
+                      <div class="custom-ttl-field">
+                        <label for="custom-ttl-hours">Hours</label>
+                        <input type="number" id="custom-ttl-hours" min="0" max="168" value="2">
+                      </div>
+                      <div class="custom-ttl-field">
+                        <label for="custom-ttl-minutes">Minutes</label>
+                        <input type="number" id="custom-ttl-minutes" min="1" max="59" value="0">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Maximum Views Selector -->
+                <div class="form-group">
+                  <div class="label-with-hint">
+                    <label for="views-select">MAXIMUM VIEWS</label>
+                    <span class="field-hint">Burn-after-reading</span>
+                  </div>
+                  <select id="views-select" name="max_views">
+                    <option value="1" selected>1 view — Self-destruct after viewing</option>
+                    <option value="2">2 views</option>
+                    <option value="3">3 views</option>
+                    <option value="5">5 views</option>
+                    <option value="10">10 views</option>
+                  </select>
+                  <div class="ttl-helper-text">
+                    <span>One-view secrets provide the strongest burn-after-reading behavior.</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Optional Passphrase Protection -->
+              <div class="form-group">
+                <div class="label-with-badge">
+                  <label for="passphrase-input">OPTIONAL PASSPHRASE</label>
+                  <span class="badge-tag badge-cyan">Extra Protection</span>
+                </div>
+                <div class="password-wrapper">
+                  <span class="password-icon">
+                    <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3L22 7l-3-3"></path></svg>
+                  </span>
+                  <input
+                    type="password"
+                    id="passphrase-input"
+                    name="passphrase"
+                    class="password-input-with-icon"
+                    placeholder="Enter an optional passphrase (recipient must provide to decrypt)"
+                    autocomplete="new-password"
+                  >
+                  <button type="button" id="btn-toggle-eye" class="btn-toggle-eye" title="Toggle passphrase visibility" aria-label="Show or hide passphrase">
+                    <svg id="eye-icon" class="svg-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  </button>
+                </div>
+
+                <!-- Passphrase Strength Meter -->
+                <div id="passphrase-strength-container" class="passphrase-strength-container hidden">
+                  <div class="strength-bar-track">
+                    <div id="passphrase-strength-bar" class="strength-bar-fill"></div>
+                  </div>
+                  <div class="strength-label-row">
+                    <span>Strength: <strong id="passphrase-strength-text">Weak</strong></span>
+                    <span class="passphrase-hint">Use a separate secure channel to share the passphrase.</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- Submit Action Button -->
+          <!-- Secret Security Score / Configuration Meter -->
+          <div class="security-score-card">
+            <div class="score-header-row">
+              <span class="score-title">SECURITY CONFIGURATION</span>
+              <span class="score-value" id="security-score-label">Strong (90%)</span>
+            </div>
+            <div class="score-bar-track">
+              <div class="score-bar-fill" id="security-score-bar" style="width: 90%;"></div>
+            </div>
+            <div class="score-factors-grid" id="security-score-factors">
+              <span class="factor-item factor-active">✓ AES-256-GCM</span>
+              <span class="factor-item factor-active" id="factor-views">✓ 1 view burn</span>
+              <span class="factor-item factor-active" id="factor-ttl">✓ TTL enabled</span>
+              <span class="factor-item factor-active">✓ Non-guessable URL</span>
+              <span class="factor-item factor-active">✓ Hard SQLite purge</span>
+              <span class="factor-item factor-inactive" id="factor-passphrase">+ Optional Passphrase</span>
+            </div>
+          </div>
+
+          <!-- Live Vault Configuration Summary Box -->
+          <div class="config-summary-box">
+            <div class="config-summary-title">YOUR VAULT CONFIGURATION</div>
+            <div class="config-summary-grid">
+              <div class="summary-col">
+                <span class="summary-label">Encryption:</span>
+                <span class="summary-val">AES-256-GCM</span>
+              </div>
+              <div class="summary-col">
+                <span class="summary-label">Expiration:</span>
+                <span class="summary-val" id="summary-expiration">1 hour</span>
+              </div>
+              <div class="summary-col">
+                <span class="summary-label">Maximum Views:</span>
+                <span class="summary-val" id="summary-views">1 view (Instant Burn)</span>
+              </div>
+              <div class="summary-col">
+                <span class="summary-label">Storage Mode:</span>
+                <span class="summary-val">Encrypted Only</span>
+              </div>
+              <div class="summary-col" style="grid-column: span 2;">
+                <span class="summary-label">Destruction Policy:</span>
+                <span class="summary-val">Hard delete upon allowed views or TTL expiration</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Main CTA Submit Button -->
           <button type="submit" id="submit-btn" class="btn-action-primary">
-            <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            <span>Encrypt &amp; Generate Secure Link</span>
+            <svg class="svg-icon btn-icon-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <span id="submit-btn-text">Encrypt &amp; Generate Secure Link</span>
+            <svg class="svg-icon btn-arrow-right" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
           </button>
-
-          <!-- Trust Shield Note -->
-          <div class="trust-shield-note">
-            <svg class="svg-icon trust-shield-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-            <span>Zero plaintext storage • Permanent hard delete on view • Scraper defense</span>
-          </div>
         </form>
 
-        <!-- Result Screen -->
+        <!-- Security Flow Preview (Mini Pipeline) -->
+        <div class="security-flow-pipeline">
+          <div class="flow-step">
+            <div class="flow-icon"><svg class="svg-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></div>
+            <span class="flow-label">Your Secret</span>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-icon"><svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+            <span class="flow-label">AES-256-GCM</span>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-icon"><svg class="svg-icon" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg></div>
+            <span class="flow-label">Encrypted Storage</span>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-icon"><svg class="svg-icon" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></div>
+            <span class="flow-label">Temporary Link</span>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-icon"><svg class="svg-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></div>
+            <span class="flow-label">Human Reveal</span>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-icon"><svg class="svg-icon" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg></div>
+            <span class="flow-label">Zero-Trace Burn</span>
+          </div>
+        </div>
+
+        <!-- Result Screen (Shown after successful vault creation) -->
         <section id="result-section" class="hidden" aria-label="Secret creation results">
           <div class="success-header">
             <div class="success-badge-circle">
@@ -218,7 +421,6 @@
 
           <!-- PANEL 1: Share via Web Link -->
           <div id="panel-delivery-link" class="delivery-panel">
-            <!-- Generated Link Box -->
             <div class="link-box-container">
               <div class="link-box-label">
                 <svg class="svg-icon" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
@@ -241,15 +443,13 @@
               </div>
             </div>
 
-            <!-- QR Code Box (Collapsible) -->
+            <!-- QR Code Canvas Container -->
             <div id="qr-container" class="qr-container hidden">
-              <div class="qr-frame">
-                <canvas id="qr-canvas" width="180" height="180"></canvas>
-              </div>
+              <div class="qr-frame"></div>
               <div class="qr-hint">Scan with mobile device camera to open vault on mobile</div>
             </div>
 
-            <!-- Direct App Sharing Hub -->
+            <!-- Direct App Sharing Section -->
             <div class="app-share-section">
               <div class="app-share-header">
                 <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
@@ -286,7 +486,6 @@
 
           <!-- PANEL 2: Download & Share Encrypted File Package -->
           <div id="panel-delivery-file" class="delivery-panel hidden">
-            <!-- Attached File Manifest Card -->
             <div id="file-manifest-card" class="file-manifest-card">
               <div class="file-manifest-header">
                 <div class="file-manifest-icon" id="manifest-file-icon">
@@ -302,7 +501,7 @@
                 </div>
               </div>
 
-              <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:0.75rem;">
+              <p class="file-manifest-intro">
                 Download this standalone self-extracting vault file. You can attach and send this file directly via WhatsApp documents, Slack file attachments, or Email attachments!
               </p>
 
@@ -322,7 +521,7 @@
 
               <div class="share-instructions">
                 <strong>How to send the file to others:</strong>
-                <ul style="margin-left: 1.25rem; margin-top: 0.35rem; line-height: 1.5;">
+                <ul>
                   <li><strong>WhatsApp:</strong> Attach the downloaded <code>.html</code> file as a Document in any chat.</li>
                   <li><strong>Slack / Teams:</strong> Drag and drop the downloaded file directly into your conversation.</li>
                   <li><strong>Email:</strong> Attach the downloaded file to your confidential email message.</li>
@@ -332,7 +531,7 @@
             </div>
           </div>
 
-          <!-- Metadata Card -->
+          <!-- Metadata Summary Box -->
           <div class="meta-card">
             <div class="meta-item">
               <span class="meta-item-label">
@@ -348,12 +547,12 @@
               </span>
               <span class="meta-value" id="views-display">-</span>
             </div>
-            <div class="meta-item" style="flex-direction:column;align-items:flex-start;gap:0.35rem;">
+            <div class="meta-item meta-item-full">
               <span class="meta-item-label">
                 <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                 Integrity Fingerprint (SHA-256):
               </span>
-              <div class="fingerprint-box" style="width:100%;">
+              <div class="fingerprint-box">
                 <span id="fingerprint-display">-</span>
                 <button type="button" id="btn-copy-fingerprint" class="btn-copy-mini" title="Copy SHA-256 Fingerprint">
                   <svg class="svg-icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
@@ -362,19 +561,17 @@
             </div>
           </div>
 
-          <!-- Zero-Trace Guarantee Alert Box -->
-          <div class="zero-trace-box">
-            <svg class="svg-icon zero-trace-icon" style="width:1.75rem;height:1.75rem;stroke:#f59e0b;" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          <!-- Important Security Notice -->
+          <div class="warning-callout">
+            <svg class="svg-icon icon-warn" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
             <div>
-              <div class="zero-trace-title">Zero-Trace Security Guarantee</div>
-              <div class="zero-trace-text">
-                Once the recipient reveals the secret, it is automatically wiped with SQLite zero-overwriting (<code>secure_delete = ON</code>). It cannot be retrieved again from any backups, storage traces, or cache.
-              </div>
+              <strong>Important Security Notice:</strong>
+              <span>Anyone who receives this link may be able to reveal the secret. Share it only with the intended recipient. Once revealed or expired, it is permanently wiped from storage.</span>
             </div>
           </div>
 
           <!-- Reset Button -->
-          <button type="button" id="reset-btn" class="btn-action-primary" style="background:#1e293b;border:1px solid rgba(56,189,248,0.25);">
+          <button type="button" id="reset-btn" class="btn-action-secondary">
             <svg class="svg-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             <span>Create Another Secret</span>
           </button>
@@ -382,7 +579,101 @@
       </main>
     </div>
 
-    <!-- Modals for Nav Links -->
+    <!-- Trust / Security Feature Cards (Section 19) -->
+    <section class="security-cards-section" aria-labelledby="security-cards-title">
+      <div class="section-badge-center">
+        <span>SECURITY FOUNDATION</span>
+      </div>
+      <h3 id="security-cards-title" class="section-title-center">Engineered for Zero-Trust Environments</h3>
+      <p class="section-subtitle-center">Six foundational protections implemented directly in our cryptographic and storage layers.</p>
+
+      <div class="feature-cards-grid">
+        <div class="spec-card">
+          <div class="spec-card-icon icon-blue">
+            <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          </div>
+          <h4 class="spec-card-title">1. AES-256-GCM</h4>
+          <p class="spec-card-desc">Authenticated hardware-grade encryption. Plaintext is never stored or written unencrypted.</p>
+        </div>
+
+        <div class="spec-card">
+          <div class="spec-card-icon icon-cyan">
+            <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4l3 3"></path></svg>
+          </div>
+          <h4 class="spec-card-title">2. Unique IV</h4>
+          <p class="spec-card-desc">Fresh 12-byte cryptographic initialization vector generated for every individual secret.</p>
+        </div>
+
+        <div class="spec-card">
+          <div class="spec-card-icon icon-orange">
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
+          </div>
+          <h4 class="spec-card-title">3. Burn After Reading</h4>
+          <p class="spec-card-desc">Automatic hard destruction after allowed views are consumed. Records are zero-overwritten.</p>
+        </div>
+
+        <div class="spec-card">
+          <div class="spec-card-icon icon-green">
+            <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8" y2="16"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg>
+          </div>
+          <h4 class="spec-card-title">4. Scraper Defense</h4>
+          <p class="spec-card-desc">GET requests from bots (Slack, WhatsApp, Discord) receive a safe static landing shell with 0 DB burns.</p>
+        </div>
+
+        <div class="spec-card">
+          <div class="spec-card-icon icon-purple">
+            <svg class="svg-icon" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+          </div>
+          <h4 class="spec-card-title">5. Atomic Reads</h4>
+          <p class="spec-card-desc">Single-transaction SQLite updates prevent double-read concurrency race conditions.</p>
+        </div>
+
+        <div class="spec-card">
+          <div class="spec-card-icon icon-indigo">
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          </div>
+          <h4 class="spec-card-title">6. Automatic Cleanup</h4>
+          <p class="spec-card-desc">Autonomous background sweeper purges expired secrets and checkpoints the WAL database.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Security Explanation Section ("Why Your Secret Is Safe") (Section 20) -->
+    <section class="security-pillars-section" aria-labelledby="pillars-title">
+      <div class="section-badge-center">
+        <span>SECURITY ARCHITECTURE</span>
+      </div>
+      <h3 id="pillars-title" class="section-title-center">Why Your Secret Is Safe</h3>
+      <p class="section-subtitle-center">Technically accurate, verifiable zero-knowledge guarantees.</p>
+
+      <div class="pillars-grid">
+        <div class="pillar-card">
+          <div class="pillar-num">01</div>
+          <h4 class="pillar-title">Encrypted at Rest</h4>
+          <p class="pillar-desc">
+            Your secret is never stored as readable plaintext. Ciphertext, salt, IV, and auth tag are isolated in a hardened SQLite WAL database with cryptographic zero-delete.
+          </p>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-num">02</div>
+          <h4 class="pillar-title">Human-Controlled Reveal</h4>
+          <p class="pillar-desc">
+            Opening the link loads a safe landing page. The plaintext secret is only decrypted upon an explicit, authenticated POST request initiated by a human recipient.
+          </p>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-num">03</div>
+          <h4 class="pillar-title">Automatic Destruction</h4>
+          <p class="pillar-desc">
+            The secret becomes permanently unavailable after successful reveal or expiration. Deleted blocks are zero-overwritten in memory and storage with no retention.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Modals for Nav Links & Help -->
     <!-- Modal: How It Works -->
     <div id="modal-how-it-works" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-how-it-works-title">
       <div class="modal-card">
@@ -395,8 +686,11 @@
           <h4>2. Secure Distribution</h4>
           <p>A 12-character non-guessable random URL is generated. You can share it directly via 1-click integrations for WhatsApp, Slack, MS Teams, Discord, or Email.</p>
 
-          <h4>3. Single-Use Cryptographic Burn</h4>
-          <p>When the recipient visits the link, a safe splash screen is loaded. Only an explicit human button click reveals and decrypts the secret. Once read, the vault row is purged permanently with <code>secure_delete = ON</code>.</p>
+          <h4>3. Atomic Single-Use Reveal</h4>
+          <p>Recipients view a safe pre-reveal landing page. Clicking "Reveal &amp; Destroy Secret" issues an authenticated POST request that decrypts the secret and immediately deletes the database row.</p>
+
+          <h4>4. Hardware-Level Zero Overwrite</h4>
+          <p>The database runs with <code>PRAGMA secure_delete = ON;</code> ensuring deleted table cells are physically overwritten with zeros rather than merely marked as free.</p>
         </div>
       </div>
     </div>
@@ -435,7 +729,7 @@
           <p>Automated deep-linking for WhatsApp, Slack (with formatted mrkdwn), Microsoft Teams, Discord, and Email.</p>
 
           <h4>Configurable Lifecycles</h4>
-          <p>Set custom expiration timeframes from 1 minute up to 7 days, with view limits from 1 up to 10 views.</p>
+          <p>Set custom expiration timeframes from 10 minutes up to 7 days, with view limits from 1 up to 10 views.</p>
         </div>
       </div>
     </div>
@@ -463,12 +757,33 @@
       <span id="toast-message">Copied to clipboard</span>
     </div>
 
-    <!-- Page Footer -->
-    <footer class="footer-note">
-      <div>AES-256-GCM authenticated • Zero-trace SQLite WAL • Automatic Hard Deletion</div>
-      <div style="margin-top: 0.5rem; display: flex; justify-content: center; gap: 1.5rem;">
-        <a href="/images/workflow-diagram.jpg" target="_blank" style="color:var(--text-muted);text-decoration:underline;font-size:0.75rem;">Architecture Workflow Diagram</a>
-        <a href="/images/ui-mockup-create.jpg" target="_blank" style="color:var(--text-muted);text-decoration:underline;font-size:0.75rem;">UI Design Overview</a>
+    <!-- Enterprise Security Footer (Section 27) -->
+    <footer class="footer-enterprise" role="contentinfo">
+      <div class="footer-trust-strip">
+        <span>AES-256-GCM Authenticated</span>
+        <span class="strip-sep">•</span>
+        <span>Zero Plaintext Storage</span>
+        <span class="strip-sep">•</span>
+        <span>Temporary Non-Guessable Links</span>
+        <span class="strip-sep">•</span>
+        <span>Automatic Hard Deletion</span>
+        <span class="strip-sep">•</span>
+        <span>Bot Scraper Defense</span>
+      </div>
+
+      <div class="footer-links-row">
+        <a href="#how-it-works" class="footer-link" id="footer-how">How It Works</a>
+        <a href="#security" class="footer-link" id="footer-security">Security Architecture</a>
+        <a href="#features" class="footer-link" id="footer-features">Features</a>
+        <a href="#faq" class="footer-link" id="footer-faq">FAQ</a>
+        <a href="https://github.com/SURIYAKUMARE/Ephemeral-Secret-Vault.git" target="_blank" rel="noopener noreferrer" class="footer-link">
+          <svg class="svg-icon icon-github" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+          <span>GitHub</span>
+        </a>
+      </div>
+
+      <div class="footer-meta-text">
+        Ephemeral Secret Vault • Production-Grade Zero-Trace Cryptographic Service
       </div>
     </footer>
   </div>

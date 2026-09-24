@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  // Enterprise Vector SVG Icons (100% Professional - Zero Emojis)
+  // Enterprise Vector SVG Icons (Zero Casual Emojis)
   const SVG_ICONS = {
     eye: '<svg class="svg-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>',
     eyeOff: '<svg class="svg-icon" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>',
@@ -18,7 +18,7 @@
     download: '<svg class="svg-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>'
   };
 
-  // DOM Elements - Form & Inputs
+  // DOM Elements - Creation Form & Inputs
   const createForm = document.getElementById('create-form');
   const secretInput = document.getElementById('secret-input');
   const fileInput = document.getElementById('file-input');
@@ -34,23 +34,55 @@
   const passphraseInput = document.getElementById('passphrase-input');
   const btnToggleEye = document.getElementById('btn-toggle-eye');
   const submitBtn = document.getElementById('submit-btn');
+  const submitBtnText = document.getElementById('submit-btn-text');
   const errorAlert = document.getElementById('error-alert');
   const errorMessage = document.getElementById('error-message');
 
-  // DOM Elements - Result & Delivery Tabs
+  // Textarea Controls & Indicators
+  const btnClearSecret = document.getElementById('btn-clear-secret');
+  const btnToggleSecretView = document.getElementById('btn-toggle-secret-view');
+  const secretVisibilityIcon = document.getElementById('secret-visibility-icon');
+  const secretVisibilityText = document.getElementById('secret-visibility-text');
+  const detectedFormatBadge = document.getElementById('detected-format-badge');
+  const secretStatusIndicator = document.getElementById('secret-status-indicator');
+
+  // Advanced Security Options Accordion
+  const btnToggleAdvanced = document.getElementById('btn-toggle-advanced');
+  const advancedOptionsPanel = document.getElementById('advanced-options-panel');
+  const advancedChevron = document.getElementById('advanced-chevron');
+  const ttlSelect = document.getElementById('ttl-select');
+  const customTtlGroup = document.getElementById('custom-ttl-group');
+  const customTtlHours = document.getElementById('custom-ttl-hours');
+  const customTtlMinutes = document.getElementById('custom-ttl-minutes');
+  const liveExpiryPreview = document.getElementById('live-expiry-preview');
+  const viewsSelect = document.getElementById('views-select');
+
+  // Passphrase Strength Meter
+  const passphraseStrengthContainer = document.getElementById('passphrase-strength-container');
+  const passphraseStrengthBar = document.getElementById('passphrase-strength-bar');
+  const passphraseStrengthText = document.getElementById('passphrase-strength-text');
+
+  // Configuration Score & Summary Box
+  const securityScoreBar = document.getElementById('security-score-bar');
+  const securityScoreLabel = document.getElementById('security-score-label');
+  const factorViews = document.getElementById('factor-views');
+  const factorTtl = document.getElementById('factor-ttl');
+  const factorPassphrase = document.getElementById('factor-passphrase');
+  const summaryExpiration = document.getElementById('summary-expiration');
+  const summaryViews = document.getElementById('summary-views');
+
+  // Delivery Tabs & Result Screen
   const resultSection = document.getElementById('result-section');
+  const tabDeliveryLink = document.getElementById('tab-delivery-link');
+  const tabDeliveryFile = document.getElementById('tab-delivery-file');
+  const panelDeliveryLink = document.getElementById('panel-delivery-link');
+  const panelDeliveryFile = document.getElementById('panel-delivery-file');
   const linkOutput = document.getElementById('link-output');
   const copyBtn = document.getElementById('copy-btn');
   const openLinkBtn = document.getElementById('open-link-btn');
   const btnToggleQr = document.getElementById('btn-toggle-qr');
   const qrContainer = document.getElementById('qr-container');
   const qrFrame = document.querySelector('.qr-frame');
-
-  // Delivery Method Switchers
-  const tabDeliveryLink = document.getElementById('tab-delivery-link');
-  const tabDeliveryFile = document.getElementById('tab-delivery-file');
-  const panelDeliveryLink = document.getElementById('panel-delivery-link');
-  const panelDeliveryFile = document.getElementById('panel-delivery-file');
 
   // File Manifest Card (Panel 2)
   const manifestFileIcon = document.getElementById('manifest-file-icon');
@@ -77,18 +109,14 @@
   const shareEmail = document.getElementById('share-email');
   const shareNative = document.getElementById('share-native');
 
-  // Tab Switching (Text vs File)
+  // Tabs & Nav
   const tabText = document.getElementById('tab-text');
   const tabFile = document.getElementById('tab-file');
-
-  // Theme Toggle
+  const tabHelperText = document.getElementById('tab-helper-text');
   const themeToggle = document.getElementById('theme-toggle');
-
-  // Nav Modals
-  const navHowItWorks = document.getElementById('nav-how-it-works');
-  const navSecurity = document.getElementById('nav-security');
-  const navFeatures = document.getElementById('nav-features');
-  const navFaq = document.getElementById('nav-faq');
+  const navHelp = document.getElementById('nav-help');
+  const btnMobileMenu = document.getElementById('btn-mobile-menu');
+  const mobileNavDrawer = document.getElementById('mobile-nav-drawer');
 
   // Active Runtime State
   let currentFile = null;
@@ -96,6 +124,7 @@
   let activeSecretData = null;
   let activeSecretText = '';
   let activePassphrase = '';
+  let isSecretMasked = false;
 
   // Helpers
   function formatBytes(bytes) {
@@ -149,23 +178,171 @@
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
-  // Reactive Byte Counter
-  function updateByteCounter() {
+  // ==========================================================================
+  // Smart Client-Side Format Detection
+  // ==========================================================================
+  function detectSecretFormat(text) {
+    if (!text || text.trim().length === 0) return null;
+    const trimmed = text.trim();
+
+    // 1. Private Key
+    if (/-----BEGIN (?:RSA|EC|DSA|OPENSSH|PGP)?\s?PRIVATE KEY-----/.test(trimmed)) {
+      return 'Private Key';
+    }
+
+    // 2. SSH Key
+    if (/ssh-(?:rsa|ed25519|dss)\s+[A-Za-z0-9+/=]+/.test(trimmed)) {
+      return 'SSH Key';
+    }
+
+    // 3. Certificate
+    if (/-----BEGIN CERTIFICATE-----/.test(trimmed)) {
+      return 'Certificate';
+    }
+
+    // 4. JWT
+    if (/^eyJ[A-Za-z0-9-_=]+\.eyJ[A-Za-z0-9-_=]+\.[A-Za-z0-9-_.+/=]*$/.test(trimmed)) {
+      return 'JWT Token';
+    }
+
+    // 5. Cloud & API Keys
+    if (/(?:sk_live_|ghp_|gho_|AKIA[0-9A-Z]{16}|AIza[0-9A-Za-z-_]{35}|Bearer\s+[A-Za-z0-9-_=]+|xox[baprs]-[0-9a-zA-Z]{10,48})/i.test(trimmed)) {
+      return 'API Key';
+    }
+
+    // 6. JSON Credentials
+    if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        if (typeof parsed === 'object') {
+          return 'JSON Credentials';
+        }
+      } catch (e) {}
+    }
+
+    // 7. Environment Variables (.env)
+    if (/^[A-Z0-9_]+\s*=\s*.+/m.test(trimmed) && trimmed.includes('=')) {
+      return '.env Content';
+    }
+
+    // 8. Password
+    if (trimmed.length >= 8 && trimmed.length <= 64 && !trimmed.includes('\n') && !trimmed.includes(' ')) {
+      return 'Password';
+    }
+
+    return 'Generic Secret';
+  }
+
+  // ==========================================================================
+  // Reactive Byte Counter & Detection
+  // ==========================================================================
+  function updateByteCounterAndIndicators() {
     if (!secretInput || !byteCounter) return;
     const text = secretInput.value;
     const bytes = new Blob([text]).size;
+    const chars = text.length;
+
     byteCounter.textContent = `${bytes.toLocaleString()} / 10,240 bytes`;
     if (bytes > 10240) {
       byteCounter.style.color = '#ef4444';
     } else {
-      byteCounter.style.color = 'var(--text-muted)';
+      byteCounter.style.color = 'var(--text-dim)';
+    }
+
+    // Toggle clear button
+    if (btnClearSecret) {
+      if (chars > 0) {
+        btnClearSecret.classList.remove('hidden');
+      } else {
+        btnClearSecret.classList.add('hidden');
+      }
+    }
+
+    // Format detection badge & status indicator
+    const format = detectSecretFormat(text);
+    if (format && detectedFormatBadge) {
+      detectedFormatBadge.textContent = `Detected format: ${format}`;
+      detectedFormatBadge.classList.remove('hidden');
+      if (secretStatusIndicator) secretStatusIndicator.classList.remove('hidden');
+    } else {
+      if (detectedFormatBadge) detectedFormatBadge.classList.add('hidden');
+      if (secretStatusIndicator) secretStatusIndicator.classList.add('hidden');
     }
   }
+
   if (secretInput) {
-    secretInput.addEventListener('input', updateByteCounter);
+    secretInput.addEventListener('input', updateByteCounterAndIndicators);
   }
 
-  // Passphrase visibility toggle
+  // Clear secret button
+  if (btnClearSecret && secretInput) {
+    btnClearSecret.addEventListener('click', () => {
+      secretInput.value = '';
+      updateByteCounterAndIndicators();
+      secretInput.focus();
+    });
+  }
+
+  // Textarea visibility toggle (masking)
+  if (btnToggleSecretView && secretInput) {
+    btnToggleSecretView.addEventListener('click', () => {
+      isSecretMasked = !isSecretMasked;
+      if (isSecretMasked) {
+        secretInput.classList.add('masked-content');
+        secretVisibilityText.textContent = 'Unmask';
+        secretVisibilityIcon.innerHTML = SVG_ICONS.eyeOff;
+      } else {
+        secretInput.classList.remove('masked-content');
+        secretVisibilityText.textContent = 'Mask';
+        secretVisibilityIcon.innerHTML = SVG_ICONS.eye;
+      }
+    });
+  }
+
+  // ==========================================================================
+  // Passphrase Strength Evaluator
+  // ==========================================================================
+  function evaluatePassphraseStrength(pwd) {
+    if (!pwd || pwd.length === 0) return { score: 0, text: 'None' };
+    let score = 0;
+    if (pwd.length >= 8) score += 30;
+    if (pwd.length >= 14) score += 20;
+    if (/[A-Z]/.test(pwd)) score += 15;
+    if (/[a-z]/.test(pwd)) score += 15;
+    if (/[0-9]/.test(pwd)) score += 10;
+    if (/[^A-Za-z0-9]/.test(pwd)) score += 10;
+
+    if (score < 45) return { score: 30, text: 'Weak', color: 'var(--danger)' };
+    if (score < 75) return { score: 65, text: 'Medium', color: 'var(--warning)' };
+    return { score: 100, text: 'Strong', color: 'var(--success)' };
+  }
+
+  if (passphraseInput) {
+    passphraseInput.addEventListener('input', () => {
+      const val = passphraseInput.value;
+      if (val.length > 0) {
+        passphraseStrengthContainer.classList.remove('hidden');
+        const { score, text, color } = evaluatePassphraseStrength(val);
+        passphraseStrengthBar.style.width = `${score}%`;
+        passphraseStrengthBar.style.background = color;
+        passphraseStrengthText.textContent = text;
+        passphraseStrengthText.style.color = color;
+        if (factorPassphrase) {
+          factorPassphrase.className = 'factor-item factor-active';
+          factorPassphrase.textContent = '✓ Passphrase enabled';
+        }
+      } else {
+        passphraseStrengthContainer.classList.add('hidden');
+        if (factorPassphrase) {
+          factorPassphrase.className = 'factor-item factor-inactive';
+          factorPassphrase.textContent = '+ Optional Passphrase';
+        }
+      }
+      updateSecurityScore();
+    });
+  }
+
+  // Passphrase Show/Hide Toggle
   if (btnToggleEye && passphraseInput) {
     btnToggleEye.addEventListener('click', () => {
       const isPassword = passphraseInput.getAttribute('type') === 'password';
@@ -175,7 +352,112 @@
     });
   }
 
-  // Theme toggle
+  // ==========================================================================
+  // Expiration / TTL & Security Configuration Score
+  // ==========================================================================
+  function getSelectedTtlSeconds() {
+    if (!ttlSelect) return 3600;
+    const val = ttlSelect.value;
+    if (val === 'custom') {
+      const h = parseInt(customTtlHours.value, 10) || 0;
+      const m = parseInt(customTtlMinutes.value, 10) || 0;
+      const total = (h * 3600) + (m * 60);
+      return Math.max(60, Math.min(total, 604800));
+    }
+    return parseInt(val, 10);
+  }
+
+  function updateExpiryLivePreview() {
+    const seconds = getSelectedTtlSeconds();
+    const expiryDate = new Date(Date.now() + (seconds * 1000));
+    const now = new Date();
+    const isToday = expiryDate.toDateString() === now.toDateString();
+    const timeStr = expiryDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const datePrefix = isToday ? 'Today' : expiryDate.toLocaleDateString([], { month: 'short', day: 'numeric' });
+
+    if (liveExpiryPreview) {
+      liveExpiryPreview.textContent = `Expires approximately: ${datePrefix}, ${timeStr}`;
+    }
+
+    if (summaryExpiration) {
+      if (seconds < 3600) {
+        summaryExpiration.textContent = `${Math.round(seconds / 60)} minutes`;
+      } else if (seconds === 3600) {
+        summaryExpiration.textContent = '1 hour';
+      } else if (seconds < 86400) {
+        summaryExpiration.textContent = `${Math.round(seconds / 3600)} hours`;
+      } else {
+        summaryExpiration.textContent = `${Math.round(seconds / 86400)} days`;
+      }
+    }
+  }
+
+  if (ttlSelect) {
+    ttlSelect.addEventListener('change', () => {
+      if (ttlSelect.value === 'custom') {
+        customTtlGroup.classList.remove('hidden');
+      } else {
+        customTtlGroup.classList.add('hidden');
+      }
+      updateExpiryLivePreview();
+      updateSecurityScore();
+    });
+  }
+
+  if (customTtlHours) customTtlHours.addEventListener('input', updateExpiryLivePreview);
+  if (customTtlMinutes) customTtlMinutes.addEventListener('input', updateExpiryLivePreview);
+
+  if (viewsSelect) {
+    viewsSelect.addEventListener('change', () => {
+      const views = parseInt(viewsSelect.value, 10);
+      if (summaryViews) {
+        summaryViews.textContent = views === 1 ? '1 view (Instant Burn)' : `${views} views`;
+      }
+      if (factorViews) {
+        factorViews.textContent = views === 1 ? '✓ 1 view burn' : `✓ ${views} views limit`;
+      }
+      updateSecurityScore();
+    });
+  }
+
+  function updateSecurityScore() {
+    let score = 70; // Base score (AES-256-GCM + random URL + SQLite hard deletion)
+    const views = parseInt(viewsSelect ? viewsSelect.value : '1', 10);
+    const ttl = getSelectedTtlSeconds();
+    const hasPass = passphraseInput && passphraseInput.value.length > 0;
+
+    if (views === 1) score += 10;
+    if (ttl <= 3600) score += 10;
+    if (hasPass) score += 10;
+
+    if (securityScoreBar) securityScoreBar.style.width = `${score}%`;
+    if (securityScoreLabel) {
+      if (score >= 95) securityScoreLabel.textContent = `Maximum (${score}%)`;
+      else if (score >= 85) securityScoreLabel.textContent = `Strong (${score}%)`;
+      else securityScoreLabel.textContent = `Good (${score}%)`;
+    }
+  }
+
+  // ==========================================================================
+  // Collapsible Advanced Security Options Accordion
+  // ==========================================================================
+  if (btnToggleAdvanced && advancedOptionsPanel && advancedChevron) {
+    btnToggleAdvanced.addEventListener('click', () => {
+      const isExpanded = btnToggleAdvanced.getAttribute('aria-expanded') === 'true';
+      btnToggleAdvanced.setAttribute('aria-expanded', !isExpanded);
+      if (isExpanded) {
+        advancedOptionsPanel.classList.add('hidden');
+        advancedChevron.classList.remove('rotated');
+      } else {
+        advancedOptionsPanel.classList.remove('hidden');
+        advancedChevron.classList.add('rotated');
+      }
+    });
+  }
+
+  // ==========================================================================
+  // Theme Toggle (Dark Cyber Cosmic / Light Mode)
+  // ==========================================================================
   if (themeToggle) {
     const savedTheme = localStorage.getItem('vault_theme');
     if (savedTheme === 'light') {
@@ -193,27 +475,55 @@
     });
   }
 
-  // Tab switching (Text vs File input)
+  // Mobile Hamburger Menu Toggle
+  if (btnMobileMenu && mobileNavDrawer) {
+    btnMobileMenu.addEventListener('click', () => {
+      const isOpen = !mobileNavDrawer.classList.contains('hidden');
+      if (isOpen) {
+        mobileNavDrawer.classList.add('hidden');
+        btnMobileMenu.setAttribute('aria-expanded', 'false');
+      } else {
+        mobileNavDrawer.classList.remove('hidden');
+        btnMobileMenu.setAttribute('aria-expanded', 'true');
+      }
+    });
+  }
+
+  // ==========================================================================
+  // Tab Switching (Text vs File Input)
+  // ==========================================================================
   if (tabText && tabFile) {
     tabText.addEventListener('click', () => {
       tabText.classList.add('active');
       tabFile.classList.remove('active');
+      tabText.setAttribute('aria-selected', 'true');
+      tabFile.setAttribute('aria-selected', 'false');
+      if (tabHelperText) {
+        tabHelperText.textContent = 'Perfect for passwords, API keys, credentials, tokens and environment variables.';
+      }
       if (secretInput) secretInput.focus();
     });
 
     tabFile.addEventListener('click', () => {
       tabFile.classList.add('active');
       tabText.classList.remove('active');
+      tabFile.setAttribute('aria-selected', 'true');
+      tabText.setAttribute('aria-selected', 'false');
+      if (tabHelperText) {
+        tabHelperText.textContent = 'Encrypt and share confidential documents, code scripts and images securely.';
+      }
       if (dropzone) dropzone.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
   }
 
-  // File handling
+  // ==========================================================================
+  // Universal File Upload & Drag-and-Drop Experience
+  // ==========================================================================
   function processSelectedFile(file) {
     if (!file) return;
 
     if (file.size > 10 * 1024 * 1024) {
-      showError('File exceeds maximum allowed size of 10 MB.');
+      showError('This file exceeds the maximum allowed size of 10 MB.');
       return;
     }
 
@@ -224,7 +534,7 @@
         name: file.name,
         type: file.type || 'application/octet-stream',
         size: file.size,
-        data: e.target.result // base64 Data URL
+        data: e.target.result // Base64 Data URL
       };
 
       // Show preview card
@@ -253,7 +563,6 @@
     reader.readAsDataURL(file);
   }
 
-  // Drag and drop events
   if (dropzone) {
     dropzone.addEventListener('dragover', (e) => {
       e.preventDefault();
@@ -302,12 +611,9 @@
     });
   }
 
-  // Enable native device share if available
-  if (navigator.share && shareNative) {
-    shareNative.classList.remove('hidden');
-  }
-
-  // Delivery Method Switcher Tabs (Option 1: Link vs Option 2: File)
+  // ==========================================================================
+  // Delivery Method Switchers (Link vs File)
+  // ==========================================================================
   if (tabDeliveryLink && tabDeliveryFile && panelDeliveryLink && panelDeliveryFile) {
     tabDeliveryLink.addEventListener('click', () => {
       tabDeliveryLink.classList.add('active');
@@ -347,8 +653,8 @@
           text: url,
           width: 180,
           height: 180,
-          colorDark: '#38bdf8',
-          colorLight: '#0f172a',
+          colorDark: '#0284c7',
+          colorLight: '#ffffff',
           correctLevel: window.QRCode.CorrectLevel.M
         });
       } catch (e) {
@@ -366,9 +672,9 @@
     canvas.height = 180;
     const ctx = canvas.getContext('2d');
     if (ctx) {
-      ctx.fillStyle = '#0f172a';
+      ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, 180, 180);
-      ctx.fillStyle = '#38bdf8';
+      ctx.fillStyle = '#0284c7';
       ctx.font = '10px monospace';
       ctx.textAlign = 'center';
       ctx.fillText('QR Code Ready', 90, 85);
@@ -378,7 +684,14 @@
     qrFrame.appendChild(canvas);
   }
 
-  // Form submission
+  // Native Device Share
+  if (navigator.share && shareNative) {
+    shareNative.classList.remove('hidden');
+  }
+
+  // ==========================================================================
+  // Form Submission & Secret Creation
+  // ==========================================================================
   if (createForm) {
     createForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -386,12 +699,12 @@
 
       const secretText = secretInput ? secretInput.value.trim() : '';
       if (!secretText && !currentFile) {
-        showError('Please enter confidential text or attach a file.');
+        showError('Enter a secret or attach a file before creating the vault.');
         return;
       }
 
-      const ttlSeconds = parseInt(document.getElementById('ttl-select').value, 10);
-      const maxViews = parseInt(document.getElementById('views-select').value, 10);
+      const ttlSeconds = getSelectedTtlSeconds();
+      const maxViews = parseInt(viewsSelect.value, 10);
       const passphrase = passphraseInput ? passphraseInput.value : '';
 
       const payload = {
@@ -399,22 +712,19 @@
         max_views: maxViews
       };
 
-      if (secretText) {
-        payload.secret = secretText;
-      }
+      if (secretText) payload.secret = secretText;
+      if (currentFile) payload.file = currentFile;
+      if (passphrase) payload.passphrase = passphrase;
 
-      if (currentFile) {
-        payload.file = currentFile;
-      }
-
-      if (passphrase) {
-        payload.passphrase = passphrase;
-      }
-
+      // Premium interactive CTA sequence
       submitBtn.disabled = true;
-      submitBtn.innerHTML = `${SVG_ICONS.spinner} <span>Encrypting Payload...</span>`;
+      submitBtnText.textContent = 'Encrypting...';
+      submitBtn.querySelector('.btn-icon-lock').outerHTML = SVG_ICONS.spinner;
 
       try {
+        await new Promise((r) => setTimeout(r, 200));
+        submitBtnText.textContent = 'Generating Secure Link...';
+
         const response = await fetch('/api/secret', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -427,7 +737,9 @@
           throw new Error(data.error || 'Failed to create secret.');
         }
 
-        // Save active runtime state
+        submitBtnText.textContent = 'Vault Created ✓';
+
+        // Store active runtime data
         activeSecretData = data;
         activeSecretUrl = data.view_url;
         activeSecretText = secretText;
@@ -455,16 +767,12 @@
           btnDownloadHtmlVault.querySelector('span').textContent = 'Download Portable Vault (.html)';
         }
 
-        // Setup Social Sharing Integrations (Enterprise Templates)
+        // Setup Social Sharing Links
         const shareText = `Confidential Ephemeral Secret:\nA self-destructing secret has been generated via Ephemeral Secret Vault.\n\nAccess Link: ${data.view_url}\n\nSecurity Notice: This link permanently self-destructs upon access.`;
 
-        // WhatsApp
         shareWhatsApp.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
-
-        // Microsoft Teams
         shareTeams.href = `https://teams.microsoft.com/share?href=${encodeURIComponent(data.view_url)}&msgText=${encodeURIComponent('A confidential self-destructing secret has been shared with you.')}`;
 
-        // Email
         const emailSubject = 'Secure Self-Destructing Secret Link';
         const emailBody = `Hello,\n\nA confidential secret has been shared with you via Ephemeral Secret Vault:\n\n${data.view_url}\n\nSecurity Notice: This secret is permanently erased from storage once viewed or upon expiration. No records are retained.\n`;
         shareEmail.href = `mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
@@ -474,21 +782,25 @@
         resultSection.classList.remove('hidden');
         resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       } catch (err) {
-        showError(err.message);
+        showError(err.message || 'Unable to create the vault. Please try again.');
       } finally {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = `${SVG_ICONS.lock} <span>Encrypt &amp; Generate Secure Link</span>`;
+        submitBtn.innerHTML = `
+          <svg class="svg-icon btn-icon-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <span id="submit-btn-text">Encrypt &amp; Generate Secure Link</span>
+          <svg class="svg-icon btn-arrow-right" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        `;
       }
     });
   }
 
-  // Copy link handler
+  // Copy Link Handler
   if (copyBtn) {
     copyBtn.addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText(linkOutput.value);
         copyBtn.innerHTML = `${SVG_ICONS.check} <span>Copied</span>`;
-        showToast('Link copied to clipboard');
+        showToast('✓ Secure link copied to clipboard');
         setTimeout(() => {
           copyBtn.innerHTML = `${SVG_ICONS.copy} <span>Copy Link</span>`;
         }, 2000);
@@ -496,7 +808,7 @@
         linkOutput.select();
         document.execCommand('copy');
         copyBtn.innerHTML = `${SVG_ICONS.check} <span>Copied</span>`;
-        showToast('Link copied to clipboard');
+        showToast('✓ Secure link copied to clipboard');
         setTimeout(() => {
           copyBtn.innerHTML = `${SVG_ICONS.copy} <span>Copy Link</span>`;
         }, 2000);
@@ -504,26 +816,26 @@
     });
   }
 
-  // Copy Fingerprint handler
+  // Copy Fingerprint Handler
   if (btnCopyFingerprint && fingerprintDisplay) {
     btnCopyFingerprint.addEventListener('click', async () => {
       const hash = fingerprintDisplay.textContent.trim();
       try {
         await navigator.clipboard.writeText(hash);
-        showToast('SHA-256 Digest copied');
+        showToast('✓ SHA-256 Digest copied');
       } catch {
         showToast('Failed to copy fingerprint');
       }
     });
   }
 
-  // Slack share handler
+  // Slack Share Handler
   if (shareSlack) {
     shareSlack.addEventListener('click', async () => {
       const slackSnippet = `*Encrypted Self-Destructing Secret*\nView Link: <${activeSecretUrl}>\n> _Notice: This secret self-destructs automatically once accessed._`;
       try {
         await navigator.clipboard.writeText(slackSnippet);
-        showToast('Slack-formatted link copied');
+        showToast('✓ Slack-formatted link copied');
       } catch {
         showToast('Failed to copy to clipboard');
       }
@@ -531,13 +843,13 @@
     });
   }
 
-  // Discord share handler
+  // Discord Share Handler
   if (shareDiscord) {
     shareDiscord.addEventListener('click', async () => {
       const discordSnippet = `**Ephemeral Secret Vault**\n> **Secret Link:** ${activeSecretUrl}\n> *Warning: This link will self-destruct and permanently delete upon access.*`;
       try {
         await navigator.clipboard.writeText(discordSnippet);
-        showToast('Discord markdown copied');
+        showToast('✓ Discord markdown copied');
       } catch {
         showToast('Failed to copy to clipboard');
       }
@@ -545,7 +857,7 @@
     });
   }
 
-  // Native share handler
+  // Native Share Handler
   if (shareNative) {
     shareNative.addEventListener('click', async () => {
       if (navigator.share) {
@@ -594,7 +906,7 @@
   <title>Portable Ephemeral Vault — ${packageTitle}</title>
   <style>
     :root {
-      --bg: #090d16;
+      --bg: #070a13;
       --card-bg: #0f172a;
       --border: rgba(56, 189, 248, 0.2);
       --cyan: #38bdf8;
@@ -696,15 +1008,6 @@
       word-break: break-all;
     }
     .hidden { display: none !important; }
-    .alert-danger {
-      background: rgba(239, 68, 68, 0.15);
-      border: 1px solid var(--danger);
-      color: #fca5a5;
-      padding: 0.75rem 1rem;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      margin-bottom: 1rem;
-    }
     .status-burned {
       margin-top: 1rem;
       text-align: center;
@@ -737,7 +1040,7 @@
       </div>
       <div class="meta-row">
         <span class="meta-label">Security Protocol:</span>
-        <span>AES-256-GCM / PBKDF2 Zero-Knowledge</span>
+        <span>AES-256-GCM Authenticated Encryption</span>
       </div>
     </div>
 
@@ -853,7 +1156,7 @@
       const blob = new Blob([portableHtml], { type: 'text/html;charset=utf-8' });
       const safeFileName = currentFile ? `${currentFile.name}.vault.html` : `vault-${activeSecretData.id.slice(0, 8)}.html`;
       triggerDownload(blob, safeFileName);
-      showToast(`Downloaded Portable Vault: ${safeFileName}`);
+      showToast(`✓ Downloaded Portable Vault: ${safeFileName}`);
     });
   }
 
@@ -886,11 +1189,11 @@
       const blob = new Blob([JSON.stringify(receipt, null, 2)], { type: 'application/json;charset=utf-8' });
       const filename = `vault-${activeSecretData.id.slice(0, 8)}.vault`;
       triggerDownload(blob, filename);
-      showToast(`Downloaded Cryptographic Capsule: ${filename}`);
+      showToast(`✓ Downloaded Cryptographic Capsule: ${filename}`);
     });
   }
 
-  // Reset form
+  // Reset Form
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
       createForm.reset();
@@ -914,55 +1217,93 @@
         panelDeliveryFile.classList.add('hidden');
       }
 
-      updateByteCounter();
+      updateByteCounterAndIndicators();
+      updateExpiryLivePreview();
+      updateSecurityScore();
+
       resultSection.classList.add('hidden');
       createForm.classList.remove('hidden');
       hideError();
     });
   }
 
-  // Modal System
+  // ==========================================================================
+  // Modal Dialogs System
+  // ==========================================================================
   function openModal(id) {
     const modal = document.getElementById(id);
     if (modal) modal.classList.add('active');
   }
 
   function closeAllModals() {
-    document.querySelectorAll('.modal-overlay').forEach(modal => {
+    document.querySelectorAll('.modal-overlay').forEach((modal) => {
       modal.classList.remove('active');
     });
   }
 
-  if (navHowItWorks) {
-    navHowItWorks.addEventListener('click', (e) => {
+  if (document.getElementById('nav-how-it-works')) {
+    document.getElementById('nav-how-it-works').addEventListener('click', (e) => {
       e.preventDefault();
       openModal('modal-how-it-works');
     });
   }
 
-  if (navSecurity) {
-    navSecurity.addEventListener('click', (e) => {
+  if (document.getElementById('nav-security')) {
+    document.getElementById('nav-security').addEventListener('click', (e) => {
       e.preventDefault();
       openModal('modal-security');
     });
   }
 
-  if (navFeatures) {
-    navFeatures.addEventListener('click', (e) => {
+  if (document.getElementById('nav-features')) {
+    document.getElementById('nav-features').addEventListener('click', (e) => {
       e.preventDefault();
       openModal('modal-features');
     });
   }
 
-  if (navFaq) {
-    navFaq.addEventListener('click', (e) => {
+  if (document.getElementById('nav-faq')) {
+    document.getElementById('nav-faq').addEventListener('click', (e) => {
       e.preventDefault();
       openModal('modal-faq');
     });
   }
 
+  if (navHelp) {
+    navHelp.addEventListener('click', (e) => {
+      e.preventDefault();
+      openModal('modal-security');
+    });
+  }
+
+  // Footer & Mobile modal hooks
+  const footerHow = document.getElementById('footer-how');
+  if (footerHow) footerHow.addEventListener('click', (e) => { e.preventDefault(); openModal('modal-how-it-works'); });
+
+  const footerSec = document.getElementById('footer-security');
+  if (footerSec) footerSec.addEventListener('click', (e) => { e.preventDefault(); openModal('modal-security'); });
+
+  const footerFeat = document.getElementById('footer-features');
+  if (footerFeat) footerFeat.addEventListener('click', (e) => { e.preventDefault(); openModal('modal-features'); });
+
+  const footerFaq = document.getElementById('footer-faq');
+  if (footerFaq) footerFaq.addEventListener('click', (e) => { e.preventDefault(); openModal('modal-faq'); });
+
+  // Mobile menu items
+  const mobHow = document.getElementById('mobile-nav-how');
+  if (mobHow) mobHow.addEventListener('click', (e) => { e.preventDefault(); mobileNavDrawer.classList.add('hidden'); openModal('modal-how-it-works'); });
+
+  const mobSec = document.getElementById('mobile-nav-security');
+  if (mobSec) mobSec.addEventListener('click', (e) => { e.preventDefault(); mobileNavDrawer.classList.add('hidden'); openModal('modal-security'); });
+
+  const mobFeat = document.getElementById('mobile-nav-features');
+  if (mobFeat) mobFeat.addEventListener('click', (e) => { e.preventDefault(); mobileNavDrawer.classList.add('hidden'); openModal('modal-features'); });
+
+  const mobFaq = document.getElementById('mobile-nav-faq');
+  if (mobFaq) mobFaq.addEventListener('click', (e) => { e.preventDefault(); mobileNavDrawer.classList.add('hidden'); openModal('modal-faq'); });
+
   // Close modals on overlay / close button click
-  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  document.querySelectorAll('.modal-overlay').forEach((overlay) => {
     overlay.addEventListener('click', (e) => {
       if (e.target === overlay || e.target.classList.contains('modal-close-btn')) {
         overlay.classList.remove('active');
@@ -975,6 +1316,8 @@
     if (e.key === 'Escape') closeAllModals();
   });
 
-  // Initial byte count setup
-  updateByteCounter();
+  // Initial runs
+  updateByteCounterAndIndicators();
+  updateExpiryLivePreview();
+  updateSecurityScore();
 })();
