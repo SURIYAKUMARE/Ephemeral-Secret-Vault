@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="referrer" content="no-referrer">
+  <meta property="og:title" content="Ephemeral Secret Vault">
+  <meta property="og:description" content="Share end-to-end encrypted, self-destructing secrets with zero trace.">
+  <meta property="og:type" content="website">
+  <title>Ephemeral Secret Vault - Create Secret</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="vault-logo">🔒</div>
+      <h1>Ephemeral Secret Vault</h1>
+      <p class="subtitle">Self-destructing, zero-trace secret sharing</p>
+    </header>
+
+    <main class="card">
+      <div id="error-alert" class="alert alert-danger hidden" role="alert">
+        <span id="error-message"></span>
+      </div>
+
+      <form id="create-form">
+        <div class="form-group">
+          <label for="secret-input">
+            Secret Content
+            <span class="char-count" id="byte-counter">0 / 10,240 bytes</span>
+          </label>
+          <textarea
+            id="secret-input"
+            name="secret"
+            placeholder="Paste passwords, API keys, private tokens, or confidential notes here..."
+            required
+            maxlength="10240"
+            spellcheck="false"
+            autofocus
+          ></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="ttl-select">Lifetime (TTL)</label>
+            <select id="ttl-select" name="ttl_seconds">
+              <option value="600">10 Minutes</option>
+              <option value="3600" selected>1 Hour</option>
+              <option value="43200">12 Hours</option>
+              <option value="86400">24 Hours</option>
+              <option value="604800">7 Days</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="views-input">Max Views</label>
+            <input
+              type="number"
+              id="views-input"
+              name="max_views"
+              min="1"
+              max="10"
+              value="1"
+              required
+            >
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="passphrase-input">Optional Passphrase Protection</label>
+          <input
+            type="password"
+            id="passphrase-input"
+            name="passphrase"
+            placeholder="Optional passphrase required to decrypt"
+            autocomplete="new-password"
+          >
+        </div>
+
+        <button type="submit" id="submit-btn" class="btn btn-primary">
+          <span>Create Secret Link</span>
+        </button>
+      </form>
+
+      <section id="result-section" class="hidden">
+        <div class="alert alert-success">
+          <strong>Secret created!</strong> The link below will self-destruct once viewed.
+        </div>
+
+        <div class="form-group">
+          <label for="link-output">Shareable Secret URL</label>
+          <div class="copy-input-group">
+            <input type="text" id="link-output" readonly>
+            <button type="button" id="copy-btn" class="btn btn-secondary">Copy Link</button>
+          </div>
+        </div>
+
+        <div class="meta-box">
+          <div class="meta-row">
+            <span class="meta-label">Expires At:</span>
+            <span class="meta-value" id="expires-display">-</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Allowed Views:</span>
+            <span class="meta-value" id="views-display">-</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Audit Fingerprint (SHA-256):</span>
+          </div>
+          <div class="fingerprint-text" id="fingerprint-display">-</div>
+        </div>
+
+        <button type="button" id="reset-btn" class="btn btn-secondary">Create Another Secret</button>
+      </section>
+    </main>
+
+    <footer class="footer">
+      AES-256-GCM encrypted • Zero-trace SQLite WAL • Hard physical row deletion
+    </footer>
+  </div>
+
+  <script src="/create.js"></script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="referrer" content="no-referrer">
+  <meta property="og:title" content="Ephemeral Secret Vault">
+  <meta property="og:description" content="This secure secret link will self-destruct once viewed.">
+  <meta property="og:type" content="website">
+  <title>Ephemeral Secret Vault - View Secret</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="vault-logo" aria-hidden="true">🔐</div>
+      <h1>SECURE SECRET</h1>
+      <p class="subtitle">You have been sent a secure, self-destructing secret.</p>
+    </header>
+
+    <main class="card" id="vault-card"
+      data-id="{{ID}}"
+      data-expires="{{EXPIRES_ISO}}"
+      data-views="{{VIEWS_REMAINING}}"
+      data-has-passphrase="{{HAS_PASSPHRASE}}">
+
+      <div id="error-alert" class="alert alert-danger hidden" role="alert" aria-live="assertive">
+        <span id="error-message"></span>
+      </div>
+
+      <!-- Pre-reveal Safe Landing Screen -->
+      <section id="splash-section" aria-label="Pre-reveal notification">
+        <div class="alert alert-warning">
+          <strong>Notice:</strong> Once revealed, this secret will be permanently destroyed.
+        </div>
+
+        <div class="meta-box">
+          <div class="meta-row">
+            <span class="meta-label">Expires:</span>
+            <span class="meta-value" id="expires-text">{{EXPIRES_AT}}</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Views Remaining:</span>
+            <span class="meta-value" id="views-text">
+              <span class="badge {{BADGE_CLASS}}">{{VIEWS_REMAINING}} remaining</span>
+            </span>
+          </div>
+        </div>
+
+        <div id="passphrase-container" class="form-group {{PASSPHRASE_CLASS}}">
+          <label for="view-passphrase">Passphrase Required</label>
+          <input
+            type="password"
+            id="view-passphrase"
+            placeholder="Enter passphrase to decrypt"
+            autocomplete="current-password"
+          >
+        </div>
+
+        <p class="subtitle" style="margin-bottom: 1.5rem; text-align: center;">
+          The plaintext secret is not loaded in this page. Clicking below will issue an authenticated request to decrypt and permanently burn it.
+        </p>
+
+        <button type="button" id="burn-btn" class="btn btn-danger">
+          <span>Reveal & Destroy Secret</span>
+        </button>
+      </section>
+
+      <!-- Post-reveal Revealed Section -->
+      <section id="revealed-section" class="hidden" aria-label="Revealed secret">
+        <div id="burn-status-alert" class="alert alert-danger">
+          <strong id="burn-status-title">SECRET REVEALED</strong>
+          <span id="burn-status-desc">This secret has now been destroyed and cannot be retrieved again.</span>
+        </div>
+
+        <div class="form-group">
+          <label for="secret-display">Decrypted Secret</label>
+          <pre id="secret-display" class="secret-display" tabindex="0"></pre>
+        </div>
+
+        <div class="copy-input-group">
+          <button type="button" id="copy-secret-btn" class="btn btn-primary">
+            Copy Secret
+          </button>
+          <button type="button" id="download-secret-btn" class="btn btn-secondary" title="Download secret as a local file">
+            📥 Download as File
+          </button>
+        </div>
+      </section>
+
+      <!-- Fallback 404 / Gone State -->
+      <section id="destroyed-section" class="hidden" aria-label="Secret unavailable">
+        <div class="alert alert-danger">
+          <strong>Secret Unavailable</strong>
+          <p style="margin-top: 0.5rem;">Secret not found, expired, or already destroyed.</p>
+        </div>
+        <a href="/" class="btn btn-secondary">Create a New Secret</a>
+      </section>
+    </main>
+
+    <footer class="footer">
+      Zero traces remain after destruction • AES-256-GCM authenticated
+      <div style="margin-top: 0.5rem; display: flex; justify-content: center; gap: 1.5rem;">
+        <a href="/images/workflow-diagram.jpg" target="_blank" style="color:var(--text-muted);text-decoration:underline;font-size:0.75rem;">Architecture Workflow Diagram</a>
+        <a href="/images/vault-ui-screenshot.png" target="_blank" style="color:var(--text-muted);text-decoration:underline;font-size:0.75rem;">UI Design Overview</a>
+      </div>
+    </footer>
+  </div>
+
+  <script src="/js/view.js"></script>
+</body>
+</html>

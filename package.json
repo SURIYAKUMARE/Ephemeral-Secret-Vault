@@ -1,0 +1,38 @@
+{
+  "name": "ephemeral-secret-vault",
+  "version": "1.0.0",
+  "description": "Production-grade, self-destructing, zero-trace secret-sharing vault",
+  "main": "src/server.js",
+  "bin": {
+    "vault-cli": "./scripts/vault-cli.js"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test \"tests/*.test.js\"",
+    "test:race": "node --test \"tests/race.test.js\"",
+    "bench": "node scripts/bench.js",
+    "gen-key": "node scripts/gen-key.js"
+  },
+  "keywords": [
+    "secret-sharing",
+    "self-destruct",
+    "zero-trace",
+    "ephemeral",
+    "aes-gcm",
+    "sqlite-wal"
+  ],
+  "author": "",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "@fastify/rate-limit": "^11.2.0",
+    "@fastify/static": "^10.1.4",
+    "better-sqlite3": "^13.0.3",
+    "dotenv": "^18.0.3",
+    "express": "^5.2.1",
+    "fastify": "^5.12.5"
+  },
+  "devDependencies": {
+    "autocannon": "^8.0.0"
+  }
+}
