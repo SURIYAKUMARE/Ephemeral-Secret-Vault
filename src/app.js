@@ -14,7 +14,7 @@ app.use((req, res, next) => {
   res.setHeader('Referrer-Policy', 'no-referrer');
   res.setHeader(
     'Content-Security-Policy',
-    "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'"
+    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'"
   );
   next();
 });
@@ -22,8 +22,8 @@ app.use((req, res, next) => {
 // Bot defense middleware
 app.use(botGuard);
 
-// Strict 16 KB body limit
-app.use(express.json({ limit: '16kb' }));
+// 15 MB body limit to support encrypted file attachments (images, pdfs, docs, code)
+app.use(express.json({ limit: '15mb' }));
 
 // Static assets (CSS, JS)
 app.use('/css', express.static(path.join(publicDir, 'css')));

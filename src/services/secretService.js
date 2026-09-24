@@ -14,14 +14,30 @@ const logger = require('../utils/logger');
  * @param {string} [params.passphrase]
  * @returns {object} { id, view_url, expires_at, views_remaining, fingerprint }
  */
-function createSecret({ secret, ttlSeconds = 3600, maxViews = 1, passphrase = null }) {
+function createSecret({ secret, file = null, ttlSeconds = 3600, maxViews = 1, passphrase = null }) {
   const db = getDb();
   const id = generateId();
   const now = Date.now();
   const expiresAt = now + ttlSeconds * 1000;
 
+  let contentToEncrypt;
+  if (file && typeof file === 'object' && file.data) {
+    contentToEncrypt = JSON.stringify({
+      __vault_payload: true,
+      text: typeof secret === 'string' ? secret : '',
+      file: {
+        name: file.name,
+        type: file.type || 'application/octet-stream',
+        size: file.size,
+        data: file.data
+      }
+    });
+  } else {
+    contentToEncrypt = secret;
+  }
+
   // AES-256-GCM encryption with record ID bound as AAD
-  const { ciphertext, iv, authTag } = encrypt(secret, id);
+  const { ciphertext, iv, authTag } = encrypt(contentToEncrypt, id);
 
   let passphraseHash = null;
   let passphraseSalt = null;
@@ -57,7 +73,7 @@ function createSecret({ secret, ttlSeconds = 3600, maxViews = 1, passphrase = nu
     view_url: `${baseUrl}/view/${id}`,
     expires_at: new Date(expiresAt).toISOString(),
     views_remaining: maxViews,
-    fingerprint: getFingerprint(secret)
+    fingerprint: getFingerprint(contentToEncrypt)
   };
 }
 
@@ -160,8 +176,21 @@ function claimAndBurnSecret(id, passphrase = null, now = Date.now()) {
   try {
     const plaintext = decrypt(claimResult.ciphertext, claimResult.iv, claimResult.auth_tag, id);
     logger.info('Secret consumed', { id, viewsRemaining: claimResult.views_remaining, burned: claimResult.views_remaining === 0 });
+
+    let finalSecret = plaintext;
+    let finalFile = null;
+
+    if (typeof plaintext === 'string' && plaintext.startsWith('{"__vault_payload":true,')) {
+      try {
+        const parsed = JSON.parse(plaintext);
+        finalSecret = parsed.text || (parsed.file ? `[Attached File: ${parsed.file.name}]` : '');
+        finalFile = parsed.file || null;
+      } catch {}
+    }
+
     return {
-      secret: plaintext,
+      secret: finalSecret,
+      file: finalFile,
       views_remaining: claimResult.views_remaining,
       burned: claimResult.views_remaining === 0
     };

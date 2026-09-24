@@ -6,9 +6,9 @@
   <meta name="robots" content="noindex, nofollow, noarchive">
   <meta name="referrer" content="no-referrer">
   <meta property="og:title" content="Ephemeral Secret Vault">
-  <meta property="og:description" content="This secure secret link will self-destruct once viewed.">
+  <meta property="og:description" content="This secure secret link will permanently self-destruct once viewed.">
   <meta property="og:type" content="website">
-  <title>Ephemeral Secret Vault - View Secret</title>
+  <title>Ephemeral Secret Vault — Secure Self-Destructing Secret</title>
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
@@ -32,7 +32,8 @@
       <!-- Pre-reveal Safe Landing Screen -->
       <section id="splash-section" aria-label="Pre-reveal notification">
         <div class="alert alert-warning">
-          <strong>Notice:</strong> Once revealed, this secret will be permanently destroyed.
+          <strong>🔥 Self-Destruction Warning:</strong>
+          <span>Once revealed, this secret will be permanently destroyed from storage. Zero copies will remain.</span>
         </div>
 
         <div class="meta-box">
@@ -41,7 +42,7 @@
             <span class="meta-value" id="expires-text">{{EXPIRES_AT}}</span>
           </div>
           <div class="meta-row">
-            <span class="meta-label">Views Remaining:</span>
+            <span class="meta-label">Remaining Views:</span>
             <span class="meta-value" id="views-text">
               <span class="badge {{BADGE_CLASS}}">{{VIEWS_REMAINING}} remaining</span>
             </span>
@@ -55,10 +56,11 @@
             id="view-passphrase"
             placeholder="Enter passphrase to decrypt"
             autocomplete="current-password"
+            autofocus
           >
         </div>
 
-        <p class="subtitle" style="margin-bottom: 1.5rem; text-align: center;">
+        <p class="subtitle" style="margin-bottom: 1.5rem; text-align: center; font-size: 0.88rem;">
           The plaintext secret is not loaded in this page. Clicking below will issue an authenticated request to decrypt and permanently burn it.
         </p>
 
@@ -70,22 +72,48 @@
       <!-- Post-reveal Revealed Section -->
       <section id="revealed-section" class="hidden" aria-label="Revealed secret">
         <div id="burn-status-alert" class="alert alert-danger">
-          <strong id="burn-status-title">SECRET REVEALED</strong>
-          <span id="burn-status-desc">This secret has now been destroyed and cannot be retrieved again.</span>
+          <strong id="burn-status-title">🔥 SECRET REVEALED & DESTROYED</strong>
+          <span id="burn-status-desc">This secret has now been permanently erased from the vault with zero-overwriting.</span>
         </div>
 
-        <div class="form-group">
-          <label for="secret-display">Decrypted Secret</label>
+        <!-- Attached File View (if present) -->
+        <div id="revealed-file-box" class="revealed-file-card hidden">
+          <div class="revealed-file-header">
+            <div id="revealed-file-icon" class="revealed-file-icon">📄</div>
+            <div class="revealed-file-details">
+              <div id="revealed-file-name" class="revealed-file-name">filename.ext</div>
+              <div id="revealed-file-meta" class="revealed-file-size">0 KB</div>
+            </div>
+          </div>
+
+          <!-- Inline Image Preview (if image) -->
+          <div id="image-preview-container" class="hidden" style="text-align: center;">
+            <img id="revealed-image" class="revealed-image-preview" alt="Decrypted Image Preview">
+          </div>
+
+          <!-- Primary Download Button for File -->
+          <button type="button" id="download-file-btn" class="btn btn-primary">
+            <span>📥 Download File</span>
+          </button>
+        </div>
+
+        <!-- Text Secret Display -->
+        <div id="text-display-group" class="form-group">
+          <label id="secret-text-label" for="secret-display">Decrypted Secret Content</label>
           <pre id="secret-display" class="secret-display" tabindex="0"></pre>
+
+          <div class="copy-input-group">
+            <button type="button" id="copy-secret-btn" class="btn btn-secondary">
+              📋 Copy Text
+            </button>
+            <button type="button" id="download-text-btn" class="btn btn-secondary" title="Save text as a file">
+              📥 Save Text as File
+            </button>
+          </div>
         </div>
 
-        <div class="copy-input-group">
-          <button type="button" id="copy-secret-btn" class="btn btn-primary">
-            Copy Secret
-          </button>
-          <button type="button" id="download-secret-btn" class="btn btn-secondary" title="Download secret as a local file">
-            📥 Download as File
-          </button>
+        <div style="margin-top: 1.5rem;">
+          <a href="/" class="btn btn-secondary">🔒 Create a New Secret</a>
         </div>
       </section>
 
@@ -95,9 +123,14 @@
           <strong>Secret Unavailable</strong>
           <p style="margin-top: 0.5rem;">Secret not found, expired, or already destroyed.</p>
         </div>
-        <a href="/" class="btn btn-secondary">Create a New Secret</a>
+        <a href="/" class="btn btn-secondary">🔒 Create a New Secret</a>
       </section>
     </main>
+
+    <!-- Floating Feedback Toast -->
+    <div id="toast" class="toast" role="status" aria-live="polite">
+      <span id="toast-message">Copied to clipboard!</span>
+    </div>
 
     <footer class="footer">
       Zero traces remain after destruction • AES-256-GCM authenticated

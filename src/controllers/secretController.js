@@ -16,9 +16,10 @@ function health(req, res) {
  */
 function createSecret(req, res, next) {
   try {
-    const { secret, ttl_seconds, max_views, passphrase } = req.body;
+    const { secret, file, ttl_seconds, max_views, passphrase } = req.body;
     const result = secretService.createSecret({
       secret,
+      file,
       ttlSeconds: ttl_seconds,
       maxViews: max_views,
       passphrase
@@ -92,6 +93,7 @@ function burnSecret(req, res, next) {
 
     return res.status(200).json({
       secret: result.secret,
+      file: result.file || undefined,
       views_remaining: result.views_remaining,
       burned: result.burned
     });

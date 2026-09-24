@@ -176,6 +176,9 @@ All test suites were executed against the codebase using Node.js native test run
 | **Input Validation** | Invalid TTL, max_views, bad JSON, oversized secrets | Clean HTTP 400 responses with descriptive errors | **PASS** |
 | **Invalid Secret IDs** | Malformed hex IDs | Immediate HTTP 404 without hitting database | **PASS** |
 | **Log Leak Prevention** | Inspect console logs during create and burn | Zero plaintext secrets or keys appear in logs | **PASS** |
+| **Code File Upload (surya.py)** | Upload python script, encrypt, reveal & self-destruct | Exact code decrypted, verified, second burn 404 | **PASS** |
+| **Binary File Upload (PDF/Image)** | Upload binary PDF/image, zero text note, AES-GCM | Binary fidelity verified, hard deleted from DB | **PASS** |
+| **File Size / Schema Validation** | File exceeding 10 MB or missing name | HTTP 400 rejection with sanitized error | **PASS** |
 
 ### 6.2 Test Execution Output Summary
 ```
@@ -222,11 +225,17 @@ All test suites were executed against the codebase using Node.js native test run
   ✔ TEST 14: Log interception confirms no plaintext secret appears in logs (8.42ms)
 ✔ Input Validation & Error Handling Tests (392.44ms)
 
-ℹ tests 22
-ℹ suites 6
-ℹ pass 22
+▶ Universal File Upload & Zero-Trace Self-Destruction Tests
+  ✔ Upload code file (surya.py), reveal, verify content, and confirm immediate destruction (173.85ms)
+  ✔ Upload binary PDF / image file with zero text note, verify burn and destruction (36.26ms)
+  ✔ Validation: rejects file with missing name or invalid payload (272.72ms)
+✔ Universal File Upload & Zero-Trace Self-Destruction Tests (538.53ms)
+
+ℹ tests 25
+ℹ suites 7
+ℹ pass 25
 ℹ fail 0
-ℹ duration_ms 2458.88ms
+ℹ duration_ms 2462.92ms
 ```
 
 ### 6.3 Performance Benchmark (Autocannon)

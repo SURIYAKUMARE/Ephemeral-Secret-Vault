@@ -57,13 +57,16 @@ Standard communication channels (Slack, email, chat, ticket comments) leave pers
 ## 2. Features
 
 - **Authenticated Encryption:** AES-256-GCM using Node.js `node:crypto`. Fresh 96-bit random IV per secret, 128-bit authentication tag, and record ID bound as Additional Authenticated Data (AAD) to prevent ciphertext transplantation between rows.
+- **Universal File Upload (Up to 10 MB):** Encrypts and securely shares any file type — images (`.png`, `.jpg`, `.webp`), documents (`.pdf`, `.docx`, `.xlsx`), source code and scripts (`surya.py`, `.env`, `.js`, `.json`), keys (`.pem`, `.key`), and binaries. Files are encrypted in-memory and never written unencrypted to disk.
+- **1-Click Messaging Integrations:** Automated instant sharing to **WhatsApp**, **Slack**, **Microsoft Teams**, **Discord**, and **Email** with pre-filled self-destruction warnings and secure links.
 - **Atomic Concurrency Protection:** Single-statement atomic burn (`UPDATE secrets SET views_remaining = views_remaining - 1 WHERE id = ? AND views_remaining > 0 ... RETURNING ...`) in an ACID transaction.
-- **Scraper Defense:** Reusable bot detection middleware intercepts link expanders and serves static HTML shells with generic OpenGraph tags without querying or touching SQLite.
+- **Scraper Defense:** Reusable bot detection middleware intercepts link expanders (Slackbot, Twitterbot, Discordbot, WhatsApp, Facebook, Telegram) and serves static HTML shells without querying SQLite.
 - **Automatic Sweeper:** In-process background worker runs every 10–30s to purge expired secrets and executes `PRAGMA wal_checkpoint(TRUNCATE)` to eliminate residual transaction bytes.
 - **Zero-Trace SQLite Storage:** Hard `DELETE` operations combined with `PRAGMA secure_delete = ON` ensure database blocks are physically zeroed out upon record deletion.
-- **CLI & Stdin Integration:** Supports piping secrets from command line or files into `node scripts/vault-cli.js`.
+- **Recipient File Viewer & Download:** On reveal, renders inline image previews, syntax-formatted code displays (for python scripts like `surya.py`), and provides a 1-click download button preserving the original filename and binary fidelity.
+- **CLI & Stdin Integration:** Supports piping secrets and files from command line into `node scripts/vault-cli.js`.
 - **Passphrase & Audit Fingerprint:** Optional scrypt passphrase verification per record and SHA-256 integrity fingerprinting.
-- **Zero-CDN Frontend:** Responsive, accessible, cybersecurity-themed UI built with semantic HTML5, CSS3, and vanilla modern JavaScript.
+- **Zero-CDN Frontend:** Responsive, accessible, cybersecurity-themed UI built with semantic HTML5, modern CSS3, and vanilla JavaScript.
 
 ---
 

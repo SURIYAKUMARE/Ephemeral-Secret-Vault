@@ -6,9 +6,9 @@
   <meta name="robots" content="noindex, nofollow, noarchive">
   <meta name="referrer" content="no-referrer">
   <meta property="og:title" content="Ephemeral Secret Vault">
-  <meta property="og:description" content="Share sensitive information securely. Secrets are encrypted, time-limited, and destroyed after use.">
+  <meta property="og:description" content="Share sensitive text & files securely. AES-256-GCM encrypted, time-limited, and automatically destroyed after viewing.">
   <meta property="og:type" content="website">
-  <title>Ephemeral Secret Vault</title>
+  <title>Ephemeral Secret Vault — Self-Destructing Secret & File Sharing</title>
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
@@ -16,7 +16,7 @@
     <header class="header">
       <div class="vault-logo" aria-hidden="true">🔒</div>
       <h1>EPHEMERAL SECRET VAULT</h1>
-      <p class="subtitle">Share sensitive information securely. Secrets are encrypted, time-limited, and destroyed after use.</p>
+      <p class="subtitle">Share credentials, private keys, or any files securely. Encrypted at rest with AES-256-GCM and permanently destroyed after viewing.</p>
     </header>
 
     <main class="card" role="main">
@@ -24,115 +24,177 @@
         <span id="error-message"></span>
       </div>
 
-      <form id="create-form" aria-label="Create a secure secret">
-        <div class="form-group">
+      <form id="create-form" aria-label="Create a secure secret or share a file">
+        <!-- Input Mode Switcher -->
+        <div class="tab-container" role="tablist">
+          <button type="button" class="tab-btn active" id="tab-text" role="tab" aria-selected="true">
+            <span>📝 Secret Text / Notes</span>
+          </button>
+          <button type="button" class="tab-btn" id="tab-file" role="tab" aria-selected="false">
+            <span>📁 Upload Any File (Images, PDF, Code)</span>
+          </button>
+        </div>
+
+        <!-- Text Secret Section -->
+        <div id="text-section" class="form-group">
           <label for="secret-input">
-            SECRET
+            SECRET TEXT / CREDENTIALS
             <span class="char-count" id="byte-counter" aria-live="polite">0 / 10,240 bytes</span>
           </label>
           <textarea
             id="secret-input"
             name="secret"
-            placeholder="Paste temporary passwords, credentials, API keys, private tokens, or confidential text here..."
-            required
-            maxlength="10240"
+            placeholder="Paste temporary passwords, credentials, API keys, private tokens, .env variables, or confidential notes..."
             spellcheck="false"
             autofocus
-            aria-describedby="byte-counter"
           ></textarea>
+        </div>
 
-          <div class="file-upload-bar">
-            <input type="file" id="file-input" class="hidden-file-input" accept=".env,.txt,.json,.key,.pem,.cert,.yaml,.yml,.sh,*/*">
-            <button type="button" id="upload-file-btn" class="btn-file" title="Upload a file up to 10 KB">
-              📁 Upload File (.env, cert, key, txt)
-            </button>
-            <span class="subtitle" style="font-size: 0.8rem;">or drag & drop a file directly</span>
-            <div id="file-badge" class="badge badge-success hidden file-badge">
-              <span id="file-badge-text"></span>
-              <button type="button" id="file-remove-btn" title="Remove attached file" aria-label="Remove file">&times;</button>
+        <!-- File Upload Dropzone -->
+        <div id="file-dropzone-group" class="form-group">
+          <label>
+            ATTACH CONFIDENTIAL FILE (OPTIONAL OR STANDALONE)
+            <span class="char-count">Images, PDF, DOCX, Code, etc. up to 10 MB</span>
+          </label>
+          
+          <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="File upload dropzone">
+            <input type="file" id="file-input" class="hidden-file-input" accept="*/*">
+            <div class="dropzone-icon" id="dropzone-icon">📥</div>
+            <div class="dropzone-title">Click or drag & drop any file here</div>
+            <div class="dropzone-hint">Supports photos, PDF documents, DOCX, Python (surya.py), certificates, archives, and binaries</div>
+          </div>
+
+          <!-- File Selected Preview Card -->
+          <div id="file-preview-card" class="file-preview-card hidden">
+            <img id="file-thumb" class="file-preview-thumb hidden" alt="Thumbnail preview">
+            <div id="file-icon" class="file-preview-icon">📄</div>
+            <div class="file-preview-info">
+              <div id="file-name" class="file-preview-name">filename.ext</div>
+              <div id="file-meta" class="file-preview-meta">
+                <span id="file-size">0 KB</span> • <span id="file-type">text/plain</span>
+              </div>
             </div>
+            <button type="button" id="btn-remove-file" class="btn-remove-file" title="Remove attached file" aria-label="Remove file">&times;</button>
           </div>
         </div>
 
+        <!-- Configuration Grid -->
         <div class="form-row">
           <div class="form-group">
-            <label for="ttl-select">Expiration</label>
+            <label for="ttl-select">Expiration (TTL)</label>
             <select id="ttl-select" name="ttl_seconds">
               <option value="60">1 minute</option>
               <option value="300">5 minutes</option>
               <option value="900">15 minutes</option>
               <option value="3600" selected>1 hour</option>
               <option value="86400">24 hours</option>
+              <option value="604800">7 days</option>
             </select>
           </div>
 
           <div class="form-group">
             <label for="views-select">Maximum Views</label>
             <select id="views-select" name="max_views">
-              <option value="1" selected>1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="5">5</option>
+              <option value="1" selected>1 view (Self-destruct on view)</option>
+              <option value="2">2 views</option>
+              <option value="3">3 views</option>
+              <option value="5">5 views</option>
+              <option value="10">10 views</option>
             </select>
           </div>
         </div>
 
+        <!-- Optional Passphrase Protection -->
         <div class="form-group">
-          <label for="passphrase-input">Optional Passphrase Protection</label>
+          <label for="passphrase-input">Optional Passphrase (Zero-Knowledge Protection)</label>
           <input
             type="password"
             id="passphrase-input"
             name="passphrase"
-            placeholder="Optional passphrase required to decrypt"
+            placeholder="Optional passphrase required by recipient to decrypt"
             autocomplete="new-password"
           >
         </div>
 
         <button type="submit" id="submit-btn" class="btn btn-primary">
-          <span>Create Secure Secret</span>
+          <span>🔒 Encrypt & Generate Self-Destructing Link</span>
         </button>
       </form>
 
+      <!-- Result Screen -->
       <section id="result-section" class="hidden" aria-label="Secret creation results">
         <div class="alert alert-success">
-          <strong>Secret Created Successfully</strong>
-          <span>The link below is ready to share. It will self-destruct once viewed or expired.</span>
+          <strong>Vault Sealed Successfully!</strong>
+          <span>Encrypted with AES-256-GCM. The link will be permanently destroyed once viewed.</span>
         </div>
 
         <div class="form-group">
-          <label for="link-output">Secure View URL</label>
+          <label for="link-output">Self-Destructing Secret Link</label>
           <div class="copy-input-group">
             <input type="text" id="link-output" readonly aria-label="Generated secret view URL">
             <button type="button" id="copy-btn" class="btn btn-secondary">Copy Link</button>
-            <a id="open-link-btn" href="#" target="_blank" class="btn btn-secondary" style="width: auto; text-decoration: none;" title="Open link in new tab">Open Link</a>
+            <a id="open-link-btn" href="#" target="_blank" class="btn btn-secondary" title="Open secret in new tab">Open Link</a>
           </div>
         </div>
 
+        <!-- Automated Messaging & Social Sharing Hub -->
+        <div class="share-hub">
+          <div class="share-hub-header">
+            <span>🚀 Send Link Directly via App:</span>
+          </div>
+          <div class="share-grid">
+            <a id="share-whatsapp" href="#" target="_blank" class="share-btn share-whatsapp" title="Share via WhatsApp">
+              <span>💬 WhatsApp</span>
+            </a>
+            <button type="button" id="share-slack" class="share-btn share-slack" title="Copy formatted message & open Slack">
+              <span>🟣 Slack</span>
+            </button>
+            <a id="share-teams" href="#" target="_blank" class="share-btn share-teams" title="Share via Microsoft Teams">
+              <span>💼 MS Teams</span>
+            </a>
+            <button type="button" id="share-discord" class="share-btn share-discord" title="Copy Discord markdown & open Discord">
+              <span>👾 Discord</span>
+            </button>
+            <a id="share-email" href="#" class="share-btn share-email" title="Share via Email">
+              <span>✉️ Email</span>
+            </a>
+            <button type="button" id="share-native" class="share-btn share-native hidden" title="Share using device apps">
+              <span>📲 Share App</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Metadata Box -->
         <div class="meta-box">
           <div class="meta-row">
             <span class="meta-label">Expires:</span>
             <span class="meta-value" id="expires-display">-</span>
           </div>
           <div class="meta-row">
-            <span class="meta-label">Maximum Views:</span>
+            <span class="meta-label">Allowed Views:</span>
             <span class="meta-value" id="views-display">-</span>
           </div>
           <div class="meta-row">
-            <span class="meta-label">Security Fingerprint (SHA-256):</span>
+            <span class="meta-label">Integrity Fingerprint (SHA-256):</span>
           </div>
           <div class="fingerprint-text" id="fingerprint-display">-</div>
         </div>
 
         <div class="alert alert-warning" style="margin-bottom: 1.5rem;">
-          <strong>Security Notice:</strong> The secret will not be displayed here again. Once the recipient opens the link and reveals the secret, it is permanently destroyed from storage.
+          <strong>Zero-Trace Guarantee:</strong> Once the recipient reveals the secret, it is automatically wiped with SQLite zero-overwriting (`secure_delete = ON`). It cannot be retrieved again from any backups or cache.
         </div>
 
         <button type="button" id="reset-btn" class="btn btn-secondary">Create Another Secret</button>
       </section>
     </main>
 
+    <!-- Floating Feedback Toast -->
+    <div id="toast" class="toast" role="status" aria-live="polite">
+      <span id="toast-message">Copied to clipboard!</span>
+    </div>
+
     <footer class="footer">
-      AES-256-GCM encrypted • Zero-trace SQLite WAL • Hard physical deletion
+      AES-256-GCM encrypted • Zero-trace SQLite WAL • Automatic Hard Deletion
       <div style="margin-top: 0.5rem; display: flex; justify-content: center; gap: 1.5rem;">
         <a href="/images/workflow-diagram.jpg" target="_blank" style="color:var(--text-muted);text-decoration:underline;font-size:0.75rem;">Architecture Workflow Diagram</a>
         <a href="/images/vault-ui-screenshot.png" target="_blank" style="color:var(--text-muted);text-decoration:underline;font-size:0.75rem;">UI Design Overview</a>
