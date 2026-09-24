@@ -29,8 +29,9 @@ function encrypt(plaintext, id, masterKey = validateAndGetMasterKey()) {
     throw new TypeError('Record ID must be a non-empty string');
   }
 
+  const keyBuf = Buffer.isBuffer(masterKey) ? masterKey : validateAndGetMasterKey(masterKey);
   const iv = crypto.randomBytes(IV_LENGTH);
-  const cipher = crypto.createCipheriv(ALGORITHM, masterKey, iv, { authTagLength: TAG_LENGTH });
+  const cipher = crypto.createCipheriv(ALGORITHM, keyBuf, iv, { authTagLength: TAG_LENGTH });
   cipher.setAAD(Buffer.from(id, 'utf8'));
 
   const ciphertext = Buffer.concat([
@@ -68,7 +69,8 @@ function decrypt(ciphertext, iv, authTag, id, masterKey = validateAndGetMasterKe
   }
 
   try {
-    const decipher = crypto.createDecipheriv(ALGORITHM, masterKey, iv, { authTagLength: TAG_LENGTH });
+    const keyBuf = Buffer.isBuffer(masterKey) ? masterKey : validateAndGetMasterKey(masterKey);
+    const decipher = crypto.createDecipheriv(ALGORITHM, keyBuf, iv, { authTagLength: TAG_LENGTH });
     decipher.setAAD(Buffer.from(id, 'utf8'));
     decipher.setAuthTag(authTag);
 
