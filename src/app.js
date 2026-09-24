@@ -4,8 +4,14 @@ const { botGuard } = require('./middleware/botGuard');
 const errorHandler = require('./middleware/errorHandler');
 const secretRoutes = require('./routes/secretRoutes');
 
+const fs = require('node:fs');
+
 const app = express();
-const publicDir = path.join(process.cwd(), 'public');
+app.enable('trust proxy');
+
+const publicDir = fs.existsSync(path.join(process.cwd(), 'public'))
+  ? path.join(process.cwd(), 'public')
+  : path.join(__dirname, '..', 'public');
 
 // Global security headers
 app.use((req, res, next) => {

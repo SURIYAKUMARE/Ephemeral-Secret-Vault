@@ -2,7 +2,9 @@ const fs = require('node:fs');
 const path = require('node:path');
 const secretService = require('../services/secretService');
 
-const publicDir = path.join(process.cwd(), 'public');
+const publicDir = fs.existsSync(path.join(process.cwd(), 'public'))
+  ? path.join(process.cwd(), 'public')
+  : path.join(__dirname, '..', '..', 'public');
 
 /**
  * Health check endpoint.
@@ -17,12 +19,22 @@ function health(req, res) {
 function createSecret(req, res, next) {
   try {
     const { secret, file, ttl_seconds, max_views, passphrase } = req.body;
+
+    // Auto-detect public URL from request headers (for Vercel / reverse proxies)
+    let requestBaseUrl;
+    const host = req.get('x-forwarded-host') || req.get('host');
+    if (host && !host.includes('localhost') && !host.includes('127.0.0.1')) {
+      const proto = req.get('x-forwarded-proto') || req.protocol || 'https';
+      requestBaseUrl = `${proto}://${host}`;
+    }
+
     const result = secretService.createSecret({
       secret,
       file,
       ttlSeconds: ttl_seconds,
       maxViews: max_views,
-      passphrase
+      passphrase,
+      customBaseUrl: requestBaseUrl
     });
     return res.status(201).json(result);
   } catch (err) {

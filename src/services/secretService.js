@@ -14,7 +14,7 @@ const logger = require('../utils/logger');
  * @param {string} [params.passphrase]
  * @returns {object} { id, view_url, expires_at, views_remaining, fingerprint }
  */
-function createSecret({ secret, file = null, ttlSeconds = 3600, maxViews = 1, passphrase = null }) {
+function createSecret({ secret, file = null, ttlSeconds = 3600, maxViews = 1, passphrase = null, customBaseUrl = null }) {
   const db = getDb();
   const id = generateId();
   const now = Date.now();
@@ -68,9 +68,11 @@ function createSecret({ secret, file = null, ttlSeconds = 3600, maxViews = 1, pa
 
   logger.info('Secret created', { id, maxViews, expiresAt });
 
+  const activeBaseUrl = (customBaseUrl || baseUrl).replace(/\/+$/, '');
+
   return {
     id,
-    view_url: `${baseUrl}/view/${id}`,
+    view_url: `${activeBaseUrl}/view/${id}`,
     expires_at: new Date(expiresAt).toISOString(),
     views_remaining: maxViews,
     fingerprint: getFingerprint(contentToEncrypt)
