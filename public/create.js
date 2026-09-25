@@ -58,6 +58,7 @@
   const linkOutput = document.getElementById('link-output');
   const copyBtn = document.getElementById('copy-btn');
   const openLinkBtn = document.getElementById('open-link-btn');
+  const openShareCenterBtn = document.getElementById('open-share-center-btn');
   const btnToggleQr = document.getElementById('btn-toggle-qr');
   const qrContainer = document.getElementById('qr-container');
   const qrFrame = document.querySelector('.qr-frame');
@@ -508,6 +509,9 @@
         // Populate Result Elements Safely
         if (linkOutput) linkOutput.value = activeSecretUrl;
         if (openLinkBtn) openLinkBtn.href = activeSecretUrl;
+        if (openShareCenterBtn && data.id) {
+          openShareCenterBtn.href = '/share/' + data.id;
+        }
         if (expiresDisplay && data.expires_at) {
           expiresDisplay.textContent = new Date(data.expires_at).toLocaleString();
         }
@@ -515,6 +519,21 @@
           const rem = data.views_remaining || 1;
           viewsDisplay.textContent = `${rem} view${rem > 1 ? 's' : ''}`;
         }
+
+        // Save anonymous metadata reference to local creator history (Zero Plaintext Guarantee)
+        try {
+          if (data && data.id) {
+            const hist = JSON.parse(localStorage.getItem('vault_created_history') || '[]');
+            hist.unshift({
+              id: data.id,
+              url: activeSecretUrl,
+              createdAt: Date.now(),
+              expiresAt: data.expires_at || (Date.now() + 3600000),
+              burned: false
+            });
+            localStorage.setItem('vault_created_history', JSON.stringify(hist.slice(0, 50)));
+          }
+        } catch (_) {}
 
         // Reveal Result Section
         createForm.classList.add('hidden');

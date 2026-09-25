@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="referrer" content="no-referrer">
+  <title>Creator Dashboard — Ephemeral Secret Vault</title>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body id="top">
+  <!-- Cyber Background Neon Arcs -->
+  <div class="cyber-background" aria-hidden="true">
+    <div class="neon-arc-left"></div>
+    <div class="neon-arc-left-glow"></div>
+    <div class="neon-arc-right"></div>
+    <div class="neon-arc-right-glow"></div>
+    <div class="reflective-floor"></div>
+  </div>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="/" class="nav-brand" title="Ephemeral Secret Vault">
+        <img src="/images/logo-icon.png" alt="Ephemeral Secret Vault Logo" class="nav-logo-img">
+        <span class="brand-text">Ephemeral <span class="gradient-text">Secret Vault</span></span>
+      </a>
+
+      <nav class="nav-links-row" aria-label="Main Navigation">
+        <a href="/">Home</a>
+        <a href="/create">Create Secret</a>
+        <a href="/security">Security</a>
+        <a href="/extension">Extension</a>
+        <a href="/how-it-works">How It Works</a>
+        <a href="/dashboard" class="active">Dashboard</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="/create" class="btn-nav-gradient">
+          <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <span>Create Secret</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Dashboard Container -->
+  <main class="saas-container" style="max-width:1040px;padding-top:3.5rem;padding-bottom:5rem;">
+    
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2.5rem;">
+      <div>
+        <div class="saas-section-badge">LOCAL CREATOR DASHBOARD</div>
+        <h1 class="saas-section-title" style="text-align:left;font-size:2.4rem;margin-bottom:0.35rem;">
+          Your Vault Activity
+        </h1>
+        <p class="saas-section-desc" style="text-align:left;font-size:0.95rem;">
+          Manage links created from this browser. Plaintext secrets are strictly never stored in browser storage.
+        </p>
+      </div>
+
+      <div style="display:flex;gap:0.75rem;">
+        <button type="button" id="btn-clear-history" class="btn-secondary-glass" style="width:auto;padding:0.6rem 1rem;font-size:0.85rem;">
+          Clear History
+        </button>
+        <a href="/create" class="btn-primary-gradient" style="padding:0.6rem 1.25rem;text-decoration:none;font-size:0.85rem;">
+          + New Secret
+        </a>
+      </div>
+    </div>
+
+    <!-- Quick Stats Grid -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:1rem;margin-bottom:2rem;">
+      <div style="background:rgba(10,16,35,0.7);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:1.25rem;">
+        <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;">Tracked Vaults</div>
+        <div id="stat-total" style="font-size:1.8rem;font-weight:800;color:var(--text-white);margin-top:0.25rem;">0</div>
+      </div>
+      <div style="background:rgba(10,16,35,0.7);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:1.25rem;">
+        <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;">Active Status</div>
+        <div id="stat-active" style="font-size:1.8rem;font-weight:800;color:var(--success);margin-top:0.25rem;">0</div>
+      </div>
+      <div style="background:rgba(10,16,35,0.7);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:1.25rem;">
+        <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;">Privacy Mode</div>
+        <div style="font-size:1.1rem;font-weight:700;color:var(--neon-cyan);margin-top:0.5rem;">Zero-Plaintext</div>
+      </div>
+    </div>
+
+    <!-- Vaults List Table / Cards -->
+    <div style="background:rgba(10,16,35,0.7);border:1px solid rgba(255,255,255,0.08);border-radius:18px;overflow:hidden;">
+      <div style="padding:1.25rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between;">
+        <div style="font-weight:700;font-size:0.95rem;color:var(--text-white);">Recent Vault Links</div>
+        <button type="button" id="btn-refresh-status" style="background:none;border:none;color:var(--neon-cyan);font-size:0.82rem;cursor:pointer;">
+          ↻ Refresh Status
+        </button>
+      </div>
+
+      <div id="vaults-container" style="padding:1rem;">
+        <!-- Dynamically populated or empty state -->
+        <div id="empty-state" style="padding:3rem 1.5rem;text-align:center;color:var(--text-muted);">
+          <svg class="svg-icon" viewBox="0 0 24 24" style="width:48px;height:48px;margin-bottom:0.75rem;color:rgba(255,255,255,0.2);"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <div style="font-size:1rem;font-weight:600;color:var(--text-dim);margin-bottom:0.35rem;">No Vaults Created Yet</div>
+          <p style="font-size:0.85rem;max-width:360px;margin:0 auto 1.5rem auto;">When you create secrets on this device, anonymous metadata references will appear here for easy management.</p>
+          <a href="/create" class="btn-primary-gradient" style="padding:0.65rem 1.5rem;text-decoration:none;font-size:0.88rem;">
+            Create Your First Secret
+          </a>
+        </div>
+
+        <div id="vaults-list" style="display:flex;flex-direction:column;gap:0.75rem;" class="hidden"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite">
+    <span id="toast-message">Copied</span>
+  </div>
+
+  <footer class="footer-enterprise">
+    <div class="footer-trust-strip">
+      <span>Protected by AES-256-GCM</span>
+      <span class="strip-sep">•</span>
+      <span>Zero Plaintext Storage</span>
+      <span class="strip-sep">•</span>
+      <span>Permanent Overwrite</span>
+    </div>
+    <div class="footer-meta-text">
+      Ephemeral Secret Vault • Production-Grade Security Service
+    </div>
+  </footer>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const STORAGE_KEY = 'vault_created_history';
+      const emptyState = document.getElementById('empty-state');
+      const vaultsList = document.getElementById('vaults-list');
+      const statTotal = document.getElementById('stat-total');
+      const statActive = document.getElementById('stat-active');
+      const btnClearHistory = document.getElementById('btn-clear-history');
+      const btnRefresh = document.getElementById('btn-refresh-status');
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toast-message');
+
+      function showToast(msg) {
+        if (!toast) return;
+        toastMessage.textContent = msg;
+        toast.classList.add('visible');
+        setTimeout(() => toast.classList.remove('visible'), 2500);
+      }
+
+      function getHistory() {
+        try {
+          return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        } catch {
+          return [];
+        }
+      }
+
+      function saveHistory(list) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+      }
+
+      async function renderDashboard() {
+        const history = getHistory();
+        statTotal.textContent = String(history.length);
+
+        if (history.length === 0) {
+          emptyState.classList.remove('hidden');
+          vaultsList.classList.add('hidden');
+          statActive.textContent = '0';
+          return;
+        }
+
+        emptyState.classList.add('hidden');
+        vaultsList.classList.remove('hidden');
+        vaultsList.innerHTML = '';
+
+        let activeCount = 0;
+
+        for (const item of history) {
+          const itemEl = document.createElement('div');
+          itemEl.style.cssText = 'background:rgba(5,9,22,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;';
+
+          const createdFormatted = item.createdAt ? new Date(item.createdAt).toLocaleString() : 'Recent';
+          const expiresFormatted = item.expiresAt ? new Date(item.expiresAt).toLocaleString() : '1 hour';
+          const isExpiredLocal = item.expiresAt && Date.now() > item.expiresAt;
+
+          if (!isExpiredLocal && !item.burned) activeCount++;
+
+          const statusColor = isExpiredLocal || item.burned ? 'var(--danger)' : 'var(--success)';
+          const statusText = item.burned ? 'Burned' : (isExpiredLocal ? 'Expired' : 'Active');
+
+          itemEl.innerHTML = `
+            <div style="flex-grow:1;min-width:240px;">
+              <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.25rem;">
+                <span style="font-family:var(--font-mono);font-size:0.9rem;font-weight:700;color:var(--text-white);">${item.id || 'Secret Vault'}</span>
+                <span style="font-size:0.7rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:9999px;background:rgba(255,255,255,0.08);color:${statusColor};">${statusText}</span>
+              </div>
+              <div style="font-size:0.78rem;color:var(--text-muted);">
+                Created: ${createdFormatted} • Expires: ${expiresFormatted}
+              </div>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+              <a href="/share/${item.id}" class="btn-secondary-glass" style="padding:0.45rem 0.85rem;font-size:0.8rem;text-decoration:none;width:auto;">
+                Share Center
+              </a>
+              <button type="button" class="btn-secondary-glass btn-copy-item" data-url="${item.url || window.location.origin + '/vault/' + item.id}" style="padding:0.45rem 0.85rem;font-size:0.8rem;width:auto;">
+                Copy Link
+              </button>
+              <button type="button" class="btn-danger-outline btn-burn-item" data-id="${item.id}" style="padding:0.45rem 0.85rem;font-size:0.8rem;">
+                Destroy
+              </button>
+            </div>
+          `;
+
+          vaultsList.appendChild(itemEl);
+        }
+
+        statActive.textContent = String(activeCount);
+
+        // Wire copy buttons
+        document.querySelectorAll('.btn-copy-item').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const url = btn.getAttribute('data-url');
+            if (url) {
+              await navigator.clipboard.writeText(url);
+              showToast('✓ Link copied to clipboard');
+            }
+          });
+        });
+
+        // Wire burn buttons
+        document.querySelectorAll('.btn-burn-item').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const id = btn.getAttribute('data-id');
+            if (!confirm('Are you sure you want to permanently destroy this vault?')) return;
+            try {
+              btn.textContent = 'Shredding...';
+              btn.disabled = true;
+              await fetch('/api/secret/' + id + '/burn', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+              const hist = getHistory().map(h => h.id === id ? { ...h, burned: true } : h);
+              saveHistory(hist);
+              renderDashboard();
+              showToast('✓ Vault burned and purged');
+            } catch {
+              showToast('Vault already burned or expired');
+            }
+          });
+        });
+      }
+
+      if (btnClearHistory) {
+        btnClearHistory.addEventListener('click', () => {
+          if (confirm('Clear local history list? (This does not affect active secrets on the server).')) {
+            localStorage.removeItem(STORAGE_KEY);
+            renderDashboard();
+            showToast('Local history cleared');
+          }
+        });
+      }
+
+      if (btnRefresh) {
+        btnRefresh.addEventListener('click', () => {
+          renderDashboard();
+          showToast('Status refreshed');
+        });
+      }
+
+      renderDashboard();
+    })();
+  </script>
+</body>
+</html>

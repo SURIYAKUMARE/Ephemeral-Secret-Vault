@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="referrer" content="no-referrer">
+  <title>Vault Expired — Ephemeral Secret Vault</title>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body id="top">
+  <!-- Cyber Background Neon Arcs -->
+  <div class="cyber-background" aria-hidden="true">
+    <div class="neon-arc-left"></div>
+    <div class="neon-arc-left-glow"></div>
+    <div class="neon-arc-right"></div>
+    <div class="neon-arc-right-glow"></div>
+    <div class="reflective-floor"></div>
+  </div>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="/" class="nav-brand" title="Ephemeral Secret Vault">
+        <img src="/images/logo-icon.png" alt="Ephemeral Secret Vault Logo" class="nav-logo-img">
+        <span class="brand-text">Ephemeral <span class="gradient-text">Secret Vault</span></span>
+      </a>
+
+      <nav class="nav-links-row" aria-label="Main Navigation">
+        <a href="/">Home</a>
+        <a href="/create">Create Secret</a>
+        <a href="/security">Security</a>
+        <a href="/extension">Extension</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="/create" class="btn-nav-gradient">
+          <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <span>Create Secret</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Status Container -->
+  <main class="saas-container">
+    <div class="status-hero-card">
+      
+      <!-- Expired Icon Circle -->
+      <div class="status-icon-circle expired">
+        <svg class="svg-icon" viewBox="0 0 24 24" style="width:36px;height:36px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+      </div>
+
+      <div class="hero-badge hero-badge-clean badge-unavailable" style="margin-bottom:1rem;display:inline-flex;">
+        <span>LIFETIME EXCEEDED • PURGED FROM DATABASE</span>
+      </div>
+
+      <h1 class="status-hero-title">Vault Link Expired</h1>
+      
+      <p class="status-hero-desc">
+        This secret has exceeded its time-to-live (TTL) expiration window and was physically purged by the background sweeper engine. In accordance with zero-retention privacy, recovery is mathematically impossible.
+      </p>
+
+      <div style="background:rgba(5,9,22,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1.25rem;margin-bottom:2rem;text-align:left;font-size:0.85rem;color:var(--text-dim);line-height:1.6;">
+        <div style="font-weight:700;color:var(--text-white);margin-bottom:0.4rem;display:flex;align-items:center;gap:0.4rem;">
+          <svg class="svg-icon" viewBox="0 0 24 24" style="color:var(--neon-cyan);width:16px;height:16px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          Zero-Trace Retention Policy
+        </div>
+        When a vault's expiration deadline passes, the server immediately overwrites the ciphertext and physically removes the SQLite record. No log records or cached copies remain.
+      </div>
+
+      <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;">
+        <a href="/create" class="btn-primary-gradient" style="padding:0.85rem 1.75rem;text-decoration:none;">
+          <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <span>Create a New Secret</span>
+        </a>
+        <a href="/" class="btn-secondary-glass" style="padding:0.85rem 1.5rem;text-decoration:none;width:auto;">
+          <span>Return Home</span>
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="footer-enterprise">
+    <div class="footer-trust-strip">
+      <span>Protected</span>
+      <span class="strip-sep">•</span>
+      <span>Zero Plaintext Storage</span>
+      <span class="strip-sep">•</span>
+      <span>Permanent Overwrite</span>
+    </div>
+    <div class="footer-meta-text">
+      Ephemeral Secret Vault • Production-Grade Security Service
+    </div>
+  </footer>
+</body>
+</html>

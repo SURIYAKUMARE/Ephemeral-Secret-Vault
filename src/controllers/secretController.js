@@ -134,6 +134,86 @@ function getSecretView(req, res, next) {
 }
 
 /**
+ * Serves safe Share Center page with safe metadata placeholders.
+ */
+function getShareView(req, res, next) {
+  try {
+    const { id } = req.params;
+    const meta = secretService.getSecretMetadata(id, Date.now(), req);
+
+    if (!meta) {
+      res.setHeader('Cache-Control', 'no-store');
+      res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+      const expiredPath = path.join(publicDir, 'expired.html');
+      if (fs.existsSync(expiredPath)) {
+        return res.status(404).sendFile(expiredPath);
+      }
+      return res.status(404).sendFile(path.join(publicDir, '404.html'));
+    }
+
+    const templatePath = path.join(publicDir, 'share.html');
+    let html = fs.readFileSync(templatePath, 'utf8');
+
+    const host = req.get('x-forwarded-host') || req.get('host') || 'localhost:3000';
+    const proto = req.get('x-forwarded-proto') || req.protocol || 'http';
+    const vaultUrl = `${proto}://${host}/vault/${id}`;
+    const shareUrl = `${proto}://${host}/share/${id}`;
+
+    const createdIso = meta.created_at ? new Date(meta.created_at).toISOString() : new Date().toISOString();
+    const createdFormatted = meta.created_at ? new Date(meta.created_at).toLocaleString() : 'Just now';
+    const expiresIso = new Date(meta.expires_at).toISOString();
+    const expiresFormatted = new Date(meta.expires_at).toLocaleString();
+
+    html = html
+      .replace(/\{\{ID\}\}/g, id)
+      .replace(/\{\{VAULT_URL\}\}/g, vaultUrl)
+      .replace(/\{\{SHARE_URL\}\}/g, shareUrl)
+      .replace(/\{\{CREATED_AT\}\}/g, createdFormatted)
+      .replace(/\{\{CREATED_ISO\}\}/g, createdIso)
+      .replace(/\{\{EXPIRES_AT\}\}/g, expiresFormatted)
+      .replace(/\{\{EXPIRES_ISO\}\}/g, expiresIso)
+      .replace(/\{\{VIEWS_REMAINING\}\}/g, String(meta.views_remaining))
+      .replace(/\{\{MAX_VIEWS\}\}/g, String(meta.max_views))
+      .replace(/\{\{HAS_PASSPHRASE\}\}/g, String(meta.has_passphrase));
+
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.setHeader('Surrogate-Control', 'no-store');
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+    return res.status(200).send(html);
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * Returns safe metadata for a vault without decrypting or decrementing views.
+ */
+function getVaultMetadata(req, res, next) {
+  try {
+    const { id } = req.params;
+    const meta = secretService.getSecretMetadata(id, Date.now(), req);
+    if (!meta) {
+      return res.status(404).json({ error: 'Vault not found, expired, or burned.' });
+    }
+    return res.status(200).json({
+      id: meta.id,
+      created_at: meta.created_at,
+      expires_at: meta.expires_at,
+      views_remaining: meta.views_remaining,
+      max_views: meta.max_views,
+      has_passphrase: meta.has_passphrase,
+      client_encrypted: meta.client_encrypted
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
  * Atomically consumes and decrypts a secret.
  */
 async function burnSecret(req, res, next) {
@@ -549,5 +629,7 @@ module.exports = {
   createCanaryTrap,
   requestRevealToken,
   revealSecret,
-  denyDirectSecretAccess
+  denyDirectSecretAccess,
+  getShareView,
+  getVaultMetadata
 };

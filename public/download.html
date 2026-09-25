@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="referrer" content="no-referrer">
+  <title>Install Extension — Ephemeral Secret Vault</title>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body id="top">
+  <!-- Cyber Background Neon Arcs -->
+  <div class="cyber-background" aria-hidden="true">
+    <div class="neon-arc-left"></div>
+    <div class="neon-arc-left-glow"></div>
+    <div class="neon-arc-right"></div>
+    <div class="neon-arc-right-glow"></div>
+    <div class="reflective-floor"></div>
+  </div>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="/" class="nav-brand" title="Ephemeral Secret Vault">
+        <img src="/images/logo-icon.png" alt="Ephemeral Secret Vault Logo" class="nav-logo-img">
+        <span class="brand-text">Ephemeral <span class="gradient-text">Secret Vault</span></span>
+      </a>
+
+      <nav class="nav-links-row" aria-label="Main Navigation">
+        <a href="/">Home</a>
+        <a href="/create">Create Secret</a>
+        <a href="/security">Security</a>
+        <a href="/extension">Extension</a>
+        <a href="/dashboard">Dashboard</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="/create" class="btn-nav-gradient">
+          <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <span>Create Secret</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Download Container -->
+  <main class="saas-container" style="max-width:860px;padding-top:3.5rem;padding-bottom:5rem;">
+    
+    <div class="saas-section-header" style="margin-bottom:2.5rem;">
+      <div class="saas-section-badge">SETUP &amp; INSTALLATION</div>
+      <h1 class="saas-section-title" style="font-size:2.5rem;">Install the Browser Extension</h1>
+      <p class="saas-section-desc">Get the complete Manifest V3 companion extension loaded in Chromium browsers in less than 30 seconds.</p>
+    </div>
+
+    <!-- Direct Download Card -->
+    <div style="background:rgba(10,16,35,0.75);border:1px solid rgba(56,189,248,0.3);border-radius:20px;padding:2rem;margin-bottom:2.5rem;text-align:center;box-shadow:0 16px 40px rgba(0,0,0,0.5);">
+      <div style="font-size:1.25rem;font-weight:700;color:var(--text-white);margin-bottom:0.5rem;">
+        Ephemeral Secret Vault — Extension Package (.ZIP)
+      </div>
+      <p style="color:var(--text-dim);font-size:0.92rem;margin-bottom:1.5rem;">
+        Pre-packaged Manifest V3 extension ready for Developer Mode installation in Chrome, Edge, Brave, and Opera.
+      </p>
+
+      <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;">
+        <a href="/api/extension/download" class="btn-primary-gradient" style="padding:0.9rem 2rem;text-decoration:none;font-size:1rem;">
+          <svg class="svg-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>Download Extension (.ZIP)</span>
+        </a>
+        <a href="/create" class="btn-secondary-glass" style="padding:0.9rem 1.5rem;text-decoration:none;width:auto;">
+          <span>Use Web App Instead</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- 4-Step Installation Guide -->
+    <div style="display:flex;flex-direction:column;gap:1.25rem;">
+      
+      <!-- Step 1 -->
+      <div class="flow-step-card" style="padding:1.5rem;">
+        <div style="display:flex;align-items:flex-start;gap:1rem;">
+          <div class="flow-step-num" style="position:static;">1</div>
+          <div style="flex-grow:1;">
+            <h3 style="font-size:1.15rem;font-weight:700;color:var(--text-white);margin-bottom:0.35rem;">
+              Download and Extract Archive
+            </h3>
+            <p style="font-size:0.9rem;color:var(--text-dim);line-height:1.55;">
+              Download the ZIP package above and extract it into a folder on your computer (e.g. <code style="background:rgba(255,255,255,0.08);padding:0.15rem 0.4rem;border-radius:4px;color:var(--neon-cyan);font-family:var(--font-mono);">ephemeral-vault-extension/</code>). If you cloned the repository, the extension files are already in the <code style="background:rgba(255,255,255,0.08);padding:0.15rem 0.4rem;border-radius:4px;color:var(--neon-cyan);font-family:var(--font-mono);">extension/</code> directory.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="flow-step-card" style="padding:1.5rem;">
+        <div style="display:flex;align-items:flex-start;gap:1rem;">
+          <div class="flow-step-num" style="position:static;">2</div>
+          <div style="flex-grow:1;">
+            <h3 style="font-size:1.15rem;font-weight:700;color:var(--text-white);margin-bottom:0.35rem;">
+              Open Browser Extensions Page
+            </h3>
+            <p style="font-size:0.9rem;color:var(--text-dim);line-height:1.55;margin-bottom:0.75rem;">
+              Paste the appropriate management URL into your browser address bar:
+            </p>
+            <div style="display:flex;flex-direction:column;gap:0.4rem;font-family:var(--font-mono);font-size:0.85rem;">
+              <div style="background:rgba(5,9,22,0.8);padding:0.5rem 0.75rem;border-radius:6px;border:1px solid rgba(255,255,255,0.06);color:#38bdf8;">
+                chrome://extensions <span style="color:var(--text-muted);">(Google Chrome &amp; Brave)</span>
+              </div>
+              <div style="background:rgba(5,9,22,0.8);padding:0.5rem 0.75rem;border-radius:6px;border:1px solid rgba(255,255,255,0.06);color:#38bdf8;">
+                edge://extensions <span style="color:var(--text-muted);">(Microsoft Edge)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="flow-step-card" style="padding:1.5rem;">
+        <div style="display:flex;align-items:flex-start;gap:1rem;">
+          <div class="flow-step-num" style="position:static;">3</div>
+          <div style="flex-grow:1;">
+            <h3 style="font-size:1.15rem;font-weight:700;color:var(--text-white);margin-bottom:0.35rem;">
+              Enable "Developer mode"
+            </h3>
+            <p style="font-size:0.9rem;color:var(--text-dim);line-height:1.55;">
+              In the top-right corner of the Extensions page, toggle the switch labeled <strong>Developer mode</strong> to the ON position.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="flow-step-card" style="padding:1.5rem;">
+        <div style="display:flex;align-items:flex-start;gap:1rem;">
+          <div class="flow-step-num" style="position:static;">4</div>
+          <div style="flex-grow:1;">
+            <h3 style="font-size:1.15rem;font-weight:700;color:var(--text-white);margin-bottom:0.35rem;">
+              Click "Load unpacked" and Select Folder
+            </h3>
+            <p style="font-size:0.9rem;color:var(--text-dim);line-height:1.55;">
+              Click the button labeled <strong>Load unpacked</strong> in the top-left toolbar, browse to the folder where you extracted the extension, and click <strong>Select Folder</strong>.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5 -->
+      <div class="flow-step-card" style="padding:1.5rem;border-color:rgba(16,185,129,0.3);">
+        <div style="display:flex;align-items:flex-start;gap:1rem;">
+          <div class="flow-step-num" style="position:static;color:var(--success);border-color:rgba(16,185,129,0.3);">✓</div>
+          <div style="flex-grow:1;">
+            <h3 style="font-size:1.15rem;font-weight:700;color:var(--text-white);margin-bottom:0.35rem;">
+              You're Ready to Share!
+            </h3>
+            <p style="font-size:0.9rem;color:var(--text-dim);line-height:1.55;">
+              The <strong>Ephemeral Secret Vault</strong> lock icon will now appear in your browser toolbar. Pin it for quick access, or simply visit WhatsApp Web, Gmail, or Slack and press <code style="background:rgba(255,255,255,0.08);padding:0.15rem 0.4rem;border-radius:4px;color:var(--neon-cyan);font-family:var(--font-mono);">Ctrl+Shift+V</code> to vault credentials in real time.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <footer class="footer-enterprise">
+    <div class="footer-trust-strip">
+      <span>Manifest V3 Compliant</span>
+      <span class="strip-sep">•</span>
+      <span>Zero Plaintext Storage</span>
+      <span class="strip-sep">•</span>
+      <span>Permanent Overwrite</span>
+    </div>
+    <div class="footer-meta-text">
+      Ephemeral Secret Vault • Production-Grade Security Service
+    </div>
+  </footer>
+</body>
+</html>

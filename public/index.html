@@ -5,16 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow, noarchive">
   <meta name="referrer" content="no-referrer">
-  <meta property="og:title" content="Ephemeral Secret Vault — Professional Secret Sharing">
-  <meta property="og:description" content="Share sensitive credentials, keys, or files securely. Encrypted at rest with AES-256-GCM and automatically destroyed after viewing.">
-  <title>Ephemeral Secret Vault — Zero-Knowledge Secret Sharing</title>
+  <meta property="og:title" content="Ephemeral Secret Vault — Secure Sharing Anywhere">
+  <meta property="og:description" content="Share sensitive credentials, passwords, or files securely. Share the LINK, never the SECRET. Protected with AES-256-GCM and automatic self-destruction.">
+  <title>Ephemeral Secret Vault — Secure Sharing Anywhere</title>
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="stylesheet" href="/css/style.css">
-  <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="/style.css">
 </head>
 <body id="top">
-  <!-- Atmospheric Cyber Background with Deep Navy/Black & Subtle Grid -->
+  <!-- Cyber Background Neon Arcs & Atmospheric Glow -->
   <div class="cyber-background" aria-hidden="true">
     <div class="neon-arc-left"></div>
     <div class="neon-arc-left-glow"></div>
@@ -23,7 +22,7 @@
     <div class="reflective-floor"></div>
   </div>
 
-  <!-- Minimal Sticky Header: Logo + Brand on Left, "Secure ●" Status on Right -->
+  <!-- Minimal Sticky Navbar -->
   <header class="navbar">
     <div class="nav-container">
       <a href="/" class="nav-brand" title="Ephemeral Secret Vault">
@@ -31,459 +30,551 @@
         <span class="brand-text">Ephemeral <span class="gradient-text">Secret Vault</span></span>
       </a>
 
-      <!-- Right Actions: Security Status Dot + Theme Toggle -->
+      <!-- Center Nav Links -->
+      <nav class="nav-links-row" aria-label="Main Navigation">
+        <a href="/" class="active">Home</a>
+        <a href="/create">Product</a>
+        <a href="/security">Security</a>
+        <a href="/extension">Extension</a>
+        <a href="/how-it-works">How It Works</a>
+        <a href="/dashboard">Dashboard</a>
+      </nav>
+
+      <!-- Right Actions: Security Badge, Theme Toggle, Create Button -->
       <div class="nav-actions" style="display:flex;align-items:center;gap:0.75rem;">
-        <div class="nav-security-status" title="Active End-to-End Cryptographic Security">
+        <div class="nav-security-status" title="Active Cryptographic Security">
           <span class="status-indicator-dot"></span>
           <span class="status-indicator-text">Secure</span>
         </div>
         <button type="button" class="btn-theme-circle" id="theme-toggle" aria-label="Toggle Theme" title="Toggle Dark/Light Mode">
           <svg id="theme-icon" class="svg-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
         </button>
+        <a href="/create" class="btn-nav-gradient">
+          <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <span>Create Secret</span>
+        </a>
       </div>
     </div>
   </header>
 
-  <!-- Two-Column Desktop Layout (45% 3D Lock Illustration / 55% Glass Creation Card) -->
-  <main class="vault-split-layout">
-    <!-- Left Column: 3D Pedestal Glass Lock Graphic with Atmospheric Glow -->
-    <aside class="vault-visual-col" aria-hidden="true">
-      <div class="lock-visual-aura"></div>
-      <img src="/images/pedestal-lock.png" alt="3D Ephemeral Security Vault" class="pedestal-lock-3d">
-      <div class="lock-pedestal-shadow"></div>
-    </aside>
-
-    <!-- Right Column: Glass Security Card -->
-    <div class="vault-card-col">
-      <div class="main-card">
+  <!-- Hero Section -->
+  <section class="saas-section" style="padding-top:4rem;padding-bottom:5rem;">
+    <div class="saas-container">
+      <div class="vault-split-layout" style="align-items:center;">
         
-        <!-- Hero Header -->
-        <header class="vault-card-header" id="hero-header">
-          <div class="hero-badge hero-badge-clean" style="margin-bottom:0.75rem;">
+        <!-- Left: Text Hero Content -->
+        <div class="hero-content" style="max-width:580px;">
+          <div class="hero-badge hero-badge-clean" style="margin-bottom:1.25rem;">
             <span class="status-dot-pulse"></span>
-            <span>SECURE • TEMPORARY • PRIVATE</span>
-          </div>
-          <h1 class="vault-card-title">Create a <span class="gradient-text">Secret Vault</span></h1>
-          <p class="vault-card-subtitle">Share sensitive information securely. Encrypted at rest with AES-256-GCM and automatically destroyed after viewing or expiration.</p>
-        </header>
-
-        <!-- Creation Form -->
-        <form id="create-form" aria-label="Create a secure secret or share a confidential file">
-          
-          <!-- Mode Tabs (Secret Text vs Upload File) -->
-          <div class="tab-switcher" role="tablist">
-            <button type="button" class="tab-pill active" id="tab-text" role="tab" aria-selected="true">
-              <svg class="svg-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-              <span>Secret Text / Credentials</span>
-            </button>
-            <button type="button" class="tab-pill" id="tab-file" role="tab" aria-selected="false">
-              <svg class="svg-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-              <span>Upload File</span>
-            </button>
+            <span>SECURE • TEMPORARY • PRIVATE • ZERO-KNOWLEDGE</span>
           </div>
 
-          <!-- Section 1: Secret Text Input -->
-          <div id="text-section" class="input-panel">
-            <div class="field-header-row">
-              <div class="field-title-group">
-                <span class="field-title">SECRET CONTENT</span>
-                <button type="button" class="btn-info-icon" title="Encrypted in memory with AES-256-GCM. Plaintext never touches persistent disk." aria-label="Information about secret encryption">
-                  <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                </button>
-              </div>
-              <span id="byte-counter" class="byte-counter">0 / 10,240 bytes</span>
-            </div>
-            <textarea
-              id="secret-input"
-              name="secret"
-              class="secret-textarea"
-              placeholder="Paste sensitive credentials, API keys, passwords, certificates, or confidential text here..."
-              rows="6"
-              spellcheck="false"
-              maxlength="10240"
-            ></textarea>
+          <h1 class="saas-section-title" style="text-align:left;font-size:3rem;line-height:1.15;margin-bottom:1.25rem;">
+            Share sensitive information.<br>
+            <span class="gradient-text">Not the secret itself.</span>
+          </h1>
+
+          <p class="saas-section-desc" style="text-align:left;font-size:1.15rem;margin-bottom:2rem;">
+            Create an encrypted, self-destructing vault and share it anywhere with a secure link. Protected by AES-256-GCM authenticated encryption and two-step authorization.
+          </p>
+
+          <div style="display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:2.5rem;">
+            <a href="/create" class="btn-primary-gradient" style="padding:0.9rem 1.75rem;font-size:1rem;text-decoration:none;">
+              <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              <span>Create Secret Now →</span>
+            </a>
+            <a href="/extension" class="btn-secondary-glass" style="padding:0.9rem 1.5rem;font-size:0.95rem;text-decoration:none;width:auto;">
+              <svg class="svg-icon" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+              <span>Install Browser Extension</span>
+            </a>
           </div>
 
-          <!-- Section 2: Universal File Upload Dropzone -->
-          <div id="file-dropzone-group" class="input-panel hidden">
-            <input type="file" id="file-input" class="hidden" aria-label="Upload file">
-            
-            <div id="dropzone" class="file-dropzone" tabindex="0" role="button" aria-label="Drop confidential file here or click to select">
-              <div class="dropzone-icon">
-                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-              </div>
-              <div class="dropzone-text">
-                <strong>Click to browse</strong> or drag &amp; drop a file here
-              </div>
-              <div class="dropzone-sub">
-                Supports code scripts (Python, Shell, JSON), documents, PDFs, keys, or images up to 10 MB
-              </div>
+          <!-- Trust bullets -->
+          <div style="display:flex;flex-wrap:wrap;gap:1.5rem;color:var(--text-dim);font-size:0.85rem;font-weight:500;">
+            <div style="display:flex;align-items:center;gap:0.4rem;">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="color:var(--neon-cyan);width:16px;height:16px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Zero Plaintext in Chat</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.4rem;">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="color:var(--neon-cyan);width:16px;height:16px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Single-View Auto Burn</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.4rem;">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="color:var(--neon-cyan);width:16px;height:16px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Link Preview Immunized</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: 3D Pedestal Lock Visual with Floating App Badges -->
+        <div class="vault-visual-col" style="display:flex;justify-content:center;position:relative;">
+          <div class="visual-lock-container">
+            <!-- 3D Pedestal Lock -->
+            <div class="lock-visual-aura"></div>
+            <img src="/images/pedestal-lock.png" alt="3D Ephemeral Security Vault" class="pedestal-lock-3d" style="max-height:420px;position:relative;z-index:2;">
+            <div class="lock-pedestal-shadow"></div>
+
+            <!-- Floating App Badge 1: WhatsApp -->
+            <div class="floating-badge badge-pos-top-left">
+              <span class="badge-icon" style="color:#25d366;">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+              </span>
+              <span>WhatsApp • Link Only</span>
             </div>
 
-            <!-- File Selected Preview Card -->
-            <div id="file-preview-card" class="file-preview-card hidden">
-              <div class="file-preview-left">
-                <div id="file-icon" class="file-preview-icon">
-                  <svg class="svg-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                </div>
-                <img id="file-thumb" class="file-thumb-preview hidden" alt="File preview">
-                <div class="file-preview-info">
-                  <div id="file-name" class="file-name-text">filename.ext</div>
-                  <div class="file-meta-row">
-                    <span id="file-size" class="file-meta-badge">0 KB</span>
-                    <span id="file-type" class="file-meta-badge">binary/raw</span>
-                  </div>
-                </div>
+            <!-- Floating App Badge 2: Gmail -->
+            <div class="floating-badge badge-pos-top-right">
+              <span class="badge-icon" style="color:#ea4335;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              </span>
+              <span>Gmail • Auto-Expiring</span>
+            </div>
+
+            <!-- Floating App Badge 3: Outlook -->
+            <div class="floating-badge badge-pos-mid-left">
+              <span class="badge-icon" style="color:#0078d4;">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M19.5 7.5a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5zM22.5 9h-6a1.5 1.5 0 0 0-1.5 1.5V15a3 3 0 0 0 3 3h3a3 3 0 0 0 3-3v-4.5A1.5 1.5 0 0 0 22.5 9zM13.5 6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm3 3h-6A2.25 2.25 0 0 0 8.25 11.25V18a4.5 4.5 0 0 0 4.5 4.5h1.5a4.5 4.5 0 0 0 4.5-4.5v-6.75A2.25 2.25 0 0 0 16.5 9zM7.5 10.5V18a5.98 5.98 0 0 1-.95 3.25A4.5 4.5 0 0 1 1.5 16.5V12a1.5 1.5 0 0 1 1.5-1.5h4.5zM4.5 7.5a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5z"/></svg>
+              </span>
+              <span>Outlook • Single-Use</span>
+            </div>
+
+            <!-- Floating App Badge 4: Slack -->
+            <div class="floating-badge badge-pos-mid-right">
+              <span class="badge-icon" style="color:#e01e5a;">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z"/></svg>
+              </span>
+              <span>Slack • Instant Burn</span>
+            </div>
+
+            <!-- Floating App Badge 5: Discord -->
+            <div class="floating-badge badge-pos-bot-left">
+              <span class="badge-icon" style="color:#5865f2;">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+              </span>
+              <span>Discord • Zero Plaintext</span>
+            </div>
+
+            <!-- Floating App Badge 6: Teams -->
+            <div class="floating-badge badge-pos-bot-right">
+              <span class="badge-icon" style="color:#6264a7;">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              </span>
+              <span>Teams • AES-256-GCM</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section id="how-it-works" class="saas-section" style="background:rgba(7, 12, 30, 0.4);border-top:1px solid rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.05);">
+    <div class="saas-container">
+      <div class="saas-section-header">
+        <div class="saas-section-badge">CRUCIAL LIFECYCLE FLOW</div>
+        <h2 class="saas-section-title">Share the <span class="gradient-text">LINK</span>, Never the <span class="gradient-text">SECRET</span></h2>
+        <p class="saas-section-desc">Traditional chat apps permanently save messages in cloud backups and server databases. Ephemeral Secret Vault breaks this cycle completely.</p>
+      </div>
+
+      <div class="flow-steps-grid">
+        <!-- Step 1 -->
+        <div class="flow-step-card">
+          <div class="flow-step-num">01</div>
+          <div class="flow-step-icon">
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          </div>
+          <h3 class="flow-step-title">Create &amp; Encrypt</h3>
+          <p class="flow-step-desc">Paste your password, API credential, certificate, or confidential file. Encrypted in memory with AES-256-GCM before storage.</p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="flow-step-card">
+          <div class="flow-step-num">02</div>
+          <div class="flow-step-icon">
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+          </div>
+          <h3 class="flow-step-title">Generate Secure Link</h3>
+          <p class="flow-step-desc">A cryptographically random Vault ID is generated with custom expiration (5m to 7d) and strict view limits (1 to 5 views).</p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="flow-step-card">
+          <div class="flow-step-num">03</div>
+          <div class="flow-step-icon">
+            <svg class="svg-icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+          </div>
+          <h3 class="flow-step-title">Share Anywhere</h3>
+          <p class="flow-step-desc">Send the link via WhatsApp, Gmail, Outlook, Slack, or Teams. The secret NEVER enters chat servers or email threads.</p>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="flow-step-card">
+          <div class="flow-step-num">04</div>
+          <div class="flow-step-icon">
+            <svg class="svg-icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          </div>
+          <h3 class="flow-step-title">Authorized Reveal &amp; Burn</h3>
+          <p class="flow-step-desc">Recipient requests a single-use authorization token. The secret is decrypted on screen and immediately shredded permanently.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Share Anywhere Section -->
+  <section class="saas-section">
+    <div class="saas-container">
+      <div class="saas-section-header">
+        <div class="saas-section-badge">UNIVERSAL APPS INTEGRATION</div>
+        <h2 class="saas-section-title">Share Safely on Any Platform</h2>
+        <p class="saas-section-desc">Pre-formatted safe share cards ensure you transmit only the vault link with zero secret disclosure.</p>
+      </div>
+
+      <div class="share-anywhere-grid">
+        <!-- WhatsApp -->
+        <div class="platform-card">
+          <div class="platform-card-header">
+            <div class="platform-card-icon" style="background:rgba(37,211,102,0.15);color:#25d366;">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+            </div>
+            <div class="platform-card-title">WhatsApp</div>
+            <span class="platform-card-badge">Direct Share</span>
+          </div>
+          <div class="platform-card-snippet">🔐 I sent you a confidential message via Ephemeral Secret Vault.
+
+Open securely:
+https://vault.domain/vault/8f1e...
+(Self-destructs upon reveal)</div>
+          <p class="platform-card-desc">1-click WhatsApp deep link. Recipients view once on desktop or mobile.</p>
+        </div>
+
+        <!-- Gmail -->
+        <div class="platform-card">
+          <div class="platform-card-header">
+            <div class="platform-card-icon" style="background:rgba(234,67,53,0.15);color:#ea4335;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            </div>
+            <div class="platform-card-title">Gmail &amp; Workspace</div>
+            <span class="platform-card-badge">Direct Compose</span>
+          </div>
+          <div class="platform-card-snippet">Subject: 🔐 Secure Secret
+Body: You've received a secure message protected by Ephemeral Secret Vault.
+
+Open: https://vault.domain/vault/8f1e...</div>
+          <p class="platform-card-desc">Prevents credentials from living in sent mail folders or email forwarding chains.</p>
+        </div>
+
+        <!-- Microsoft Outlook -->
+        <div class="platform-card">
+          <div class="platform-card-header">
+            <div class="platform-card-icon" style="background:rgba(0,120,212,0.15);color:#0078d4;">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M19.5 7.5a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5zM22.5 9h-6a1.5 1.5 0 0 0-1.5 1.5V15a3 3 0 0 0 3 3h3a3 3 0 0 0 3-3v-4.5A1.5 1.5 0 0 0 22.5 9zM13.5 6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm3 3h-6A2.25 2.25 0 0 0 8.25 11.25V18a4.5 4.5 0 0 0 4.5 4.5h1.5a4.5 4.5 0 0 0 4.5-4.5v-6.75A2.25 2.25 0 0 0 16.5 9zM7.5 10.5V18a5.98 5.98 0 0 1-.95 3.25A4.5 4.5 0 0 1 1.5 16.5V12a1.5 1.5 0 0 1 1.5-1.5h4.5zM4.5 7.5a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5z"/></svg>
+            </div>
+            <div class="platform-card-title">Microsoft Outlook</div>
+            <span class="platform-card-badge">Enterprise Mail</span>
+          </div>
+          <div class="platform-card-snippet">Subject: 🔐 Secure Secret
+Body: Protected secret shared via Ephemeral Secret Vault.
+
+https://vault.domain/vault/8f1e...</div>
+          <p class="platform-card-desc">Zero plaintext in Exchange server archives, ediscovery, or PST backups.</p>
+        </div>
+
+        <!-- Slack -->
+        <div class="platform-card">
+          <div class="platform-card-header">
+            <div class="platform-card-icon" style="background:rgba(224,30,90,0.15);color:#e01e5a;">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z"/></svg>
+            </div>
+            <div class="platform-card-title">Slack</div>
+            <span class="platform-card-badge">Slackbot Shielded</span>
+          </div>
+          <div class="platform-card-snippet">🔐 *Confidential Secret*
+Open securely: <https://vault.domain/vault/8f1e...>
+_(Burns upon viewing)_</div>
+          <p class="platform-card-desc">Slackbot link expansion crawler is neutralized so it never burns the secret.</p>
+        </div>
+
+        <!-- Discord -->
+        <div class="platform-card">
+          <div class="platform-card-header">
+            <div class="platform-card-icon" style="background:rgba(88,101,242,0.15);color:#5865f2;">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+            </div>
+            <div class="platform-card-title">Discord</div>
+            <span class="platform-card-badge">Spoiler Tagged</span>
+          </div>
+          <div class="platform-card-snippet">🔐 **Encrypted Vault Link:**
+|| https://vault.domain/vault/8f1e... ||
+*(Self-destructs upon reveal)*</div>
+          <p class="platform-card-desc">Spoiler Markdown syntax protects casual observers and Discord bot scrapers.</p>
+        </div>
+
+        <!-- Microsoft Teams -->
+        <div class="platform-card">
+          <div class="platform-card-header">
+            <div class="platform-card-icon" style="background:rgba(98,100,167,0.15);color:#6264a7;">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </div>
+            <div class="platform-card-title">Microsoft Teams</div>
+            <span class="platform-card-badge">Teams Shielded</span>
+          </div>
+          <div class="platform-card-snippet">🔐 Confidential Message
+Access Vault: https://vault.domain/vault/8f1e...
+Expires after 1 authorized view.</div>
+          <p class="platform-card-desc">Keeps secrets outside Teams chat logs, channel channels, and SharePoint storage.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Browser Extension Showcase -->
+  <section class="saas-section" style="background:linear-gradient(180deg, rgba(7,12,30,0.4) 0%, rgba(10,16,35,0.8) 100%);">
+    <div class="saas-container">
+      <div class="vault-split-layout" style="align-items:center;">
+        
+        <!-- Left: Extension Mockup & Graphic -->
+        <div class="vault-visual-col">
+          <div style="position:relative;border-radius:16px;overflow:hidden;border:1px solid rgba(56,189,248,0.3);box-shadow:0 20px 50px rgba(0,0,0,0.6);">
+            <img src="/images/vault-ui-screenshot.png" alt="Browser Extension UI Mockup" style="width:100%;display:block;border-radius:16px;">
+          </div>
+        </div>
+
+        <!-- Right: Extension Features & CTA -->
+        <div class="hero-content">
+          <div class="saas-section-badge">COMPANION BROWSER EXTENSION</div>
+          <h2 class="saas-section-title" style="text-align:left;">
+            Secure anything you share.<br>
+            <span class="gradient-text">Directly in your browser.</span>
+          </h2>
+          <p class="saas-section-desc" style="text-align:left;margin-bottom:1.5rem;">
+            Never accidentally paste an API key or password into WhatsApp, Slack, or Gmail again. The extension intercepts sensitive strings and converts them into self-destructing vault links instantly.
+          </p>
+
+          <div style="display:flex;flex-direction:column;gap:0.85rem;margin-bottom:2rem;">
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+              <div style="width:24px;height:24px;border-radius:50%;background:rgba(56,189,248,0.15);display:flex;align-items:center;justify-content:center;color:var(--neon-cyan);flex-shrink:0;">
+                <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
               </div>
-              <button type="button" id="btn-remove-file" class="btn-remove" title="Remove attached file">
-                <svg class="svg-icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-              </button>
+              <span style="font-size:0.95rem;color:var(--text-main);"><strong>Keyboard Shortcut:</strong> Press <code style="background:rgba(255,255,255,0.08);padding:0.15rem 0.4rem;border-radius:4px;font-family:var(--font-mono);font-size:0.85rem;color:#38bdf8;">Ctrl+Shift+V</code> to paste &amp; vault</span>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+              <div style="width:24px;height:24px;border-radius:50%;background:rgba(56,189,248,0.15);display:flex;align-items:center;justify-content:center;color:var(--neon-cyan);flex-shrink:0;">
+                <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </div>
+              <span style="font-size:0.95rem;color:var(--text-main);"><strong>Smart Detector:</strong> Automatically flags OpenAI keys, AWS tokens, GitHub PATs, and credentials</span>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+              <div style="width:24px;height:24px;border-radius:50%;background:rgba(56,189,248,0.15);display:flex;align-items:center;justify-content:center;color:var(--neon-cyan);flex-shrink:0;">
+                <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </div>
+              <span style="font-size:0.95rem;color:var(--text-main);"><strong>Shadow DOM Isolated:</strong> No CSS pollution or interference with web app interfaces</span>
             </div>
           </div>
 
-          <!-- 3-Column Configuration Grid -->
-          <div class="config-grid">
-            
-            <!-- Col 1: Expires After -->
-            <div class="config-field">
-              <label for="ttl-select" class="config-label">
-                <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                <span>EXPIRES AFTER</span>
-              </label>
-              <div class="config-select-wrapper">
-                <select id="ttl-select" name="ttl_seconds" class="config-select">
-                  <option value="3600" selected>1 hour (Recommended)</option>
-                  <option value="300">5 minutes</option>
-                  <option value="86400">24 hours (1 day)</option>
-                  <option value="604800">7 days</option>
-                </select>
-              </div>
-              <span class="config-sub">Automatically deleted after expiry.</span>
-            </div>
-
-            <!-- Col 2: Maximum Views -->
-            <div class="config-field">
-              <label for="views-select" class="config-label">
-                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                <span>MAXIMUM VIEWS</span>
-              </label>
-              <div class="config-select-wrapper">
-                <select id="views-select" name="max_views" class="config-select">
-                  <option value="1" selected>1 view (Instant Burn)</option>
-                  <option value="2">2 views</option>
-                  <option value="3">3 views</option>
-                  <option value="5">5 views</option>
-                </select>
-              </div>
-              <span class="config-sub">Secret will be destroyed after view limit.</span>
-            </div>
-
-            <!-- Col 3: Passphrase (Optional) -->
-            <div class="config-field">
-              <label for="passphrase-input" class="config-label">
-                <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                <span>PASSPHRASE <span class="label-optional">(Optional)</span></span>
-              </label>
-              <div class="input-with-action">
-                <input
-                  type="password"
-                  id="passphrase-input"
-                  name="passphrase"
-                  class="config-input"
-                  placeholder="Min. 8 characters"
-                  autocomplete="new-password"
-                  minlength="8"
-                >
-                <button type="button" id="btn-toggle-eye" class="config-input-eye" title="Toggle passphrase visibility">
-                  <svg id="eye-icon" class="svg-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                </button>
-              </div>
-              <span class="config-sub">Add an extra layer of security.</span>
-              <div id="passphrase-validation-feedback" class="field-feedback hidden"></div>
-            </div>
-          </div>
-
-          <!-- Error Feedback Banner -->
-          <div id="submit-error-banner" class="alert-box alert-error hidden" role="alert">
-            <svg class="svg-icon" viewBox="0 0 24 24" style="color:#ef4444;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-            <span id="submit-error-message"></span>
-          </div>
-
-          <!-- Primary Submit CTA -->
-          <button type="submit" id="submit-btn" class="btn-primary-gradient">
-            <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            <span id="submit-btn-text">Encrypt &amp; Generate Secure Link →</span>
-          </button>
-        </form>
-
-        <!-- Result Screen (Revealed upon successful secret generation) -->
-        <section id="result-section" class="result-section hidden" aria-label="Secret generated successfully">
-          
-          <!-- Glowing Circular Checkmark Badge -->
-          <div class="result-success-circle">
-            <svg class="svg-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          </div>
-
-          <!-- Result Header -->
-          <h2 class="result-title">Vault Created &amp; <span class="gradient-text">Protected</span></h2>
-          <p class="result-desc">Your secret is encrypted with AES-256-GCM and will automatically self-destruct once viewed or expired.</p>
-
-          <!-- Secret Access Link Box -->
-          <div class="secret-link-card">
-            <div class="card-box-header">
-              <svg class="svg-icon" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-              <span>SECRET ACCESS LINK</span>
-            </div>
-            <div class="secret-link-row">
-              <input type="text" id="link-output" class="link-input" readonly aria-label="Generated secret view URL">
-              <button type="button" id="copy-btn" class="btn-copy-gradient">
-                <svg class="svg-icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                <span>Copy Link</span>
-              </button>
-              <a id="open-link-btn" href="#" target="_blank" class="btn-open-outline" title="Open secret in new tab">
-                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                <span>Open</span>
-              </a>
-            </div>
-          </div>
-
-          <!-- Share via Apps Card -->
-          <div class="share-apps-card" aria-label="Share secret through apps">
-            <div class="share-apps-header">
-              <div class="share-apps-title">
-                <svg class="svg-icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                <span>Share via Apps</span>
-              </div>
-              <p class="share-apps-sub">Send this one-time self-destructing link directly to your target chat or email.</p>
-            </div>
-
-            <!-- Single Row 5 App Tiles -->
-            <div class="share-apps-row">
-              
-              <!-- WhatsApp -->
-              <button type="button" class="app-tile btn-whatsapp" id="btn-share-whatsapp" title="Send encrypted link via WhatsApp">
-                <span class="app-tile-icon">
-                  <svg class="app-svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
-                </span>
-                <span class="app-tile-name">WhatsApp</span>
-              </button>
-
-              <!-- Slack -->
-              <button type="button" class="app-tile btn-slack" id="btn-share-slack" title="Copy Slack markdown &amp; open Slack">
-                <span class="app-tile-icon">
-                  <svg class="app-svg" viewBox="0 0 24 24" fill="currentColor"><path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z"/></svg>
-                </span>
-                <span class="app-tile-name">Slack</span>
-              </button>
-
-              <!-- Teams -->
-              <button type="button" class="app-tile btn-teams" id="btn-share-teams" title="Send encrypted link via Microsoft Teams">
-                <span class="app-tile-icon">
-                  <svg class="app-svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19.5 7.5a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5zM22.5 9h-6a1.5 1.5 0 0 0-1.5 1.5V15a3 3 0 0 0 3 3h3a3 3 0 0 0 3-3v-4.5A1.5 1.5 0 0 0 22.5 9zM13.5 6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm3 3h-6A2.25 2.25 0 0 0 8.25 11.25V18a4.5 4.5 0 0 0 4.5 4.5h1.5a4.5 4.5 0 0 0 4.5-4.5v-6.75A2.25 2.25 0 0 0 16.5 9zM7.5 10.5V18a5.98 5.98 0 0 1-.95 3.25A4.5 4.5 0 0 1 1.5 16.5V12a1.5 1.5 0 0 1 1.5-1.5h4.5zM4.5 7.5a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5z"/></svg>
-                </span>
-                <span class="app-tile-name">Teams</span>
-              </button>
-
-              <!-- Discord -->
-              <button type="button" class="app-tile btn-discord" id="btn-share-discord" title="Copy spoiler-protected link &amp; open Discord">
-                <span class="app-tile-icon">
-                  <svg class="app-svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
-                </span>
-                <span class="app-tile-name">Discord</span>
-              </button>
-
-              <!-- Email -->
-              <button type="button" class="app-tile btn-email" id="btn-share-email" title="Draft secure email with secret link">
-                <span class="app-tile-icon">
-                  <svg class="app-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                </span>
-                <span class="app-tile-name">Email</span>
-              </button>
-            </div>
-
-            <!-- Hidden File Dispatch Support Elements (Backward Compatibility) -->
-            <div id="file-dispatch-controls" class="hidden">
-              <button type="button" id="tab-dispatch-link" class="hidden"></button>
-              <button type="button" id="tab-dispatch-file" class="hidden"></button>
-              <div id="dispatch-panel-link" class="hidden"></div>
-              <div id="dispatch-panel-file" class="hidden">
-                <button type="button" id="btn-share-file-native" class="hidden"></button>
-                <button type="button" id="btn-share-file-whatsapp" class="hidden"></button>
-                <button type="button" id="btn-share-file-slack" class="hidden"></button>
-                <button type="button" id="btn-share-file-teams" class="hidden"></button>
-                <button type="button" id="btn-share-file-discord" class="hidden"></button>
-                <button type="button" id="btn-share-file-email" class="hidden"></button>
-                <button type="button" id="btn-download-portable-file" class="hidden"></button>
-                <button type="button" id="btn-download-vault-capsule" class="hidden"></button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Action Pills Row (Show QR Code & Download Portable Vault) -->
-          <div class="result-action-pills">
-            <button type="button" id="btn-toggle-qr" class="btn-action-pill">
-              <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-              <span>Show QR Code</span>
-            </button>
-            <button type="button" id="btn-download-html-vault" class="btn-action-pill">
+          <div style="display:flex;flex-wrap:wrap;gap:1rem;">
+            <a href="/download" class="btn-primary-gradient" style="padding:0.85rem 1.5rem;font-size:0.95rem;text-decoration:none;">
               <svg class="svg-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-              <span>Download Portable Vault (.html)</span>
-            </button>
+              <span>Download Extension →</span>
+            </a>
+            <a href="/extension" class="btn-secondary-glass" style="padding:0.85rem 1.25rem;font-size:0.95rem;text-decoration:none;width:auto;">
+              <span>Learn More</span>
+            </a>
           </div>
+        </div>
 
-          <!-- Collapsible QR Code Container -->
-          <div id="qr-container" class="qr-container hidden">
-            <div class="qr-frame"></div>
-            <div class="qr-hint">Scan with mobile camera to view secret</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cryptographic Security Features -->
+  <section class="saas-section">
+    <div class="saas-container">
+      <div class="saas-section-header">
+        <div class="saas-section-badge">CRYPTOGRAPHIC ARCHITECTURE</div>
+        <h2 class="saas-section-title">Built with True Ephemeral Guarantees</h2>
+        <p class="saas-section-desc">Designed from first principles to withstand curious recipients, link-crawling bots, and server inspection attacks.</p>
+      </div>
+
+      <div class="features-grid-saas">
+        <!-- Feature 1 -->
+        <div class="feature-box">
+          <div class="feature-icon-wrapper">
+            <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
           </div>
+          <h3 class="feature-title">AES-256-GCM Encryption</h3>
+          <p class="feature-desc">Authenticated 256-bit encryption with random 96-bit IVs and 128-bit authentication tags prevents ciphertext tampering.</p>
+        </div>
 
-          <!-- 3-Column Metadata Strip -->
-          <div class="metadata-strip">
-            <div class="meta-item">
-              <div class="meta-icon-circle">
-                <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-              </div>
-              <div class="meta-texts">
-                <span class="meta-title">Expires</span>
-                <span id="expires-display" class="meta-val">-</span>
-              </div>
-            </div>
-            
-            <div class="meta-item">
-              <div class="meta-icon-circle">
-                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-              </div>
-              <div class="meta-texts">
-                <span class="meta-title">Allowance</span>
-                <span id="views-display" class="meta-val">1 view</span>
-              </div>
-            </div>
-
-            <div class="meta-item">
-              <div class="meta-icon-circle">
-                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-              </div>
-              <div class="meta-texts">
-                <span class="meta-title">Security</span>
-                <span class="meta-val">Protected</span>
-              </div>
-            </div>
+        <!-- Feature 2 -->
+        <div class="feature-box">
+          <div class="feature-icon-wrapper">
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
           </div>
-
-          <!-- Full-Width Bottom CTA: + Create Another Secret -->
-          <button type="button" id="reset-btn" class="btn-primary-gradient" style="margin-top:1.25rem;">
-            <svg class="svg-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            <span>+ Create Another Secret</span>
-          </button>
-        </section>
-
-      </div>
-
-      <!-- Trust Badges Strip (Under Card) -->
-      <div class="trust-badges-strip" id="trust-strip">
-        <div class="trust-badge-item">
-          <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-          <span>Zero Plaintext Storage</span>
+          <h3 class="feature-title">Two-Step Reveal Flow</h3>
+          <p class="feature-desc">Vault IDs are non-sensitive locators. Plaintext is only unlocked when an authorized human requests a single-use reveal token.</p>
         </div>
-        <span class="trust-divider">|</span>
-        <div class="trust-badge-item">
-          <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-          <span>Time-Limited Secrets</span>
+
+        <!-- Feature 3 -->
+        <div class="feature-box">
+          <div class="feature-icon-wrapper">
+            <svg class="svg-icon" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+          </div>
+          <h3 class="feature-title">Link Preview Defense</h3>
+          <p class="feature-desc">Slackbot, Discordbot, Twitterbot, and WhatsApp link unfurlers receive a static dummy shell and cannot trigger a secret burn.</p>
         </div>
-        <span class="trust-divider">|</span>
-        <div class="trust-badge-item">
-          <svg class="svg-icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-          <span>Automatic Destruction</span>
+
+        <!-- Feature 4 -->
+        <div class="feature-box">
+          <div class="feature-icon-wrapper">
+            <svg class="svg-icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          </div>
+          <h3 class="feature-title">Memory Zeroization</h3>
+          <p class="feature-desc">In-memory decrypted buffers are filled with cryptographically random zeros immediately following transmission.</p>
+        </div>
+
+        <!-- Feature 5 -->
+        <div class="feature-box">
+          <div class="feature-icon-wrapper">
+            <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          </div>
+          <h3 class="feature-title">Active TTL Sweeper</h3>
+          <p class="feature-desc">A background engine periodically purges expired secrets from SQLite storage even if the recipient never opens the link.</p>
+        </div>
+
+        <!-- Feature 6 -->
+        <div class="feature-box">
+          <div class="feature-icon-wrapper">
+            <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          </div>
+          <h3 class="feature-title">Passphrase Brute Defense</h3>
+          <p class="feature-desc">Incorrect passphrase attempts trigger exponential backoffs. 3 consecutive failed guesses triggers automatic destruction.</p>
         </div>
       </div>
     </div>
-  </main>
+  </section>
 
-  <!-- Informational Modals (Preserved for app.js click & escape handling) -->
-  <div id="modal-how-it-works" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-hiw-title">
-    <div class="modal-dialog">
-      <div class="modal-header">
-        <h3 id="modal-hiw-title" class="modal-title">
-          <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-          <span>How It Works</span>
-        </h3>
-        <button type="button" class="btn-modal-close" data-modal="modal-how-it-works" aria-label="Close modal">
-          <svg class="svg-icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </button>
+  <!-- FAQ Section -->
+  <section id="faq" class="saas-section" style="background:rgba(7, 12, 30, 0.4);border-top:1px solid rgba(255,255,255,0.05);">
+    <div class="saas-container">
+      <div class="saas-section-header">
+        <div class="saas-section-badge">FAQ</div>
+        <h2 class="saas-section-title">Frequently Asked Questions</h2>
+        <p class="saas-section-desc">Everything you need to know about secure ephemeral secret sharing.</p>
       </div>
-      <div class="modal-body">
-        <h4>1. Enter &amp; Configure</h4>
-        <p>Type your credentials, paste confidential keys, or attach files. Choose your expiration time and view limit.</p>
-        <h4>2. Encrypted at Rest</h4>
-        <p>Every payload is securely encrypted with AES-256-GCM. Plaintext never touches persistent disk.</p>
-        <h4>3. Single-View Atomic Burn</h4>
-        <p>When opened, the payload is decrypted only in memory and immediately erased permanently from storage.</p>
+
+      <div class="faq-accordion">
+        <details class="faq-item" open>
+          <summary class="faq-question">
+            <span>What happens when I share a vault link via WhatsApp or Slack?</span>
+            <span class="faq-icon-arrow">▼</span>
+          </summary>
+          <div class="faq-answer">
+            Only the random vault link is sent. The actual secret text or file is never transmitted across the chat platform. Chat bots that expand links receive a static shell and cannot reveal or burn the secret.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">
+            <span>Can an expired or burned secret ever be recovered?</span>
+            <span class="faq-icon-arrow">▼</span>
+          </summary>
+          <div class="faq-answer">
+            No. When a secret expires or reaches its maximum view limit, the database row is physically purged and in-memory buffers are wiped with zeros. Recovery is mathematically impossible.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">
+            <span>Is the secret visible in the initial page source or HTML?</span>
+            <span class="faq-icon-arrow">▼</span>
+          </summary>
+          <div class="faq-answer">
+            No. The secret is never embedded in HTML, JavaScript variables, CSS, Base64 strings, or cookies. It can only be delivered over TLS after an authorized human clicks "Reveal Secret".
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">
+            <span>What file types and sizes are supported?</span>
+            <span class="faq-icon-arrow">▼</span>
+          </summary>
+          <div class="faq-answer">
+            You can share confidential scripts (Python, Bash, JS), configuration files (.env, JSON, YAML), certificates (.pem, .key), documents (.pdf), and images (.png, .jpg) up to 10 MB.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">
+            <span>How does the browser extension work?</span>
+            <span class="faq-icon-arrow">▼</span>
+          </summary>
+          <div class="faq-answer">
+            The extension adds a quick "Paste &amp; Secure" command (Ctrl+Shift+V) and context menu in WhatsApp Web, Gmail, Outlook, Slack, and Discord. It encrypts the secret and injects only the safe link into your message draft.
+          </div>
+        </details>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div id="modal-security" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-sec-title">
-    <div class="modal-dialog">
-      <div class="modal-header">
-        <h3 id="modal-sec-title" class="modal-title">
-          <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-          <span>Cryptographic Security</span>
-        </h3>
-        <button type="button" class="btn-modal-close" data-modal="modal-security" aria-label="Close modal">
-          <svg class="svg-icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </button>
-      </div>
-      <div class="modal-body">
-        <h4>Authenticated Encryption</h4>
-        <p>Every secret is protected with authenticated encryption. Ciphertext cannot be tampered with in storage.</p>
-        <h4>Zero Plaintext on Disk</h4>
-        <p>Plaintext never touches persistent storage. In-memory buffers are immediately zeroized after transmission.</p>
+  <!-- CTA Banner Section -->
+  <section class="saas-section" style="padding:4rem 0;">
+    <div class="saas-container">
+      <div style="background:linear-gradient(135deg, rgba(2,132,199,0.2) 0%, rgba(99,102,241,0.2) 100%);border:1px solid rgba(56,189,248,0.3);border-radius:24px;padding:3.5rem 2rem;text-align:center;box-shadow:0 20px 48px rgba(0,0,0,0.4);">
+        <h2 style="font-size:2.25rem;font-weight:800;color:#ffffff;margin-bottom:1rem;">Ready to share your first secret securely?</h2>
+        <p style="font-size:1.1rem;color:var(--text-dim);max-width:600px;margin:0 auto 2rem auto;">No registration required. Free, open-source, and cryptographically fortified.</p>
+        <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;">
+          <a href="/create" class="btn-primary-gradient" style="padding:0.9rem 2rem;font-size:1rem;text-decoration:none;">
+            <span>Create Secret Now →</span>
+          </a>
+          <a href="/extension" class="btn-secondary-glass" style="padding:0.9rem 1.5rem;font-size:1rem;text-decoration:none;width:auto;">
+            <span>Get the Browser Extension</span>
+          </a>
+        </div>
       </div>
     </div>
-  </div>
-
-  <div id="modal-faq" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-faq-title">
-    <div class="modal-dialog">
-      <div class="modal-header">
-        <h3 id="modal-faq-title" class="modal-title">
-          <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-          <span>Frequently Asked Questions</span>
-        </h3>
-        <button type="button" class="btn-modal-close" data-modal="modal-faq" aria-label="Close modal">
-          <svg class="svg-icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </button>
-      </div>
-      <div class="modal-body">
-        <h4>Can an expired or burned secret be recovered?</h4>
-        <p>No. Once burned or expired, storage is permanently wiped. Recovery is mathematically impossible.</p>
-        <h4>What is the Portable Vault (.html) download?</h4>
-        <p>A portable offline decryptor file that can be saved or emailed. It decrypts client-side and self-destructs locally.</p>
-      </div>
-    </div>
-  </div>
+  </section>
 
   <!-- Minimal Enterprise Security Footer -->
   <footer class="footer-enterprise">
     <div class="footer-trust-strip">
-      <span>Protected</span>
+      <span>Protected by AES-256-GCM</span>
       <span class="strip-sep">•</span>
       <span>Zero Plaintext Storage</span>
       <span class="strip-sep">•</span>
-      <span>Permanent Overwrite</span>
+      <span>Link Preview Defense</span>
+      <span class="strip-sep">•</span>
+      <span>Physical Row Shredding</span>
+    </div>
+    <div style="display:flex;justify-content:center;gap:1.5rem;margin:1.5rem 0;flex-wrap:wrap;font-size:0.88rem;">
+      <a href="/create" style="color:var(--text-dim);text-decoration:none;">Create Secret</a>
+      <a href="/extension" style="color:var(--text-dim);text-decoration:none;">Browser Extension</a>
+      <a href="/download" style="color:var(--text-dim);text-decoration:none;">Download Extension</a>
+      <a href="/security" style="color:var(--text-dim);text-decoration:none;">Security Architecture</a>
+      <a href="/how-it-works" style="color:var(--text-dim);text-decoration:none;">How It Works</a>
+      <a href="/dashboard" style="color:var(--text-dim);text-decoration:none;">Dashboard</a>
     </div>
     <div class="footer-meta-text">
-      Ephemeral Secret Vault • Production-Grade Security Service
+      Ephemeral Secret Vault • Production-Grade Ephemeral Security System
     </div>
   </footer>
 
-  <!-- Toast Notification -->
-  <div id="toast" class="toast" role="status" aria-live="polite">
-    <span id="toast-message">Copied to clipboard</span>
-  </div>
-
-  <script src="/js/qrcode.min.js"></script>
-  <script src="js/qrcode.min.js"></script>
-  <script src="/js/app.js"></script>
-  <script src="js/app.js"></script>
+  <script>
+    // Theme toggle handling
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    const savedTheme = localStorage.getItem('vault_theme');
+    if (savedTheme === 'light') {
+      document.body.classList.add('light-theme');
+    }
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const isLight = document.body.classList.toggle('light-theme');
+        localStorage.setItem('vault_theme', isLight ? 'light' : 'dark');
+      });
+    }
+  </script>
 </body>
 </html>

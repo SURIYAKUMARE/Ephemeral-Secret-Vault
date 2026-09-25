@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('node:path');
+const fs = require('node:fs');
 const secretController = require('../controllers/secretController');
 const {
   validateCreateSecret,
@@ -27,24 +28,93 @@ const publicDir = path.join(process.cwd(), 'public');
 // Health check
 router.get('/health', secretController.health);
 
-// Landing / Text Secret page
-router.get(['/', '/text', '/create', '/create.html'], (req, res) => {
+// Landing SaaS page
+router.get('/', (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
-  const indexFile = path.join(publicDir, 'index.html');
-  res.sendFile(indexFile);
+  res.sendFile(path.join(publicDir, 'index.html'));
+});
+
+// Dedicated Create Secret page
+router.get(['/create', '/create.html', '/text'], (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+  res.sendFile(path.join(publicDir, 'create.html'));
 });
 
 // Dedicated Universal File Vault page
 router.get('/file', (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
-  const filePage = path.join(publicDir, 'file.html');
-  res.sendFile(filePage);
+  res.sendFile(path.join(publicDir, 'file.html'));
 });
+
+// Dedicated Share Center
+router.get('/share/:id', validateSecretId, secretController.getShareView);
 
 // Safe view splash page (supports /view/:id, /v/:id, and /vault/:id)
 router.get(['/view/:id', '/v/:id', '/vault/:id'], validateSecretId, secretController.getSecretView);
+
+// Expired Secret page
+router.get('/expired', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+  res.sendFile(path.join(publicDir, 'expired.html'));
+});
+
+// Destroyed Secret page
+router.get('/destroyed', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+  res.sendFile(path.join(publicDir, 'destroyed.html'));
+});
+
+// Dedicated Browser Extension landing page
+router.get('/extension', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+  res.sendFile(path.join(publicDir, 'extension.html'));
+});
+
+// Dedicated Extension Download & Instructions page
+router.get('/download', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+  res.sendFile(path.join(publicDir, 'download.html'));
+});
+
+// Direct Extension ZIP download
+router.get(['/api/extension/download', '/download/extension.zip'], (req, res) => {
+  const zipPath = path.join(publicDir, 'downloads', 'ephemeral-vault-extension.zip');
+  if (fs.existsSync(zipPath)) {
+    return res.download(zipPath, 'ephemeral-secret-vault-extension.zip');
+  }
+  return res.status(404).json({ error: 'Extension archive not found' });
+});
+
+// Dedicated Security Architecture page
+router.get('/security', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+  res.sendFile(path.join(publicDir, 'security.html'));
+});
+
+// Dedicated How It Works page
+router.get('/how-it-works', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+  res.sendFile(path.join(publicDir, 'how-it-works.html'));
+});
+
+// Dedicated Creator Dashboard page
+router.get('/dashboard', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+  res.sendFile(path.join(publicDir, 'dashboard.html'));
+});
+
+// Public Safe Metadata API
+router.get(['/api/vault/:id/metadata', '/api/secret/:id/metadata'], validateSecretId, secretController.getVaultMetadata);
 
 // Threshold view page (safe landing)
 router.get('/view/threshold/:id', validateSecretId, (req, res) => {
