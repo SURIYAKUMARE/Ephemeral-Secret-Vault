@@ -1,5 +1,9 @@
 # Ephemeral Secret Vault 🔒
 
+<p align="center">
+  <img src="public/images/logo.png" alt="Ephemeral Secret Vault Logo" width="550">
+</p>
+
 **Production-Grade, Self-Destructing, Zero-Trace Secret-Sharing Web Application**
 
 Ephemeral Secret Vault is a high-security, self-destructing secret-sharing service built with Node.js, Express.js, better-sqlite3 in WAL mode, and native AES-256-GCM authenticated encryption.
