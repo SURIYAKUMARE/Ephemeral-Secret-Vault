@@ -68,6 +68,15 @@
   const toast = document.getElementById('toast');
   const toastMessage = document.getElementById('toast-message');
   const themeToggle = document.getElementById('theme-toggle');
+  const heroHeader = document.getElementById('hero-header');
+  const trustStrip = document.getElementById('trust-strip');
+  const navCreateBtn = document.getElementById('nav-create-btn');
+  const modalHowItWorks = document.getElementById('modal-how-it-works');
+  const modalSecurity = document.getElementById('modal-security');
+  const modalFaq = document.getElementById('modal-faq');
+  const btnNavHowItWorks = document.getElementById('nav-btn-how-it-works');
+  const btnNavSecurity = document.getElementById('nav-btn-security');
+  const btnNavFaq = document.getElementById('nav-btn-faq');
 
   // Runtime State
   let currentFile = null;
@@ -503,6 +512,8 @@
 
         // Reveal Result Section
         createForm.classList.add('hidden');
+        if (heroHeader) heroHeader.classList.add('hidden');
+        if (trustStrip) trustStrip.classList.add('hidden');
         if (resultSection) {
           resultSection.classList.remove('hidden');
           window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1510,9 +1521,70 @@
       }
 
       if (resultSection) resultSection.classList.add('hidden');
+      if (heroHeader) heroHeader.classList.remove('hidden');
+      if (trustStrip) trustStrip.classList.remove('hidden');
       if (createForm) createForm.classList.remove('hidden');
       hideError();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
+
+  // ==========================================================================
+  // Navbar '+ Create Secret' Button
+  // ==========================================================================
+  if (navCreateBtn) {
+    navCreateBtn.addEventListener('click', () => {
+      if (resultSection && !resultSection.classList.contains('hidden')) {
+        if (resetBtn) resetBtn.click();
+      }
+      if (secretInput) {
+        secretInput.focus();
+        secretInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
+  }
+
+  // ==========================================================================
+  // Informational Modals (How It Works, Security, FAQ)
+  // ==========================================================================
+  function openModal(modal) {
+    if (modal) modal.classList.remove('hidden');
+  }
+
+  function closeModal(modal) {
+    if (modal) modal.classList.add('hidden');
+  }
+
+  if (btnNavHowItWorks) {
+    btnNavHowItWorks.addEventListener('click', () => openModal(modalHowItWorks));
+  }
+  if (btnNavSecurity) {
+    btnNavSecurity.addEventListener('click', () => openModal(modalSecurity));
+  }
+  if (btnNavFaq) {
+    btnNavFaq.addEventListener('click', () => openModal(modalFaq));
+  }
+
+  document.querySelectorAll('.btn-modal-close').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const modalId = btn.getAttribute('data-modal');
+      const target = document.getElementById(modalId);
+      if (target) closeModal(target);
+    });
+  });
+
+  [modalHowItWorks, modalSecurity, modalFaq].forEach((modal) => {
+    if (!modal) return;
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal(modal);
+    });
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      [modalHowItWorks, modalSecurity, modalFaq].forEach((modal) => {
+        if (modal && !modal.classList.contains('hidden')) closeModal(modal);
+      });
+    }
+  });
 })();
