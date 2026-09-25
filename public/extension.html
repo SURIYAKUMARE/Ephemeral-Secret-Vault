@@ -11,26 +11,20 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body id="top">
-  <!-- Cyber Background Neon Arcs -->
-  <div class="cyber-background" aria-hidden="true">
-    <div class="neon-arc-left"></div>
-    <div class="neon-arc-left-glow"></div>
-    <div class="neon-arc-right"></div>
-    <div class="neon-arc-right-glow"></div>
-    <div class="reflective-floor"></div>
-  </div>
-
-  <!-- Navbar -->
+  <!-- Minimal Monochrome Header -->
   <header class="navbar">
     <div class="nav-container">
       <a href="/" class="nav-brand" title="Ephemeral Secret Vault">
-        <img src="/images/logo-icon.png" alt="Ephemeral Secret Vault Logo" class="nav-logo-img">
-        <span class="brand-text">Ephemeral <span class="gradient-text">Secret Vault</span></span>
+        <svg class="nav-monochrome-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <span class="brand-name">Ephemeral Secret Vault</span>
       </a>
 
       <nav class="nav-links-row" aria-label="Main Navigation">
         <a href="/">Home</a>
-        <a href="/create">Create Secret</a>
+        <a href="/create">Product</a>
         <a href="/security">Security</a>
         <a href="/extension" class="active">Extension</a>
         <a href="/how-it-works">How It Works</a>
@@ -38,166 +32,128 @@
       </nav>
 
       <div class="nav-actions">
-        <a href="/download" class="btn-nav-gradient">
-          <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-          <span>Download</span>
-        </a>
+        <!-- Exactly ONE status indicator in header -->
+        <span class="status-pill status-neutral">
+          <span class="status-dot"></span>
+          <span>AES-256-GCM</span>
+        </span>
+
+        <!-- Theme toggle as plain icon button -->
+        <button type="button" class="btn-icon-plain" id="theme-toggle" aria-label="Toggle Theme" title="Toggle theme">
+          <svg id="theme-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
       </div>
     </div>
   </header>
 
-  <!-- Extension Hero Section -->
-  <section class="saas-section" style="padding-top:4rem;">
-    <div class="saas-container">
-      <div class="vault-split-layout" style="align-items:center;">
+  <!-- Extension Container -->
+  <main class="viewport-layout" style="padding-top:40px;padding-bottom:60px;">
+    <div style="max-width:800px;width:100%;margin:0 auto;padding:0 16px;">
+      
+      <!-- Header -->
+      <header class="card-header-clean" style="text-align:left;margin-bottom:32px;">
+        <span class="section-label">Official Browser Companion</span>
+        <h1 class="page-title" style="font-size:28px;margin-bottom:8px;">
+          Secure Sharing Extension
+        </h1>
+        <p class="page-subtitle" style="font-size:14px;margin:0;">
+          Send sensitive passwords, API keys, credentials, and files directly through WhatsApp Web, Gmail, Outlook, Slack, and Discord without ever putting the plaintext secret in the chat message.
+        </p>
+      </header>
+
+      <!-- Action Card -->
+      <section class="vault-card" style="margin-bottom:24px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+          <div>
+            <div style="font-size:15px;font-weight:600;color:var(--text-primary);margin-bottom:4px;">Install for Chromium Browsers</div>
+            <div style="font-size:13px;color:var(--text-muted);">Compatible with Google Chrome, Microsoft Edge, Brave, and Firefox (MV3)</div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <a href="/download" class="btn-primary-solid" style="height:38px;padding:0 18px;font-size:13px;text-decoration:none;display:inline-flex;">
+              Install Extension →
+            </a>
+            <a href="/create" class="btn-secondary-neutral" style="height:38px;padding:0 16px;font-size:13px;text-decoration:none;display:inline-flex;">
+              Use Web App
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Workflow Grid -->
+      <div style="margin-bottom:28px;">
+        <span class="section-label">In-Browser Workflow</span>
+        <h2 style="font-size:18px;font-weight:600;color:var(--text-primary);margin-bottom:16px;">Zero Plaintext in Message Drafts</h2>
         
-        <div class="hero-content" style="max-width:560px;">
-          <div class="saas-section-badge">OFFICIAL BROWSER COMPANION</div>
-          <h1 class="saas-section-title" style="text-align:left;font-size:2.8rem;line-height:1.2;">
-            Ephemeral Secret Vault<br>
-            <span class="gradient-text">Secure Sharing Extension</span>
-          </h1>
-          <p class="saas-section-desc" style="text-align:left;margin-bottom:2rem;">
-            Send sensitive passwords, API keys, credentials, and files directly through WhatsApp Web, Gmail, Outlook, Slack, and Discord without ever putting the plaintext secret in the chat message.
-          </p>
-
-          <div style="display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:2rem;">
-            <a href="/download" class="btn-primary-gradient" style="padding:0.9rem 1.75rem;text-decoration:none;font-size:1rem;">
-              <svg class="svg-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-              <span>Install for Chrome / Edge →</span>
-            </a>
-            <a href="/create" class="btn-secondary-glass" style="padding:0.9rem 1.5rem;text-decoration:none;width:auto;font-size:0.95rem;">
-              <span>Use Web App</span>
-            </a>
+        <div style="display:grid;grid-template-columns:repeat(2, 1fr);gap:12px;">
+          <div class="vault-card" style="padding:16px;">
+            <div style="font-size:11px;font-weight:700;color:var(--primary);text-transform:uppercase;margin-bottom:6px;">01 • Write or Paste</div>
+            <div style="font-size:13px;color:var(--text-secondary);line-height:1.5;">Open any chat message in WhatsApp, Gmail, or Slack. Press Ctrl+Shift+V or right-click to trigger the vault modal.</div>
           </div>
 
-          <div style="display:flex;align-items:center;gap:1rem;font-size:0.82rem;color:var(--text-muted);">
-            <span>Supported Browsers:</span>
-            <span style="color:var(--text-white);font-weight:600;">Google Chrome • Microsoft Edge • Brave • Firefox (MV3)</span>
+          <div class="vault-card" style="padding:16px;">
+            <div style="font-size:11px;font-weight:700;color:var(--primary);text-transform:uppercase;margin-bottom:6px;">02 • Smart Detection</div>
+            <div style="font-size:13px;color:var(--text-secondary);line-height:1.5;">The extension automatically recognizes API tokens, AWS keys, JWTs, and passwords, suggesting instant protection.</div>
+          </div>
+
+          <div class="vault-card" style="padding:16px;">
+            <div style="font-size:11px;font-weight:700;color:var(--primary);text-transform:uppercase;margin-bottom:6px;">03 • One-Click Vaulting</div>
+            <div style="font-size:13px;color:var(--text-secondary);line-height:1.5;">The plaintext is immediately encrypted and replaced with a temporary, single-use vault link in the draft field.</div>
+          </div>
+
+          <div class="vault-card" style="padding:16px;">
+            <div style="font-size:11px;font-weight:700;color:var(--primary);text-transform:uppercase;margin-bottom:6px;">04 • Recipient Reveals</div>
+            <div style="font-size:13px;color:var(--text-secondary);line-height:1.5;">Your contact clicks the link, views the credentials once on any device, and the vault vanishes permanently.</div>
           </div>
         </div>
-
-        <div class="vault-visual-col">
-          <div style="border-radius:18px;overflow:hidden;border:1px solid rgba(56,189,248,0.3);box-shadow:0 24px 60px rgba(0,0,0,0.6);position:relative;">
-            <img src="/images/vault-hero-shield.jpg" alt="Extension Security Architecture" style="width:100%;display:block;border-radius:18px;">
-          </div>
-        </div>
-
       </div>
+
+      <!-- Security Architecture Details -->
+      <section class="vault-card">
+        <span class="section-label">Architecture</span>
+        <h2 style="font-size:18px;font-weight:600;color:var(--text-primary);margin-bottom:16px;">Engineered for Zero Data Leakage</h2>
+
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div>
+            <h3 style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:4px;">Isolated Shadow DOM</h3>
+            <p style="font-size:13px;color:var(--text-secondary);line-height:1.5;margin:0;">The in-page creation modal is rendered inside a closed Shadow Root, guaranteeing webpage scripts cannot inspect the secret.</p>
+          </div>
+
+          <div>
+            <h3 style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:4px;">Zero Plaintext in Storage</h3>
+            <p style="font-size:13px;color:var(--text-secondary);line-height:1.5;margin:0;">The extension never writes secrets or encryption keys into chrome.storage.local or session buffers. Only anonymous metadata is logged.</p>
+          </div>
+
+          <div>
+            <h3 style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:4px;">Native Platform Adapters</h3>
+            <p style="font-size:13px;color:var(--text-secondary);line-height:1.5;margin:0;">Dedicated adapters hook directly into the contenteditable and draft containers of WhatsApp, Gmail, Outlook, Slack, and Discord.</p>
+          </div>
+        </div>
+      </section>
+
     </div>
-  </section>
+  </main>
 
-  <!-- How It Works Inside Web Apps -->
-  <section class="saas-section" style="background:rgba(7, 12, 30, 0.4);border-top:1px solid rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.05);">
-    <div class="saas-container">
-      <div class="saas-section-header">
-        <div class="saas-section-badge">IN-BROWSER WORKFLOW</div>
-        <h2 class="saas-section-title">Zero Plaintext in Message Drafts</h2>
-        <p class="saas-section-desc">Experience seamless security without altering your day-to-day communication habits.</p>
-      </div>
-
-      <div class="flow-steps-grid">
-        <div class="flow-step-card">
-          <div class="flow-step-num">01</div>
-          <div class="flow-step-icon">
-            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-          </div>
-          <h3 class="flow-step-title">Write or Paste</h3>
-          <p class="flow-step-desc">Open any chat message in WhatsApp, Gmail, or Slack. Press Ctrl+Shift+V or right-click to trigger the vault modal.</p>
-        </div>
-
-        <div class="flow-step-card">
-          <div class="flow-step-num">02</div>
-          <div class="flow-step-icon">
-            <svg class="svg-icon" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-          </div>
-          <h3 class="flow-step-title">Smart Detection</h3>
-          <p class="flow-step-desc">The extension automatically recognizes API tokens, AWS keys, JWTs, and passwords, suggesting instant protection.</p>
-        </div>
-
-        <div class="flow-step-card">
-          <div class="flow-step-num">03</div>
-          <div class="flow-step-icon">
-            <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-          </div>
-          <h3 class="flow-step-title">One-Click Vaulting</h3>
-          <p class="flow-step-desc">The plaintext is immediately encrypted and replaced with a temporary, single-use vault link in the draft field.</p>
-        </div>
-
-        <div class="flow-step-card">
-          <div class="flow-step-num">04</div>
-          <div class="flow-step-icon">
-            <svg class="svg-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          </div>
-          <h3 class="flow-step-title">Recipient Reveals</h3>
-          <p class="flow-step-desc">Your contact clicks the link, views the credentials once on any device, and the vault vanishes permanently.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Technical Features Grid -->
-  <section class="saas-section">
-    <div class="saas-container">
-      <div class="saas-section-header">
-        <div class="saas-section-badge">SECURITY ARCHITECTURE</div>
-        <h2 class="saas-section-title">Engineered for Zero Data Leakage</h2>
-        <p class="saas-section-desc">Manifest V3 compliance ensures minimal browser permissions and strict isolation.</p>
-      </div>
-
-      <div class="features-grid-saas">
-        <div class="feature-box">
-          <div class="feature-icon-wrapper">
-            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-          </div>
-          <h3 class="feature-title">Isolated Shadow DOM</h3>
-          <p class="feature-desc">The in-page creation modal is rendered inside a closed Shadow Root, guaranteeing webpage scripts cannot inspect the secret.</p>
-        </div>
-
-        <div class="feature-box">
-          <div class="feature-icon-wrapper">
-            <svg class="svg-icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-          </div>
-          <h3 class="feature-title">Zero Plaintext in Storage</h3>
-          <p class="feature-desc">The extension never writes secrets or encryption keys into chrome.storage.local or session buffers. Only anonymous metadata is logged.</p>
-        </div>
-
-        <div class="feature-box">
-          <div class="feature-icon-wrapper">
-            <svg class="svg-icon" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-          </div>
-          <h3 class="feature-title">Native Platform Adapters</h3>
-          <p class="feature-desc">Dedicated adapters hook directly into the contenteditable and draft containers of WhatsApp, Gmail, Outlook, Slack, and Discord.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA Banner -->
-  <section class="saas-section" style="padding:4rem 0;">
-    <div class="saas-container">
-      <div style="background:linear-gradient(135deg, rgba(2,132,199,0.2) 0%, rgba(99,102,241,0.2) 100%);border:1px solid rgba(56,189,248,0.3);border-radius:24px;padding:3rem 2rem;text-align:center;">
-        <h2 style="font-size:2.2rem;font-weight:800;color:#ffffff;margin-bottom:0.75rem;">Get the Browser Extension</h2>
-        <p style="font-size:1rem;color:var(--text-dim);max-width:560px;margin:0 auto 1.75rem auto;">Load unpacked in 30 seconds with full Developer Mode support on Chromium browsers.</p>
-        <a href="/download" class="btn-primary-gradient" style="padding:0.85rem 2rem;text-decoration:none;font-size:1rem;">
-          <span>View Installation Guide &amp; Download →</span>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
   <footer class="footer-enterprise">
-    <div class="footer-trust-strip">
-      <span>Manifest V3 Compliant</span>
-      <span class="strip-sep">•</span>
-      <span>Zero Plaintext Storage</span>
-      <span class="strip-sep">•</span>
-      <span>Shadow DOM Isolated</span>
-    </div>
     <div class="footer-meta-text">
-      Ephemeral Secret Vault • Production-Grade Security Service
+      Ephemeral Secret Vault • AES-256-GCM Zero-Trace Cryptographic Service
     </div>
   </footer>
+
+  <script>
+    const themeBtn = document.getElementById('theme-toggle');
+    if (themeBtn) {
+      themeBtn.addEventListener('click', () => {
+        const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+        document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        localStorage.setItem('theme', isDark ? 'light' : 'dark');
+      });
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+      }
+    }
+  </script>
 </body>
 </html>

@@ -11,90 +11,107 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body id="top">
-  <!-- Cyber Background Neon Arcs -->
-  <div class="cyber-background" aria-hidden="true">
-    <div class="neon-arc-left"></div>
-    <div class="neon-arc-left-glow"></div>
-    <div class="neon-arc-right"></div>
-    <div class="neon-arc-right-glow"></div>
-    <div class="reflective-floor"></div>
-  </div>
-
-  <!-- Navbar -->
+  <!-- Minimal Monochrome Header -->
   <header class="navbar">
     <div class="nav-container">
       <a href="/" class="nav-brand" title="Ephemeral Secret Vault">
-        <img src="/images/logo-icon.png" alt="Ephemeral Secret Vault Logo" class="nav-logo-img">
-        <span class="brand-text">Ephemeral <span class="gradient-text">Secret Vault</span></span>
+        <svg class="nav-monochrome-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <span class="brand-name">Ephemeral Secret Vault</span>
       </a>
 
       <nav class="nav-links-row" aria-label="Main Navigation">
         <a href="/">Home</a>
-        <a href="/create">Create Secret</a>
+        <a href="/create">Product</a>
         <a href="/security">Security</a>
         <a href="/extension">Extension</a>
+        <a href="/dashboard">Dashboard</a>
       </nav>
 
       <div class="nav-actions">
-        <a href="/create" class="btn-nav-gradient">
-          <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-          <span>Create Secret</span>
-        </a>
+        <!-- Exactly ONE status indicator in header -->
+        <span class="status-pill status-danger">
+          <span class="status-dot"></span>
+          <span>Destroyed</span>
+        </span>
+
+        <!-- Theme toggle as plain icon button -->
+        <button type="button" class="btn-icon-plain" id="theme-toggle" aria-label="Toggle Theme" title="Toggle theme">
+          <svg id="theme-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
       </div>
     </div>
   </header>
 
-  <!-- Main Status Container -->
-  <main class="saas-container">
-    <div class="status-hero-card">
+  <!-- Single Centered Column Layout (Max-Width ~560px, Vertically Centered) -->
+  <main class="viewport-layout">
+    <div class="centered-column">
       
-      <!-- Destroyed Flame/Shred Icon Circle -->
-      <div class="status-icon-circle destroyed">
-        <svg class="svg-icon" viewBox="0 0 24 24" style="width:36px;height:36px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-      </div>
+      <!-- Consistent Production Security Card -->
+      <div class="vault-card">
+        
+        <header class="card-header-clean">
+          <div style="display:flex;justify-content:center;margin-bottom:12px;">
+            <span class="status-pill status-danger">
+              <span class="status-dot"></span>
+              <span>Burned &amp; Shredded</span>
+            </span>
+          </div>
 
-      <div class="hero-badge hero-badge-clean badge-unavailable" style="margin-bottom:1rem;display:inline-flex;">
-        <span>ATOMIC SHREDDING VERIFIED • 0 COPIES REMAIN</span>
-      </div>
+          <h1 class="page-title">Secret Burned &amp; Shredded</h1>
+          <p class="page-subtitle">
+            This secret was either accessed by its authorized recipient or destroyed on demand by its creator.
+          </p>
+        </header>
 
-      <h1 class="status-hero-title">Secret Burned &amp; Shredded</h1>
-      
-      <p class="status-hero-desc">
-        This secret was either accessed by its authorized recipient or destroyed on demand by its creator. The ciphertext was atomically deleted from disk and memory buffers were zeroized.
-      </p>
-
-      <div style="background:rgba(5,9,22,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1.25rem;margin-bottom:2rem;text-align:left;font-size:0.85rem;color:var(--text-dim);line-height:1.6;">
-        <div style="font-weight:700;color:var(--text-white);margin-bottom:0.4rem;display:flex;align-items:center;gap:0.4rem;">
-          <svg class="svg-icon" viewBox="0 0 24 24" style="color:var(--danger);width:16px;height:16px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          Single-Use Cryptographic Burn
+        <!-- Information Box -->
+        <div style="background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:var(--radius-sm);padding:16px;margin:20px 0;font-size:13px;color:var(--text-muted);line-height:1.6;">
+          <div style="font-weight:600;color:var(--text-primary);margin-bottom:6px;display:flex;align-items:center;gap:6px;">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Single-Use Cryptographic Burn
+          </div>
+          The ciphertext was atomically deleted from disk and memory buffers were zeroized. The secret link is permanently dead. Even if the URL is intercepted in browser history or router logs, the payload cannot be decrypted again.
         </div>
-        The secret link is permanently dead. Even if a bad actor intercepted the URL in browser history or router logs, the payload cannot be decrypted again.
-      </div>
 
-      <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;">
-        <a href="/create" class="btn-primary-gradient" style="padding:0.85rem 1.75rem;text-decoration:none;">
-          <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-          <span>Create a New Secret</span>
-        </a>
-        <a href="/" class="btn-secondary-glass" style="padding:0.85rem 1.5rem;text-decoration:none;width:auto;">
-          <span>Return Home</span>
-        </a>
-      </div>
+        <!-- Action Buttons -->
+        <div class="action-btn-group" style="margin-top:24px;">
+          <a href="/create" class="btn-primary-solid" style="text-decoration:none;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <span>Create a Secret</span>
+          </a>
+          <a href="/" class="btn-secondary-clean" style="text-decoration:none;">
+            <span>Return Home</span>
+          </a>
+        </div>
 
+      </div>
     </div>
   </main>
 
   <footer class="footer-enterprise">
-    <div class="footer-trust-strip">
-      <span>Protected</span>
-      <span class="strip-sep">•</span>
-      <span>Zero Plaintext Storage</span>
-      <span class="strip-sep">•</span>
-      <span>Permanent Overwrite</span>
-    </div>
     <div class="footer-meta-text">
-      Ephemeral Secret Vault • Production-Grade Security Service
+      Ephemeral Secret Vault • AES-256-GCM Zero-Trace Cryptographic Service
     </div>
   </footer>
+
+  <script>
+    // Theme toggle handler
+    const themeBtn = document.getElementById('theme-toggle');
+    if (themeBtn) {
+      themeBtn.addEventListener('click', () => {
+        const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+        document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        localStorage.setItem('theme', isDark ? 'light' : 'dark');
+      });
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+      }
+    }
+  </script>
 </body>
 </html>
