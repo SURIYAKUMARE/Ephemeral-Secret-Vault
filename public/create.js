@@ -1961,10 +1961,137 @@
     });
   });
 
-  // Close modals on Escape key
-  window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeAllModals();
+  // ==========================================================================
+  // QPA Presets, Buffer Clear & Allocation Interactions
+  // ==========================================================================
+  const presetCards = document.querySelectorAll('.qpa-preset-card');
+  const allocTagName = document.getElementById('alloc-tag-name');
+  const allocTitle = document.getElementById('alloc-title');
+  const allocSub = document.getElementById('alloc-sub');
+  const allocQueueNum = document.getElementById('alloc-queue-num');
+  const allocIconBox = document.getElementById('alloc-icon-box');
+
+  const PRESET_DATA = {
+    day: {
+      name: '✦ CPA Day',
+      title: '☀ Python',
+      sub: 'Level 3 • CPA Day',
+      queue: '#205 in queue',
+      icon: '<svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>',
+      payload: 'CPA-DAY-ASSESSMENT: PYTHON-LV3-CREDENTIALS\nSESSION_TOKEN=cpa_live_day_py3_9941a87\nENCRYPTION=AES-256-GCM\nEXAM_SECRET=python_eval_key_2026_qpa'
+    },
+    evening: {
+      name: '✦ CPA Evening',
+      title: '🌙 Node.js',
+      sub: 'Level 4 • CPA Evening',
+      queue: '#142 in queue',
+      icon: '<svg class="svg-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>',
+      payload: 'CPA-EVENING-ASSESSMENT: NODEJS-LV4-CREDENTIALS\nSESSION_TOKEN=cpa_live_eve_node4_8812b3\nENCRYPTION=AES-256-GCM\nEXAM_SECRET=node_eval_key_2026_qpa'
+    },
+    holiday: {
+      name: '✦ CPA Holiday',
+      title: '⭐ DevOps',
+      sub: 'Level 5 • CPA Holiday',
+      queue: '#089 in queue',
+      icon: '<svg class="svg-icon" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>',
+      payload: 'CPA-HOLIDAY-MASTERCLASS: DEVOPS-LV5-CREDENTIALS\nSESSION_TOKEN=cpa_live_hol_devops5_7749c1\nENCRYPTION=AES-256-GCM\nEXAM_SECRET=devops_eval_key_2026_qpa'
+    }
+  };
+
+  presetCards.forEach((card) => {
+    card.addEventListener('click', () => {
+      presetCards.forEach(c => {
+        c.classList.remove('active-preset');
+        c.setAttribute('aria-pressed', 'false');
+      });
+      card.classList.add('active-preset');
+      card.setAttribute('aria-pressed', 'true');
+
+      const presetKey = card.getAttribute('data-preset') || 'day';
+      const info = PRESET_DATA[presetKey];
+      if (info) {
+        if (allocTagName) allocTagName.textContent = info.name;
+        if (allocTitle) allocTitle.textContent = info.title;
+        if (allocSub) allocSub.textContent = info.sub;
+        if (allocQueueNum) allocQueueNum.textContent = info.queue;
+        if (allocIconBox) allocIconBox.innerHTML = info.icon;
+        if (secretInput) {
+          secretInput.value = info.payload;
+          secretInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        showToast(`Locked in ${info.name}`);
+      }
+    });
   });
+
+  // Filter Pills Interactivity
+  const filterPills = document.querySelectorAll('.qpa-filter-pill');
+  filterPills.forEach((pill) => {
+    pill.addEventListener('click', () => {
+      filterPills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      showToast(`Filter applied: ${pill.textContent}`);
+    });
+  });
+
+  // Header Refresh Button
+  const qpaHeaderRefresh = document.getElementById('qpa-header-refresh');
+  if (qpaHeaderRefresh) {
+    qpaHeaderRefresh.addEventListener('click', () => {
+      if (secretInput) {
+        secretInput.value = '';
+        secretInput.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+      if (passphraseInput) {
+        passphraseInput.value = '';
+        passphraseInput.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+      if (btnRemoveFile && filePreviewCard && !filePreviewCard.classList.contains('hidden')) {
+        btnRemoveFile.click();
+      }
+      updateByteCounterAndIndicators();
+      updateSecurityScore();
+      showToast('Buffer cleared! Ready to join a queue for your next session.');
+    });
+  }
+
+  // Cancel Allocation Button
+  const btnCancelAllocation = document.getElementById('btn-cancel-allocation');
+  if (btnCancelAllocation) {
+    btnCancelAllocation.addEventListener('click', () => {
+      if (resetBtn && resultSection && !resultSection.classList.contains('hidden')) {
+        resetBtn.click();
+      } else {
+        if (secretInput) {
+          secretInput.value = '';
+          secretInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        updateByteCounterAndIndicators();
+      }
+      showToast('Allocation reset & buffer cleared.');
+    });
+  }
+
+  // Know Me dialog handler
+  const btnKnowMe = document.getElementById('nav-help');
+  const infoModal = document.getElementById('info-modal');
+  const modalClose = document.getElementById('modal-close');
+  if (btnKnowMe && infoModal) {
+    btnKnowMe.addEventListener('click', (e) => {
+      e.preventDefault();
+      infoModal.classList.remove('hidden');
+    });
+  }
+  if (modalClose && infoModal) {
+    modalClose.addEventListener('click', () => {
+      infoModal.classList.add('hidden');
+    });
+  }
+  if (infoModal) {
+    infoModal.addEventListener('click', (e) => {
+      if (e.target === infoModal) infoModal.classList.add('hidden');
+    });
+  }
 
   // Initial runs
   updateByteCounterAndIndicators();
