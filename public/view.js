@@ -48,6 +48,17 @@
   const slideRevealWidget = document.getElementById('slide-reveal-widget');
   const slideThumb = document.getElementById('slide-thumb');
 
+  // Passphrase Eye Toggle & Hint
+  const btnToggleViewEye = document.getElementById('btn-toggle-view-eye');
+  const viewEyeIcon = document.getElementById('view-eye-icon');
+  const passphraseHintBox = document.getElementById('passphrase-hint-box');
+  const passphraseHintText = document.getElementById('passphrase-hint-text');
+
+  // Export Format Suite
+  const btnCopyEnv = document.getElementById('btn-copy-env');
+  const btnCopyBearer = document.getElementById('btn-copy-bearer');
+  const btnCopyJson = document.getElementById('btn-copy-json');
+
   // Secret Peek & RAM Wipe Controls
   const btnPeekSecret = document.getElementById('btn-peek-secret');
   const peekText = document.getElementById('peek-text');
@@ -232,6 +243,16 @@
   }
 
   // Interactive Slide-to-Reveal Slider
+  function resetSlideThumb() {
+    if (slideThumb && slideRevealWidget) {
+      slideThumb.style.transition = 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)';
+      slideThumb.style.transform = 'translateX(0px)';
+      slideThumb.style.background = '';
+      const trackText = slideRevealWidget.querySelector('.slide-reveal-text');
+      if (trackText) trackText.innerHTML = 'SLIDE TO REVEAL &amp; DESTROY &gt;&gt;&gt;';
+    }
+  }
+
   if (slideRevealWidget && slideThumb && burnBtn) {
     let isDragging = false;
     let startX = 0;
@@ -319,6 +340,10 @@
   if (burnBtn) {
     burnBtn.addEventListener('click', async () => {
       hideError();
+      if (vaultCard) {
+        vaultCard.classList.add('vault-disintegrating');
+        setTimeout(() => vaultCard.classList.remove('vault-disintegrating'), 500);
+      }
       burnBtn.disabled = true;
       burnBtn.innerHTML = `${SVG.spinner} <span>Decrypting &amp; Wiping Database Row...</span>`;
 
@@ -340,6 +365,7 @@
           showError(data.error || 'Invalid passphrase.');
           burnBtn.disabled = false;
           burnBtn.innerHTML = `${SVG.flame} <span>Reveal &amp; Destroy Secret</span>`;
+          resetSlideThumb();
           if (passphraseInput) {
             passphraseInput.focus();
             passphraseInput.select();
@@ -350,10 +376,12 @@
         if (response.status === 404) {
           splashSection.classList.add('hidden');
           destroyedSection.classList.remove('hidden');
+          resetSlideThumb();
           return;
         }
 
         if (!response.ok) {
+          resetSlideThumb();
           throw new Error(data.error || 'Failed to reveal secret.');
         }
 
@@ -459,6 +487,7 @@
         showError(err.message || 'Failed to reveal secret.');
         burnBtn.disabled = false;
         burnBtn.innerHTML = `${SVG.flame} <span>Reveal &amp; Destroy Secret</span>`;
+        resetSlideThumb();
       }
     });
   }
@@ -529,6 +558,96 @@
       showToast('✓ Saved text note as file');
     });
   }
+
+  // Developer Export Suite Handlers (.env, Bearer token, JSON)
+  if (btnCopyEnv && secretDisplay) {
+    btnCopyEnv.addEventListener('click', async () => {
+      const val = secretDisplay.textContent;
+      const formatted = val.includes('=') ? val : `SECRET_KEY="${val.replace(/"/g, '\\"')}"`;
+      try {
+        await navigator.clipboard.writeText(formatted);
+        btnCopyEnv.innerHTML = `${SVG.check} <span>Copied</span>`;
+        showToast('✓ Formatted as .env and copied');
+        setTimeout(() => {
+          btnCopyEnv.innerHTML = '<svg class="svg-icon" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg> <span>Copy as .env</span>';
+        }, 2000);
+      } catch {
+        showToast('Failed to copy to clipboard');
+      }
+    });
+  }
+
+  if (btnCopyBearer && secretDisplay) {
+    btnCopyBearer.addEventListener('click', async () => {
+      const val = secretDisplay.textContent.trim();
+      const formatted = `Authorization: Bearer ${val}`;
+      try {
+        await navigator.clipboard.writeText(formatted);
+        btnCopyBearer.innerHTML = `${SVG.check} <span>Copied</span>`;
+        showToast('✓ Formatted as Bearer header and copied');
+        setTimeout(() => {
+          btnCopyBearer.innerHTML = '<svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> <span>Copy Bearer Header</span>';
+        }, 2000);
+      } catch {
+        showToast('Failed to copy to clipboard');
+      }
+    });
+  }
+
+  if (btnCopyJson && secretDisplay) {
+    btnCopyJson.addEventListener('click', async () => {
+      const val = secretDisplay.textContent;
+      let formatted;
+      try {
+        JSON.parse(val);
+        formatted = val;
+      } catch {
+        formatted = JSON.stringify({ secret: val }, null, 2);
+      }
+      try {
+        await navigator.clipboard.writeText(formatted);
+        btnCopyJson.innerHTML = `${SVG.check} <span>Copied</span>`;
+        showToast('✓ Formatted as JSON and copied');
+        setTimeout(() => {
+          btnCopyJson.innerHTML = '<svg class="svg-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg> <span>Copy as JSON</span>';
+        }, 2000);
+      } catch {
+        showToast('Failed to copy to clipboard');
+      }
+    });
+  }
+
+  // Passphrase Eye Visibility Toggle
+  if (btnToggleViewEye && passphraseInput) {
+    btnToggleViewEye.addEventListener('click', () => {
+      const isPassword = passphraseInput.getAttribute('type') === 'password';
+      passphraseInput.setAttribute('type', isPassword ? 'text' : 'password');
+      btnToggleViewEye.setAttribute('aria-label', isPassword ? 'Hide passphrase' : 'Show passphrase');
+      if (viewEyeIcon) {
+        viewEyeIcon.innerHTML = isPassword
+          ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>'
+          : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+      }
+    });
+  }
+
+  // Zero-Knowledge URL Hash Passphrase Hint Decoder
+  function checkUrlHashHint() {
+    const hash = window.location.hash;
+    if (hash && hash.includes('hint=')) {
+      const match = hash.match(/hint=([^&]+)/);
+      if (match && match[1]) {
+        try {
+          const hint = decodeURIComponent(match[1]);
+          if (passphraseHintBox && passphraseHintText && hint) {
+            passphraseHintText.textContent = hint;
+            passphraseHintBox.classList.remove('hidden');
+          }
+        } catch (_) {}
+      }
+    }
+  }
+  checkUrlHashHint();
 
   // ==========================================================================
   // Secret Privacy Peek & Mask Toggle

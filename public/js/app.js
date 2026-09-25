@@ -46,6 +46,23 @@
   const detectedFormatBadge = document.getElementById('detected-format-badge');
   const secretStatusIndicator = document.getElementById('secret-status-indicator');
 
+  // Password & Token Generator Elements
+  const btnOpenGenerator = document.getElementById('btn-open-generator');
+  const passwordGeneratorPanel = document.getElementById('password-generator-panel');
+  const genPresetBtns = document.querySelectorAll('.gen-preset-btn');
+  const genLengthSlider = document.getElementById('gen-length-slider');
+  const genLengthVal = document.getElementById('gen-length-val');
+  const genOptUpper = document.getElementById('gen-opt-upper');
+  const genOptLower = document.getElementById('gen-opt-lower');
+  const genOptNums = document.getElementById('gen-opt-nums');
+  const genOptSyms = document.getElementById('gen-opt-syms');
+  const genOutput = document.getElementById('gen-output');
+  const btnRegenPwd = document.getElementById('btn-regen-pwd');
+  const btnInsertSecretPwd = document.getElementById('btn-insert-secret-pwd');
+  const btnUseAsPassphrase = document.getElementById('btn-use-as-passphrase');
+  const btnGenPassphrase = document.getElementById('btn-gen-passphrase');
+  const passphraseHintInput = document.getElementById('passphrase-hint-input');
+
   // Advanced Security Options Accordion
   const btnToggleAdvanced = document.getElementById('btn-toggle-advanced');
   const advancedOptionsPanel = document.getElementById('advanced-options-panel');
@@ -299,6 +316,35 @@
 
   if (secretInput) {
     secretInput.addEventListener('input', updateByteCounterAndIndicators);
+
+    // Direct Drag & Drop of text/code files directly onto textarea
+    secretInput.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      secretInput.classList.add('textarea-dragover');
+    });
+
+    secretInput.addEventListener('dragleave', () => {
+      secretInput.classList.remove('textarea-dragover');
+    });
+
+    secretInput.addEventListener('drop', (e) => {
+      e.preventDefault();
+      secretInput.classList.remove('textarea-dragover');
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        const file = e.dataTransfer.files[0];
+        if (file.size > 10 * 1024) {
+          showError(`File is ${formatBytes(file.size)}. Secret text max limit is 10 KB (use Universal File Vault for larger files).`);
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          secretInput.value = evt.target.result;
+          secretInput.dispatchEvent(new Event('input'));
+          showToast(`✓ Loaded ${file.name} into secret content`);
+        };
+        reader.readAsText(file);
+      }
+    });
   }
 
   // Clear secret button
@@ -323,6 +369,195 @@
         secretVisibilityText.textContent = 'Mask';
         secretVisibilityIcon.innerHTML = SVG_ICONS.eye;
       }
+    });
+  }
+
+  // ==========================================================================
+  // Cryptographically Secure Password / Token Generator
+  // ==========================================================================
+  const WORD_LIST = [
+    'cyber', 'vault', 'crypto', 'shield', 'phantom', 'orbit', 'matrix', 'vector',
+    'zenith', 'pulse', 'quantum', 'signal', 'beacon', 'echo', 'alpha', 'delta',
+    'vortex', 'titan', 'nebula', 'plasma', 'solar', 'aurora', 'chrono', 'forge',
+    'glacier', 'horizon', 'infinit', 'jupiter', 'kinetic', 'lunar', 'meteor', 'nova',
+    'omega', 'photon', 'quasar', 'radiant', 'shadow', 'stellar', 'tactical', 'umbra',
+    'velocity', 'warp', 'xenon', 'yield', 'zero', 'sentinel', 'cipher', 'apex'
+  ];
+
+  function getSecureRandomInt(max) {
+    const arr = new Uint32Array(1);
+    window.crypto.getRandomValues(arr);
+    return arr[0] % max;
+  }
+
+  function generateSecureRandomString(mode = 'pwd-strong', length = 24) {
+    if (mode === 'hex-key') {
+      const byteCount = Math.max(16, Math.floor(length / 2));
+      const bytes = new Uint8Array(byteCount);
+      window.crypto.getRandomValues(bytes);
+      return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    if (mode === 'base64-secret') {
+      const bytes = new Uint8Array(Math.max(16, length));
+      window.crypto.getRandomValues(bytes);
+      let binary = '';
+      for (let i = 0; i < bytes.byteLength; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      return btoa(binary).slice(0, length);
+    }
+
+    if (mode === 'word-phrase') {
+      const count = 4;
+      const picked = [];
+      for (let i = 0; i < count; i++) {
+        picked.push(WORD_LIST[getSecureRandomInt(WORD_LIST.length)]);
+      }
+      const randomNum = getSecureRandomInt(99) + 1;
+      return `${picked.join('-')}-${randomNum}`;
+    }
+
+    // Default: strong password
+    const upper = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+    const lower = 'abcdefghijkmnopqrstuvwxyz';
+    const nums = '23456789';
+    const syms = '!@#$%^&*()_+~|}{[]:;?><,./-=';
+
+    let pool = '';
+    const guaranteed = [];
+
+    if (genOptUpper && genOptUpper.checked) {
+      pool += upper;
+      guaranteed.push(upper[getSecureRandomInt(upper.length)]);
+    }
+    if (genOptLower && genOptLower.checked) {
+      pool += lower;
+      guaranteed.push(lower[getSecureRandomInt(lower.length)]);
+    }
+    if (genOptNums && genOptNums.checked) {
+      pool += nums;
+      guaranteed.push(nums[getSecureRandomInt(nums.length)]);
+    }
+    if (genOptSyms && genOptSyms.checked) {
+      pool += syms;
+      guaranteed.push(syms[getSecureRandomInt(syms.length)]);
+    }
+
+    if (!pool) pool = upper + lower + nums;
+
+    const remainingLen = Math.max(0, length - guaranteed.length);
+    const randomBytes = new Uint32Array(remainingLen);
+    window.crypto.getRandomValues(randomBytes);
+
+    let resultArr = [...guaranteed];
+    for (let i = 0; i < remainingLen; i++) {
+      resultArr.push(pool[randomBytes[i] % pool.length]);
+    }
+
+    // Fisher-Yates shuffle
+    for (let i = resultArr.length - 1; i > 0; i--) {
+      const j = getSecureRandomInt(i + 1);
+      [resultArr[i], resultArr[j]] = [resultArr[j], resultArr[i]];
+    }
+
+    return resultArr.join('');
+  }
+
+  let activeGenPreset = 'pwd-strong';
+
+  function refreshGeneratedToken() {
+    if (!genOutput) return;
+    const len = genLengthSlider ? parseInt(genLengthSlider.value, 10) : 24;
+    if (genLengthVal) genLengthVal.textContent = len;
+    genOutput.value = generateSecureRandomString(activeGenPreset, len);
+  }
+
+  if (btnOpenGenerator && passwordGeneratorPanel) {
+    btnOpenGenerator.addEventListener('click', () => {
+      const isHidden = passwordGeneratorPanel.classList.toggle('hidden');
+      if (!isHidden) {
+        refreshGeneratedToken();
+      }
+    });
+  }
+
+  if (genPresetBtns && genPresetBtns.length > 0) {
+    genPresetBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        genPresetBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeGenPreset = btn.dataset.preset || 'pwd-strong';
+        if (activeGenPreset === 'hex-key' && genLengthSlider) {
+          genLengthSlider.value = '64';
+        } else if (activeGenPreset === 'word-phrase' && genLengthSlider) {
+          genLengthSlider.value = '28';
+        } else if (activeGenPreset === 'base64-secret' && genLengthSlider) {
+          genLengthSlider.value = '32';
+        } else if (genLengthSlider) {
+          genLengthSlider.value = '24';
+        }
+        refreshGeneratedToken();
+      });
+    });
+  }
+
+  if (genLengthSlider) {
+    genLengthSlider.addEventListener('input', refreshGeneratedToken);
+  }
+
+  [genOptUpper, genOptLower, genOptNums, genOptSyms].forEach(chk => {
+    if (chk) chk.addEventListener('change', refreshGeneratedToken);
+  });
+
+  if (btnRegenPwd) {
+    btnRegenPwd.addEventListener('click', refreshGeneratedToken);
+  }
+
+  if (btnInsertSecretPwd && secretInput && genOutput) {
+    btnInsertSecretPwd.addEventListener('click', () => {
+      secretInput.value = genOutput.value;
+      secretInput.dispatchEvent(new Event('input'));
+      if (passwordGeneratorPanel) passwordGeneratorPanel.classList.add('hidden');
+      showToast('✓ Token inserted into secret content');
+      secretInput.focus();
+    });
+  }
+
+  if (btnUseAsPassphrase && passphraseInput && genOutput) {
+    btnUseAsPassphrase.addEventListener('click', () => {
+      if (advancedOptionsPanel && advancedOptionsPanel.classList.contains('hidden') && btnToggleAdvanced) {
+        btnToggleAdvanced.click();
+      }
+      passphraseInput.value = genOutput.value;
+      passphraseInput.setAttribute('type', 'text');
+      if (btnToggleEye) {
+        const eyeSvg = btnToggleEye.querySelector('svg');
+        if (eyeSvg) eyeSvg.outerHTML = SVG_ICONS.eyeOff;
+      }
+      passphraseInput.dispatchEvent(new Event('input'));
+      if (passwordGeneratorPanel) passwordGeneratorPanel.classList.add('hidden');
+      showToast('✓ Vault passphrase set (visible for review)');
+      passphraseInput.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      passphraseInput.focus();
+    });
+  }
+
+  if (btnGenPassphrase && passphraseInput) {
+    btnGenPassphrase.addEventListener('click', () => {
+      if (advancedOptionsPanel && advancedOptionsPanel.classList.contains('hidden') && btnToggleAdvanced) {
+        btnToggleAdvanced.click();
+      }
+      const newPass = generateSecureRandomString('pwd-strong', 20);
+      passphraseInput.value = newPass;
+      passphraseInput.setAttribute('type', 'text');
+      if (btnToggleEye) {
+        const eyeSvg = btnToggleEye.querySelector('svg');
+        if (eyeSvg) eyeSvg.outerHTML = SVG_ICONS.eyeOff;
+      }
+      passphraseInput.dispatchEvent(new Event('input'));
+      showToast('✓ Generated 20-char secure passphrase');
+      passphraseInput.focus();
     });
   }
 
@@ -906,13 +1141,18 @@
 
         // Store active runtime data
         activeSecretData = data;
-        activeSecretUrl = data.view_url;
+        const passphraseHint = (passphraseHintInput && passphraseHintInput.value) ? passphraseHintInput.value.trim() : '';
+        if (passphraseHint && passphrase) {
+          activeSecretUrl = `${data.view_url}#hint=${encodeURIComponent(passphraseHint)}`;
+        } else {
+          activeSecretUrl = data.view_url;
+        }
         activeSecretText = secretText;
         activePassphrase = passphrase;
 
         // Display results in Link panel
-        linkOutput.value = data.view_url;
-        openLinkBtn.href = data.view_url;
+        linkOutput.value = activeSecretUrl;
+        openLinkBtn.href = activeSecretUrl;
         expiresDisplay.textContent = new Date(data.expires_at).toLocaleString();
         viewsDisplay.textContent = `${data.views_remaining} view${data.views_remaining > 1 ? 's' : ''}`;
         fingerprintDisplay.textContent = data.fingerprint;
@@ -933,13 +1173,13 @@
         }
 
         // Setup Social Sharing Links
-        const shareText = `Confidential Ephemeral Secret:\nA self-destructing secret has been generated via Ephemeral Secret Vault.\n\nAccess Link: ${data.view_url}\n\nSecurity Notice: This link permanently self-destructs upon access.`;
+        const shareText = `Confidential Ephemeral Secret:\nA self-destructing secret has been generated via Ephemeral Secret Vault.\n\nAccess Link: ${activeSecretUrl}\n\nSecurity Notice: This link permanently self-destructs upon access.`;
 
         shareWhatsApp.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
-        shareTeams.href = `https://teams.microsoft.com/share?href=${encodeURIComponent(data.view_url)}&msgText=${encodeURIComponent('A confidential self-destructing secret has been shared with you.')}`;
+        shareTeams.href = `https://teams.microsoft.com/share?href=${encodeURIComponent(activeSecretUrl)}&msgText=${encodeURIComponent('A confidential self-destructing secret has been shared with you.')}`;
 
         const emailSubject = 'Secure Self-Destructing Secret Link';
-        const emailBody = `Hello,\n\nA confidential secret has been shared with you via Ephemeral Secret Vault:\n\n${data.view_url}\n\nSecurity Notice: This secret is permanently erased from storage once viewed or upon expiration. No records are retained.\n`;
+        const emailBody = `Hello,\n\nA confidential secret has been shared with you via Ephemeral Secret Vault:\n\n${activeSecretUrl}\n\nSecurity Notice: This secret is permanently erased from storage once viewed or upon expiration. No records are retained.\n`;
         shareEmail.href = `mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
 
         // Switch to result section
@@ -1374,6 +1614,8 @@
       if (dropzone) dropzone.classList.remove('hidden');
       if (qrContainer) qrContainer.classList.add('hidden');
       if (qrFrame) qrFrame.innerHTML = '';
+      if (passphraseHintInput) passphraseHintInput.value = '';
+      if (passwordGeneratorPanel) passwordGeneratorPanel.classList.add('hidden');
 
       // Reset delivery switcher tabs
       if (tabDeliveryLink && tabDeliveryFile && panelDeliveryLink && panelDeliveryFile) {

@@ -136,6 +136,12 @@
 
           <!-- Passphrase Required Group (if configured) -->
           <div id="passphrase-container" class="form-group {{PASSPHRASE_CLASS}}" style="margin-top: 1.25rem;">
+            <!-- Sender Zero-Knowledge Passphrase Hint (displayed when URL hash contains #hint=...) -->
+            <div id="passphrase-hint-box" class="passphrase-hint-banner hidden" style="margin-bottom:0.75rem;padding:0.6rem 0.85rem;background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.25);border-radius:6px;display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:#bae6fd;">
+              <svg class="svg-icon" style="width:16px;height:16px;stroke:#38bdf8;flex-shrink:0;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+              <span>Passphrase Hint: <strong id="passphrase-hint-text" style="color:#ffffff;"></strong></span>
+            </div>
+
             <div class="label-with-badge">
               <label for="view-passphrase">PASSPHRASE REQUIRED</label>
               <span class="badge-tag badge-cyan">Zero-Knowledge</span>
@@ -152,6 +158,9 @@
                 autocomplete="current-password"
                 autofocus
               >
+              <button type="button" id="btn-toggle-view-eye" class="btn-toggle-eye" title="Toggle passphrase visibility" aria-label="Show or hide passphrase">
+                <svg id="view-eye-icon" class="svg-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              </button>
             </div>
           </div>
 
@@ -266,6 +275,22 @@
               <button type="button" id="download-text-btn" class="btn-action-secondary" style="flex:1;margin-top:0;" title="Save text as a file">
                 <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline></svg>
                 <span>Save Text Note</span>
+              </button>
+            </div>
+
+            <!-- Quick Developer Export Formats -->
+            <div class="export-quick-bar" style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.65rem;">
+              <button type="button" id="btn-copy-env" class="btn-tool-mini" title="Copy formatted as .env variable">
+                <svg class="svg-icon" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                <span>Copy as .env</span>
+              </button>
+              <button type="button" id="btn-copy-bearer" class="btn-tool-mini" title="Copy formatted as Authorization: Bearer header">
+                <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                <span>Copy Bearer Header</span>
+              </button>
+              <button type="button" id="btn-copy-json" class="btn-tool-mini" title="Copy formatted as JSON object">
+                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>
+                <span>Copy as JSON</span>
               </button>
             </div>
           </div>

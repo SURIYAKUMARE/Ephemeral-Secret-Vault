@@ -283,9 +283,15 @@
 
               <!-- Optional Passphrase Protection -->
               <div class="form-group">
-                <div class="label-with-badge">
-                  <label for="passphrase-input">OPTIONAL PASSPHRASE</label>
-                  <span class="badge-tag badge-cyan">Extra Protection</span>
+                <div class="label-with-badge" style="display:flex;justify-content:space-between;align-items:center;">
+                  <div style="display:flex;align-items:center;gap:0.5rem;">
+                    <label for="passphrase-input">OPTIONAL PASSPHRASE</label>
+                    <span class="badge-tag badge-cyan">Extra Protection</span>
+                  </div>
+                  <button type="button" id="btn-gen-passphrase" class="btn-tool-mini" title="Generate strong random passphrase" style="font-size:0.72rem;padding:0.2rem 0.5rem;">
+                    <svg class="svg-icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                    <span>Generate Passphrase</span>
+                  </button>
                 </div>
                 <div class="password-wrapper">
                   <span class="password-icon">
@@ -313,6 +319,22 @@
                     <span>Passphrase Complexity:</span>
                     <strong id="passphrase-strength-text">Medium</strong>
                   </div>
+                </div>
+
+                <!-- Passphrase Hint (Zero-Knowledge: Encoded only into URL hash) -->
+                <div class="passphrase-hint-field" style="margin-top: 0.65rem;">
+                  <div class="label-with-hint" style="margin-bottom:0.35rem;">
+                    <label for="passphrase-hint-input" style="font-size: 0.76rem;font-weight:600;color:var(--text-dim);">PASSPHRASE HINT (OPTIONAL)</label>
+                    <span class="field-hint" style="font-size:0.72rem;">Zero-knowledge • Stored only in URL hash</span>
+                  </div>
+                  <input
+                    type="text"
+                    id="passphrase-hint-input"
+                    class="form-control"
+                    placeholder="e.g. Sent via Signal, office wifi key, or project name"
+                    maxlength="120"
+                    style="font-size: 0.82rem; padding: 0.5rem 0.75rem; background:#020617; border:1px solid rgba(56,189,248,0.2); border-radius:6px; color:#f1f5f9; width:100%;"
+                  >
                 </div>
               </div>
 

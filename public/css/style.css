@@ -2832,6 +2832,216 @@ body.light-theme .reveal-mode-btn.active {
   line-height: 1.45;
 }
 
+/* ==========================================================================
+   Vault Digital Disintegration / Particle Burn Animation
+   ========================================================================== */
+@keyframes cyberBurnPulse {
+  0% {
+    filter: drop-shadow(0 0 0 rgba(239, 68, 68, 0));
+    transform: scale(1);
+  }
+  25% {
+    filter: drop-shadow(0 0 25px rgba(239, 68, 68, 0.75)) hue-rotate(-15deg);
+    transform: scale(0.995);
+  }
+  50% {
+    filter: drop-shadow(0 0 45px rgba(239, 68, 68, 0.95)) contrast(1.15);
+    transform: scale(1.006);
+  }
+  75% {
+    filter: drop-shadow(0 0 25px rgba(239, 68, 68, 0.75));
+    transform: scale(0.998);
+  }
+  100% {
+    filter: drop-shadow(0 0 0 rgba(239, 68, 68, 0));
+    transform: scale(1);
+  }
+}
+
+.vault-disintegrating {
+  animation: cyberBurnPulse 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+  position: relative;
+}
+
+/* Zero-Knowledge Passphrase Hint Banner */
+.passphrase-hint-banner {
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Dragover feedback on textarea */
+.textarea-dragover {
+  border-color: var(--cyan-glow) !important;
+  background: rgba(14, 165, 233, 0.08) !important;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.3) !important;
+}
+
+/* Password & Token Generator Panel */
+.password-generator-panel {
+  background: #030816;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 10px;
+  padding: 1rem 1.15rem;
+  margin-bottom: 1rem;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
+  animation: fadeIn 0.25s ease-out;
+}
+
+.gen-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.gen-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--cyan-glow);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.gen-presets {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.85rem;
+}
+
+.gen-preset-btn {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  color: var(--text-dim);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.gen-preset-btn:hover {
+  border-color: var(--cyan-glow);
+  color: #ffffff;
+}
+
+.gen-preset-btn.active {
+  background: rgba(14, 165, 233, 0.2);
+  border-color: var(--cyan-glow);
+  color: #38bdf8;
+}
+
+.gen-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.85rem;
+}
+
+.gen-length-group {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.gen-length-slider {
+  -webkit-appearance: none;
+  width: 130px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  outline: none;
+}
+
+.gen-length-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--cyan-glow);
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+}
+
+.gen-options-group {
+  display: flex;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  font-size: 0.76rem;
+  color: var(--text-dim);
+}
+
+.gen-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.gen-preview-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #020617;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 8px;
+  padding: 0.4rem 0.65rem;
+  margin-bottom: 0.75rem;
+}
+
+.gen-preview-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #38bdf8;
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  outline: none;
+}
+
+.gen-actions-row {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.btn-gen-action {
+  background: rgba(14, 165, 233, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: #f1f5f9;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all var(--transition-fast);
+}
+
+.btn-gen-action:hover {
+  background: rgba(14, 165, 233, 0.28);
+  border-color: var(--cyan-glow);
+  color: #ffffff;
+}
+
+.btn-gen-action-primary {
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  border-color: #38bdf8;
+  color: #ffffff;
+}
+
+.btn-gen-action-primary:hover {
+  background: linear-gradient(135deg, #0369a1, #075985);
+}
+
 /* Accessibility: Respect Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {

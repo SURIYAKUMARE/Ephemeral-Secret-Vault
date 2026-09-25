@@ -160,6 +160,10 @@
               </div>
               <div class="textarea-actions">
                 <span class="char-counter" id="byte-counter" aria-live="polite">0 / 10,240 bytes</span>
+                <button type="button" id="btn-open-generator" class="btn-tool-mini" title="Password & Token Generator" aria-label="Generate Password or API Token">
+                  <svg class="svg-icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                  <span>Generator</span>
+                </button>
                 <button type="button" id="btn-clear-secret" class="btn-tool-mini hidden" title="Clear content" aria-label="Clear secret content">
                   <svg class="svg-icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                   <span>Clear</span>
@@ -167,6 +171,60 @@
                 <button type="button" id="btn-toggle-secret-view" class="btn-tool-mini" title="Toggle visibility" aria-label="Mask or unmask content">
                   <svg id="secret-visibility-icon" class="svg-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                   <span id="secret-visibility-text">Mask</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Cryptographically Secure Password / Token Generator Panel -->
+            <div id="password-generator-panel" class="password-generator-panel hidden">
+              <div class="gen-header-row">
+                <span class="gen-title">
+                  <svg class="svg-icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                  Cryptographic Random Generator
+                </span>
+                <span class="badge-tag badge-cyan">Web Crypto CSPRNG</span>
+              </div>
+              <div class="gen-presets">
+                <button type="button" class="gen-preset-btn active" data-preset="pwd-strong">Strong Password (24c)</button>
+                <button type="button" class="gen-preset-btn" data-preset="hex-key">API Key (Hex 64c)</button>
+                <button type="button" class="gen-preset-btn" data-preset="base64-secret">Base64 Secret (32B)</button>
+                <button type="button" class="gen-preset-btn" data-preset="word-phrase">Passphrase (4 Words)</button>
+              </div>
+              <div class="gen-controls-row">
+                <div class="gen-length-group">
+                  <span>Length: <strong id="gen-length-val">24</strong></span>
+                  <input type="range" id="gen-length-slider" class="gen-length-slider" min="8" max="64" value="24">
+                </div>
+                <div class="gen-options-group">
+                  <label class="gen-checkbox-label">
+                    <input type="checkbox" id="gen-opt-upper" checked> A-Z
+                  </label>
+                  <label class="gen-checkbox-label">
+                    <input type="checkbox" id="gen-opt-lower" checked> a-z
+                  </label>
+                  <label class="gen-checkbox-label">
+                    <input type="checkbox" id="gen-opt-nums" checked> 0-9
+                  </label>
+                  <label class="gen-checkbox-label">
+                    <input type="checkbox" id="gen-opt-syms" checked> !@#$%
+                  </label>
+                </div>
+              </div>
+              <div class="gen-preview-box">
+                <input type="text" id="gen-output" class="gen-preview-input" readonly spellcheck="false">
+                <button type="button" id="btn-regen-pwd" class="btn-tool-mini" title="Regenerate random token">
+                  <svg class="svg-icon" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                  <span>Regenerate</span>
+                </button>
+              </div>
+              <div class="gen-actions-row">
+                <button type="button" id="btn-insert-secret-pwd" class="btn-gen-action btn-gen-action-primary">
+                  <svg class="svg-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  <span>Insert into Secret Content</span>
+                </button>
+                <button type="button" id="btn-use-as-passphrase" class="btn-gen-action">
+                  <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                  <span>Use as Vault Passphrase</span>
                 </button>
               </div>
             </div>
@@ -314,9 +372,15 @@
 
               <!-- Optional Passphrase Protection -->
               <div class="form-group">
-                <div class="label-with-badge">
-                  <label for="passphrase-input">OPTIONAL PASSPHRASE</label>
-                  <span class="badge-tag badge-cyan">Extra Protection</span>
+                <div class="label-with-badge" style="display:flex;justify-content:space-between;align-items:center;">
+                  <div style="display:flex;align-items:center;gap:0.5rem;">
+                    <label for="passphrase-input">OPTIONAL PASSPHRASE</label>
+                    <span class="badge-tag badge-cyan">Extra Protection</span>
+                  </div>
+                  <button type="button" id="btn-gen-passphrase" class="btn-tool-mini" title="Generate strong random passphrase" style="font-size:0.72rem;padding:0.2rem 0.5rem;">
+                    <svg class="svg-icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                    <span>Generate Passphrase</span>
+                  </button>
                 </div>
                 <div class="password-wrapper">
                   <span class="password-icon">
@@ -344,6 +408,22 @@
                     <span>Strength: <strong id="passphrase-strength-text">Weak</strong></span>
                     <span class="passphrase-hint">Use a separate secure channel to share the passphrase.</span>
                   </div>
+                </div>
+
+                <!-- Passphrase Hint (Zero-Knowledge: Encoded only into URL hash) -->
+                <div class="passphrase-hint-field" style="margin-top: 0.65rem;">
+                  <div class="label-with-hint" style="margin-bottom:0.35rem;">
+                    <label for="passphrase-hint-input" style="font-size: 0.76rem;font-weight:600;color:var(--text-dim);">PASSPHRASE HINT (OPTIONAL)</label>
+                    <span class="field-hint" style="font-size:0.72rem;">Zero-knowledge • Stored only in URL hash</span>
+                  </div>
+                  <input
+                    type="text"
+                    id="passphrase-hint-input"
+                    class="form-control"
+                    placeholder="e.g. Sent via Signal, office wifi key, or project name"
+                    maxlength="120"
+                    style="font-size: 0.82rem; padding: 0.5rem 0.75rem; background:#020617; border:1px solid rgba(56,189,248,0.2); border-radius:6px; color:#f1f5f9; width:100%;"
+                  >
                 </div>
               </div>
             </div>
