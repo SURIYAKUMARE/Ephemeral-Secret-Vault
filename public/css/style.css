@@ -627,6 +627,301 @@ body {
   background: #475569;
 }
 
+/* ==========================================================================
+   Multi-Channel App Dispatch Section (Link or File)
+   ========================================================================== */
+
+.dispatch-section {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.15rem;
+  margin-bottom: 1.25rem;
+  text-align: left;
+}
+
+.dispatch-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-bottom: 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 0.75rem;
+}
+
+body.light-theme .dispatch-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.dispatch-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.dispatch-title-group .svg-icon {
+  width: 15px;
+  height: 15px;
+  color: var(--primary-light);
+}
+
+.dispatch-title {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-main);
+  text-transform: uppercase;
+}
+
+.dispatch-mode-toggle {
+  display: inline-flex;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 3px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  gap: 3px;
+}
+
+body.light-theme .dispatch-mode-toggle {
+  background: #e2e8f0;
+}
+
+.dispatch-mode-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.3rem 0.65rem;
+  border-radius: calc(var(--radius-sm) - 2px);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.dispatch-mode-btn:hover {
+  color: var(--text-main);
+}
+
+.dispatch-mode-btn.active {
+  background: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);
+}
+
+.dispatch-desc {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 0.85rem;
+  line-height: 1.45;
+}
+
+.app-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+}
+
+@media (max-width: 620px) {
+  .app-buttons-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .app-buttons-grid.file-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.btn-app-dispatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.7rem 0.45rem;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  min-height: 72px;
+}
+
+body.light-theme .btn-app-dispatch {
+  background: #ffffff;
+}
+
+.btn-app-dispatch:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+  color: var(--text-main);
+}
+
+.app-icon-badge {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.app-icon-badge .app-svg {
+  width: 16px;
+  height: 16px;
+}
+
+.app-name {
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.app-sub {
+  font-size: 0.66rem;
+  color: var(--text-muted);
+}
+
+.app-dispatch-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* App-Specific Themes & Brand Colors */
+.btn-whatsapp .app-icon-badge {
+  background: rgba(37, 211, 102, 0.12);
+  color: #25d366;
+}
+.btn-whatsapp:hover {
+  border-color: rgba(37, 211, 102, 0.5);
+  background: rgba(37, 211, 102, 0.08);
+}
+.btn-whatsapp:hover .app-icon-badge {
+  background: #25d366;
+  color: #ffffff;
+}
+
+.btn-slack .app-icon-badge {
+  background: rgba(224, 30, 90, 0.12);
+  color: #e01e5a;
+}
+.btn-slack:hover {
+  border-color: rgba(224, 30, 90, 0.5);
+  background: rgba(224, 30, 90, 0.08);
+}
+.btn-slack:hover .app-icon-badge {
+  background: #e01e5a;
+  color: #ffffff;
+}
+
+.btn-teams .app-icon-badge {
+  background: rgba(91, 95, 199, 0.14);
+  color: #7b83eb;
+}
+.btn-teams:hover {
+  border-color: rgba(91, 95, 199, 0.55);
+  background: rgba(91, 95, 199, 0.1);
+}
+.btn-teams:hover .app-icon-badge {
+  background: #5b5fc7;
+  color: #ffffff;
+}
+
+.btn-discord .app-icon-badge {
+  background: rgba(88, 101, 242, 0.14);
+  color: #5865f2;
+}
+.btn-discord:hover {
+  border-color: rgba(88, 101, 242, 0.55);
+  background: rgba(88, 101, 242, 0.1);
+}
+.btn-discord:hover .app-icon-badge {
+  background: #5865f2;
+  color: #ffffff;
+}
+
+.btn-email .app-icon-badge {
+  background: rgba(2, 132, 199, 0.14);
+  color: #38bdf8;
+}
+.btn-email:hover {
+  border-color: rgba(2, 132, 199, 0.55);
+  background: rgba(2, 132, 199, 0.1);
+}
+.btn-email:hover .app-icon-badge {
+  background: #0284c7;
+  color: #ffffff;
+}
+
+/* Native OS Share Button */
+.btn-file-share-primary {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.25), rgba(14, 165, 233, 0.15));
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: var(--radius-sm);
+  color: #38bdf8;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.65rem 1rem;
+  cursor: pointer;
+  margin-bottom: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.btn-file-share-primary:hover {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.35), rgba(14, 165, 233, 0.25));
+  border-color: rgba(56, 189, 248, 0.6);
+  color: #ffffff;
+}
+
+/* File Download Capsules */
+.file-download-capsules {
+  display: flex;
+  gap: 0.65rem;
+  margin-top: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.btn-capsule-dl {
+  flex: 1;
+  min-width: 200px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px dashed var(--border);
+  color: var(--text-dim);
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+body.light-theme .btn-capsule-dl {
+  background: #f8fafc;
+}
+
+.btn-capsule-dl:hover {
+  border-color: var(--primary);
+  color: var(--text-main);
+  background: rgba(2, 132, 199, 0.08);
+}
+
 .result-actions-grid {
   display: flex;
   gap: 0.75rem;
