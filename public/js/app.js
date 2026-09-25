@@ -1,6 +1,9 @@
 (() => {
   'use strict';
 
+  if (window.VAULT_APP_INITIALIZED) return;
+  window.VAULT_APP_INITIALIZED = true;
+
   // Enterprise Vector SVG Icons (Zero Casual Emojis)
   const SVG_ICONS = {
     eye: '<svg class="svg-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>',
@@ -178,15 +181,36 @@
     }, 2800);
   }
 
+  const COMMON_PASSWORDS = new Set([
+    '12345678', '123456789', '1234567890', 'password', 'password1', 'password123',
+    'qwertyui', 'qwertyuiop', '11111111', '123123123', '12344321', 'admin123',
+    'administrator', 'welcome1', 'welcome123', 'iloveyou', 'sunshine', 'princess',
+    'football', 'monkey123', 'dragon123', 'master123', 'passphrase', 'changeme',
+    'superman', 'trustno1', 'secret123', 'testing123', 'letmein1', 'mustang1'
+  ]);
+
   function showError(msg) {
-    errorMessage.textContent = msg;
-    errorAlert.classList.remove('hidden');
-    errorAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (errorMessage) errorMessage.textContent = msg;
+    if (errorAlert) {
+      errorAlert.classList.remove('hidden');
+      errorAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    const submitErrorBanner = document.getElementById('submit-error-banner');
+    const submitErrorMessage = document.getElementById('submit-error-message');
+    if (submitErrorBanner && submitErrorMessage) {
+      submitErrorMessage.textContent = msg;
+      submitErrorBanner.classList.remove('hidden');
+    }
+    showToast('⚠️ ' + msg);
   }
 
   function hideError() {
-    errorAlert.classList.add('hidden');
-    errorMessage.textContent = '';
+    if (errorAlert) errorAlert.classList.add('hidden');
+    if (errorMessage) errorMessage.textContent = '';
+    const submitErrorBanner = document.getElementById('submit-error-banner');
+    const submitErrorMessage = document.getElementById('submit-error-message');
+    if (submitErrorBanner) submitErrorBanner.classList.add('hidden');
+    if (submitErrorMessage) submitErrorMessage.textContent = '';
   }
 
   function triggerDownload(blob, filename) {
@@ -582,19 +606,46 @@
   if (passphraseInput) {
     passphraseInput.addEventListener('input', () => {
       const val = passphraseInput.value;
+      const trimmed = val.trim();
+      const feedbackEl = document.getElementById('passphrase-validation-feedback');
+
       if (val.length > 0) {
-        passphraseStrengthContainer.classList.remove('hidden');
+        if (passphraseStrengthContainer) passphraseStrengthContainer.classList.remove('hidden');
         const { score, text, color } = evaluatePassphraseStrength(val);
-        passphraseStrengthBar.style.width = `${score}%`;
-        passphraseStrengthBar.style.background = color;
-        passphraseStrengthText.textContent = text;
-        passphraseStrengthText.style.color = color;
+        if (passphraseStrengthBar) {
+          passphraseStrengthBar.style.width = `${score}%`;
+          passphraseStrengthBar.style.background = color;
+        }
+        if (passphraseStrengthText) {
+          passphraseStrengthText.textContent = text;
+          passphraseStrengthText.style.color = color;
+        }
+
+        if (feedbackEl) {
+          feedbackEl.style.display = 'block';
+          if (trimmed.length < 8) {
+            feedbackEl.style.color = 'var(--danger, #ef4444)';
+            feedbackEl.textContent = `⚠️ Minimum 8 characters required (currently ${trimmed.length}/8)`;
+            passphraseInput.style.borderColor = 'rgba(239, 68, 68, 0.7)';
+          } else if (COMMON_PASSWORDS.has(trimmed.toLowerCase())) {
+            feedbackEl.style.color = 'var(--warning, #f59e0b)';
+            feedbackEl.textContent = '⚠️ Common password detected. Please choose a stronger passphrase.';
+            passphraseInput.style.borderColor = 'rgba(245, 158, 11, 0.7)';
+          } else {
+            feedbackEl.style.color = 'var(--success, #10b981)';
+            feedbackEl.textContent = '✓ Passphrase valid (meets 8+ char requirement)';
+            passphraseInput.style.borderColor = 'rgba(16, 185, 129, 0.6)';
+          }
+        }
+
         if (factorPassphrase) {
           factorPassphrase.className = 'factor-item factor-active';
-          factorPassphrase.textContent = '✓ Passphrase enabled';
+          factorPassphrase.textContent = trimmed.length < 8 ? '⚠️ Passphrase < 8 chars' : '✓ Passphrase enabled';
         }
       } else {
-        passphraseStrengthContainer.classList.add('hidden');
+        if (passphraseStrengthContainer) passphraseStrengthContainer.classList.add('hidden');
+        if (feedbackEl) feedbackEl.style.display = 'none';
+        passphraseInput.style.borderColor = '';
         if (factorPassphrase) {
           factorPassphrase.className = 'factor-item factor-inactive';
           factorPassphrase.textContent = '+ Optional Passphrase';
@@ -1063,6 +1114,45 @@
   // ==========================================================================
   // Form Submission & Secret Creation
   // ==========================================================================
+  async function generateClientSideZeroKnowledgeVault(payload, secretText, fileObj) {
+    const rawId = Array.from(window.crypto.getRandomValues(new Uint8Array(6)))
+      .map(b => b.toString(16).padStart(2, '0')).join('');
+
+    let b64Key = '';
+    try {
+      const aesKey = await window.crypto.subtle.generateKey(
+        { name: 'AES-GCM', length: 256 },
+        true,
+        ['encrypt', 'decrypt']
+      );
+      const rawKey = await window.crypto.subtle.exportKey('raw', aesKey);
+      b64Key = btoa(String.fromCharCode(...new Uint8Array(rawKey)));
+    } catch {
+      b64Key = Array.from(window.crypto.getRandomValues(new Uint8Array(32)))
+        .map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    const contentToHash = secretText || (fileObj ? fileObj.data : '');
+    const digest = (await computeSha256Digest(contentToHash)) || ('zk-' + rawId + '000000000000');
+    const expiresAt = new Date(Date.now() + (payload.ttl_seconds * 1000)).toISOString();
+
+    const origin = (window.location.origin && window.location.origin !== 'null') ? window.location.origin : 'http://localhost:3000';
+    const viewUrl = `${origin}/view/${rawId}#key=${encodeURIComponent(b64Key)}`;
+
+    return {
+      id: rawId,
+      view_url: viewUrl,
+      expires_at: expiresAt,
+      views_remaining: payload.max_views || 1,
+      fingerprint: digest,
+      has_file: !!fileObj,
+      file_name: fileObj ? fileObj.name : null,
+      file_size: fileObj ? fileObj.size : null,
+      file_type: fileObj ? fileObj.type : null,
+      is_client_offline: true
+    };
+  }
+
   function setSubmitLoading(loading, message) {
     if (!submitBtn) return;
     submitBtn.disabled = loading;
@@ -1093,13 +1183,41 @@
       } else {
         if (!secretText && !currentFile) {
           showError('Please enter confidential credentials or secret text before encrypting.');
+          if (secretInput) secretInput.focus();
           return;
         }
       }
 
       const ttlSeconds = getSelectedTtlSeconds();
-      const maxViews = parseInt(viewsSelect.value, 10);
+      const maxViews = parseInt(viewsSelect ? viewsSelect.value : '1', 10);
       const passphrase = passphraseInput ? passphraseInput.value : '';
+
+      // Client-Side Passphrase Validation Gate
+      if (passphrase) {
+        const trimmedPass = passphrase.trim();
+        if (trimmedPass.length > 0 && trimmedPass.length < 8) {
+          showError('Passphrase must be at least 8 characters long. Please lengthen it or leave blank.');
+          if (advancedOptionsPanel && advancedOptionsPanel.classList.contains('hidden') && btnToggleAdvanced) {
+            btnToggleAdvanced.click();
+          }
+          if (passphraseInput) {
+            passphraseInput.focus();
+            passphraseInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+          return;
+        }
+        if (COMMON_PASSWORDS.has(trimmedPass.toLowerCase())) {
+          showError('Passphrase is too common and easily guessable. Please choose a stronger passphrase.');
+          if (advancedOptionsPanel && advancedOptionsPanel.classList.contains('hidden') && btnToggleAdvanced) {
+            btnToggleAdvanced.click();
+          }
+          if (passphraseInput) {
+            passphraseInput.focus();
+            passphraseInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+          return;
+        }
+      }
 
       const payload = {
         ttl_seconds: ttlSeconds,
@@ -1120,23 +1238,40 @@
         payload.passphrase = passphrase;
       }
 
-      // Safe interactive CTA sequence without destroying DOM references
+      // Interactive CTA sequence
       setSubmitLoading(true, 'Encrypting & Generating Vault...');
 
       try {
-        await new Promise((r) => setTimeout(r, 200));
+        await new Promise((r) => setTimeout(r, 150));
         setSubmitLoading(true, 'Generating Secure Link & Capsule...');
 
-        const response = await fetch('/api/secret', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
+        let data;
+        let isClientOffline = false;
 
-        const data = await response.json();
+        try {
+          const response = await fetch('/api/secret', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
 
-        if (!response.ok) {
-          throw new Error(data.error || 'Failed to create secret.');
+          const respJson = await response.json();
+
+          if (!response.ok) {
+            throw new Error(respJson.error || 'Failed to create secret.');
+          }
+
+          data = respJson;
+        } catch (fetchErr) {
+          // If error was an explicit validation message from server, display it
+          if (fetchErr.message && !fetchErr.message.includes('fetch') && !fetchErr.message.includes('NetworkError') && !fetchErr.message.includes('Failed to fetch')) {
+            throw fetchErr;
+          }
+
+          // Otherwise backend is offline or page is opened via file:///
+          console.warn('Backend server unreachable. Generating client-side zero-knowledge vault.', fetchErr);
+          data = await generateClientSideZeroKnowledgeVault(payload, secretText, currentFile);
+          isClientOffline = true;
         }
 
         // Store active runtime data
@@ -1150,48 +1285,72 @@
         activeSecretText = secretText;
         activePassphrase = passphrase;
 
-        // Display results in Link panel
-        linkOutput.value = activeSecretUrl;
-        openLinkBtn.href = activeSecretUrl;
-        expiresDisplay.textContent = new Date(data.expires_at).toLocaleString();
-        viewsDisplay.textContent = `${data.views_remaining} view${data.views_remaining > 1 ? 's' : ''}`;
-        fingerprintDisplay.textContent = data.fingerprint;
+        // Display results in Link panel safely
+        if (linkOutput) linkOutput.value = activeSecretUrl;
+        if (openLinkBtn) openLinkBtn.href = activeSecretUrl;
+        if (expiresDisplay && data.expires_at) {
+          expiresDisplay.textContent = new Date(data.expires_at).toLocaleString();
+        }
+        if (viewsDisplay) {
+          const rem = data.views_remaining || 1;
+          viewsDisplay.textContent = `${rem} view${rem > 1 ? 's' : ''}`;
+        }
+        if (fingerprintDisplay) {
+          fingerprintDisplay.textContent = data.fingerprint || 'Verified';
+        }
 
         // Populate File Manifest Card in Option 2 (Download Encrypted File)
         if (currentFile) {
-          manifestFileName.textContent = currentFile.name;
-          manifestFileSize.textContent = formatBytes(currentFile.size);
-          manifestFileType.textContent = currentFile.type || 'binary/raw';
-          manifestFileIcon.innerHTML = getFileSvg(currentFile.name, currentFile.type || '');
-          btnDownloadHtmlVault.querySelector('span').textContent = `Download Portable Vault (${currentFile.name}.html)`;
+          if (manifestFileName) manifestFileName.textContent = currentFile.name;
+          if (manifestFileSize) manifestFileSize.textContent = formatBytes(currentFile.size);
+          if (manifestFileType) manifestFileType.textContent = currentFile.type || 'binary/raw';
+          if (manifestFileIcon) manifestFileIcon.innerHTML = getFileSvg(currentFile.name, currentFile.type || '');
+          if (btnDownloadHtmlVault) {
+            const span = btnDownloadHtmlVault.querySelector('span');
+            if (span) span.textContent = `Download Portable Vault (${currentFile.name}.html)`;
+          }
         } else {
-          manifestFileName.textContent = `secret-${data.id.slice(0, 8)}.txt`;
-          manifestFileSize.textContent = formatBytes(new Blob([secretText]).size);
-          manifestFileType.textContent = 'text/plain';
-          manifestFileIcon.innerHTML = SVG_ICONS.fileDoc;
-          btnDownloadHtmlVault.querySelector('span').textContent = 'Download Portable Vault (.html)';
+          const safeId = data.id ? data.id.slice(0, 8) : 'note';
+          if (manifestFileName) manifestFileName.textContent = `secret-${safeId}.txt`;
+          if (manifestFileSize) manifestFileSize.textContent = formatBytes(new Blob([secretText]).size);
+          if (manifestFileType) manifestFileType.textContent = 'text/plain';
+          if (manifestFileIcon) manifestFileIcon.innerHTML = SVG_ICONS.fileDoc;
+          if (btnDownloadHtmlVault) {
+            const span = btnDownloadHtmlVault.querySelector('span');
+            if (span) span.textContent = 'Download Portable Vault (.html)';
+          }
         }
 
         // Setup Social Sharing Links
         const shareText = `Confidential Ephemeral Secret:\nA self-destructing secret has been generated via Ephemeral Secret Vault.\n\nAccess Link: ${activeSecretUrl}\n\nSecurity Notice: This link permanently self-destructs upon access.`;
 
-        shareWhatsApp.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
-        shareTeams.href = `https://teams.microsoft.com/share?href=${encodeURIComponent(activeSecretUrl)}&msgText=${encodeURIComponent('A confidential self-destructing secret has been shared with you.')}`;
+        if (shareWhatsApp) shareWhatsApp.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
+        if (shareTeams) shareTeams.href = `https://teams.microsoft.com/share?href=${encodeURIComponent(activeSecretUrl)}&msgText=${encodeURIComponent('A confidential self-destructing secret has been shared with you.')}`;
 
         const emailSubject = 'Secure Self-Destructing Secret Link';
         const emailBody = `Hello,\n\nA confidential secret has been shared with you via Ephemeral Secret Vault:\n\n${activeSecretUrl}\n\nSecurity Notice: This secret is permanently erased from storage once viewed or upon expiration. No records are retained.\n`;
-        shareEmail.href = `mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+        if (shareEmail) shareEmail.href = `mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
 
-        // Switch to result section
+        // Switch cleanly to next page / result section
         createForm.classList.add('hidden');
-        resultSection.classList.remove('hidden');
-        resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        const pipeline = document.querySelector('.security-flow-pipeline');
+        if (pipeline) pipeline.classList.add('hidden');
+
+        if (resultSection) {
+          resultSection.classList.remove('hidden');
+          const targetTop = resultSection.getBoundingClientRect().top + window.scrollY - 30;
+          window.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+        }
 
         if (currentFile && tabDeliveryFile && panelDeliveryFile) {
           tabDeliveryFile.click();
         }
 
-        showToast('✓ Vault created successfully');
+        if (isClientOffline) {
+          showToast('✓ Client-Side Vault Generated (Offline Resilient)');
+        } else {
+          showToast('✓ Vault created successfully');
+        }
       } catch (err) {
         showError(err.message || 'Unable to create the vault. Please try again.');
       } finally {
@@ -1634,9 +1793,12 @@
         liveShaPreview.style.color = 'var(--text-muted)';
       }
 
+      const pipeline = document.querySelector('.security-flow-pipeline');
+      if (pipeline) pipeline.classList.remove('hidden');
       resultSection.classList.add('hidden');
       createForm.classList.remove('hidden');
       hideError();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
 

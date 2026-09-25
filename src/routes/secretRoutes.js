@@ -15,7 +15,7 @@ const publicDir = path.join(process.cwd(), 'public');
 router.get('/health', secretController.health);
 
 // Landing / Text Secret page
-router.get(['/', '/text'], (req, res) => {
+router.get(['/', '/text', '/create', '/create.html'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
   const indexFile = path.join(publicDir, 'index.html');

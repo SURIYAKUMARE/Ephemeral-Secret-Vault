@@ -10,6 +10,7 @@
   <meta property="og:type" content="website">
   <title>Ephemeral Secret Vault — Self-Destructing Secret &amp; File Sharing</title>
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body id="top">
   <!-- Enterprise Navigation Bar with Live Scroll-Spy -->
@@ -391,8 +392,9 @@
                     id="passphrase-input"
                     name="passphrase"
                     class="password-input-with-icon"
-                    placeholder="Enter an optional passphrase (recipient must provide to decrypt)"
+                    placeholder="Enter an optional passphrase (min. 8 characters)"
                     autocomplete="new-password"
+                    minlength="8"
                   >
                   <button type="button" id="btn-toggle-eye" class="btn-toggle-eye" title="Toggle passphrase visibility" aria-label="Show or hide passphrase">
                     <svg id="eye-icon" class="svg-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
@@ -408,6 +410,7 @@
                     <span>Strength: <strong id="passphrase-strength-text">Weak</strong></span>
                     <span class="passphrase-hint">Use a separate secure channel to share the passphrase.</span>
                   </div>
+                  <div id="passphrase-validation-feedback" style="font-size:0.75rem;margin-top:0.4rem;display:none;font-weight:500;"></div>
                 </div>
 
                 <!-- Passphrase Hint (Zero-Knowledge: Encoded only into URL hash) -->
@@ -477,6 +480,12 @@
                 <span class="summary-val" id="live-sha-preview" style="font-family:var(--font-mono);font-size:0.75rem;color:var(--cyan-glow);">Waiting for secret input...</span>
               </div>
             </div>
+          </div>
+
+          <!-- Submit Inline Feedback & Error Banner -->
+          <div id="submit-error-banner" class="alert alert-danger hidden" role="alert" style="margin-top:1.25rem;margin-bottom:0.75rem;padding:0.75rem 1rem;border-radius:8px;font-size:0.85rem;display:flex;align-items:center;gap:0.5rem;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.4);color:#fca5a5;">
+            <svg class="svg-icon" style="flex-shrink:0;width:18px;height:18px;color:#ef4444;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <span id="submit-error-message"></span>
           </div>
 
           <!-- Main CTA Submit Button -->
@@ -1073,6 +1082,8 @@
   </div>
 
   <script src="/js/qrcode.min.js"></script>
+  <script src="js/qrcode.min.js"></script>
   <script src="/js/app.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
