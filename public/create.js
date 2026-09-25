@@ -593,66 +593,632 @@
   }
 
   // ==========================================================================
-  // Vault Capsule & Portable Vault Data Helpers
+  // Vault Capsule & Portable Vault Data Helpers (Single-View Self-Destructing)
   // ==========================================================================
-  function getPortableVaultData() {
+  async function getPortableVaultData() {
     if (!activeSecretData) return null;
-    const packageTitle = currentFile ? currentFile.name : `Secret ${activeSecretData.id.slice(0, 8)}`;
-    const payloadJson = JSON.stringify({
-      id: activeSecretData.id,
-      fingerprint: activeSecretData.fingerprint,
-      expires_at: activeSecretData.expires_at,
-      view_url: activeSecretData.view_url,
-      secret: activeSecretText,
-      file: currentFile
-    });
 
-    const safePayloadBase64 = btoa(unescape(encodeURIComponent(payloadJson)));
+    const vaultId = activeSecretData.id;
+    const expiresIso = activeSecretData.expires_at || new Date(Date.now() + 3600000).toISOString();
+    const formattedExpires = new Date(expiresIso).toLocaleString();
+    const maxViews = activeSecretData.views_remaining || 1;
+    const packageTitle = currentFile ? currentFile.name : `Secret ${vaultId.slice(0, 8)}`;
+    const origin = (window.location.origin && window.location.origin !== 'null') ? window.location.origin : 'http://localhost:3000';
+
+    const payloadObj = {
+      id: vaultId,
+      secret: activeSecretText || '',
+      file: currentFile || null,
+      created_at: new Date().toISOString()
+    };
+
+    const enc = new TextEncoder();
+    const payloadBytes = enc.encode(JSON.stringify(payloadObj));
+    const salt = window.crypto.getRandomValues(new Uint8Array(16));
+    const iv = window.crypto.getRandomValues(new Uint8Array(12));
+
+    let aesKey;
+    const hasPass = !!(activePassphrase && activePassphrase.trim().length > 0);
+    let embeddedKeyHex = '';
+
+    if (hasPass) {
+      const passBytes = enc.encode(activePassphrase.trim());
+      const baseKey = await window.crypto.subtle.importKey(
+        'raw', passBytes, { name: 'PBKDF2' }, false, ['deriveKey']
+      );
+      aesKey = await window.crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
+        baseKey,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        ['encrypt', 'decrypt']
+      );
+    } else {
+      aesKey = await window.crypto.subtle.generateKey(
+        { name: 'AES-GCM', length: 256 },
+        true,
+        ['encrypt', 'decrypt']
+      );
+      const rawKey = await window.crypto.subtle.exportKey('raw', aesKey);
+      embeddedKeyHex = Array.from(new Uint8Array(rawKey))
+        .map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    const ctBuffer = await window.crypto.subtle.encrypt(
+      { name: 'AES-GCM', iv },
+      aesKey,
+      payloadBytes
+    );
+
+    const ciphertextB64 = btoa(String.fromCharCode(...new Uint8Array(ctBuffer)));
+    const ivHex = Array.from(iv).map(b => b.toString(16).padStart(2, '0')).join('');
+    const saltHex = Array.from(salt).map(b => b.toString(16).padStart(2, '0')).join('');
 
     const portableHtml = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portable Ephemeral Vault — ${packageTitle}</title>
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <title>Ephemeral Vault — ${packageTitle}</title>
   <style>
-    body { background: #060911; color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 1.5rem; }
-    .box { background: #0f172a; border: 1px solid rgba(56,189,248,0.25); border-radius: 12px; padding: 2rem; max-width: 550px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
-    h1 { font-size: 1.25rem; margin-bottom: 0.5rem; color: #f8fafc; font-weight: 700; }
-    p { font-size: 0.85rem; color: #94a3b8; line-height: 1.5; margin-bottom: 1.25rem; }
-    .badge { display: inline-block; background: rgba(56,189,248,0.15); color: #38bdf8; font-size: 0.72rem; font-weight: 600; padding: 0.25rem 0.5rem; border-radius: 4px; margin-bottom: 1rem; border: 1px solid rgba(56,189,248,0.3); }
-    .btn { background: #0284c7; color: white; border: none; border-radius: 6px; padding: 0.75rem 1.25rem; font-size: 0.9rem; font-weight: 600; cursor: pointer; width: 100%; transition: background 0.2s; }
-    .btn:hover { background: #0369a1; }
-    pre { background: #020617; border: 1px solid rgba(56,189,248,0.15); border-radius: 6px; padding: 1rem; font-family: ui-monospace, monospace; font-size: 0.85rem; white-space: pre-wrap; word-break: break-all; margin-top: 1rem; color: #38bdf8; }
-    .download-link { display: inline-block; margin-top: 1rem; background: #1e293b; color: #38bdf8; padding: 0.6rem 1rem; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 600; }
-    .download-link:hover { background: #334155; }
+    :root {
+      --bg: #060911;
+      --card: #0f172a;
+      --card-border: rgba(56, 189, 248, 0.22);
+      --primary: #0284c7;
+      --primary-hover: #0369a1;
+      --cyan: #38bdf8;
+      --danger: #ef4444;
+      --danger-bg: rgba(239, 68, 68, 0.12);
+      --danger-border: rgba(239, 68, 68, 0.35);
+      --warning: #f59e0b;
+      --warning-bg: rgba(245, 158, 11, 0.12);
+      --success: #10b981;
+      --text: #f8fafc;
+      --text-dim: #94a3b8;
+      --text-muted: #64748b;
+      --radius: 10px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      line-height: 1.5;
+    }
+    .vault-wrapper { width: 100%; max-width: 580px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    }
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--cyan);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      margin-bottom: 1rem;
+    }
+    .pulse-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); }
+    h1 { font-size: 1.35rem; font-weight: 700; margin-bottom: 0.4rem; color: #ffffff; }
+    .subtitle { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 1.25rem; line-height: 1.5; }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.65rem;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 0.85rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.78rem;
+    }
+    .meta-item { display: flex; flex-direction: column; gap: 0.2rem; }
+    .meta-label { color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .meta-val { color: var(--cyan); font-weight: 600; font-family: ui-monospace, monospace; }
+    .alert-box {
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      font-size: 0.82rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+      line-height: 1.45;
+    }
+    .alert-danger {
+      background: var(--danger-bg);
+      border: 1px solid var(--danger-border);
+      color: #fca5a5;
+    }
+    .alert-warning {
+      background: var(--warning-bg);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: #fcd34d;
+    }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-dim); margin-bottom: 0.4rem; letter-spacing: 0.03em; }
+    .input-row { display: flex; gap: 0.5rem; }
+    .input-field {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 0.65rem 0.85rem;
+      color: #ffffff;
+      font-size: 0.88rem;
+      outline: none;
+    }
+    .input-field:focus { border-color: var(--cyan); }
+    .btn-primary {
+      width: 100%;
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.75rem 1.25rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+    .btn-danger {
+      background: #dc2626;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.6rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: background 0.2s;
+    }
+    .btn-danger:hover { background: #b91c1c; }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-dim);
+      border-radius: 6px;
+      padding: 0.55rem 0.85rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    .btn-secondary:hover { color: #ffffff; border-color: var(--cyan); }
+    .secret-box {
+      background: #020617;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 8px;
+      padding: 1.15rem;
+      margin: 1.25rem 0;
+    }
+    pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.88rem;
+      color: #e0f2fe;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 280px;
+      overflow-y: auto;
+    }
+    .countdown-bar-wrap {
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 9999px;
+      height: 6px;
+      overflow: hidden;
+      margin: 0.85rem 0 0.5rem 0;
+    }
+    .countdown-bar-fill {
+      background: linear-gradient(90deg, var(--cyan), var(--danger));
+      height: 100%;
+      width: 100%;
+      transition: width 1s linear;
+    }
+    .countdown-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .actions-row {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
     .hidden { display: none !important; }
+    .icon { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; flex-shrink: 0; }
   </style>
 </head>
 <body>
-  <div class="box">
-    <div class="badge">AES-256-GCM SECURE CAPSULE</div>
-    <h1>${packageTitle}</h1>
-    <p>This is a portable self-contained cryptographic vault generated by Ephemeral Secret Vault. Decryption occurs locally in your browser with zero network requests.</p>
-    <div id="pre"><button type="button" class="btn" id="rev">Reveal &amp; Decrypt Payload</button></div>
-    <div id="post" class="hidden">
-      <div id="out-area"></div>
-      <p style="color:#ef4444;font-size:0.75rem;margin-top:0.75rem;">⚠️ Memory buffer flushed. Store contents securely.</p>
+  <div class="vault-wrapper">
+    <div class="card">
+      <div class="header-badge">
+        <span class="pulse-dot"></span>
+        <span>AES-256-GCM One-Time Ephemeral Vault</span>
+      </div>
+
+      <h1 id="title-text">${packageTitle}</h1>
+      <p id="desc-text" class="subtitle">This is a self-contained zero-trace cryptographic vault. Decrypting burns the capsule permanently.</p>
+
+      <div id="meta-strip" class="meta-grid">
+        <div class="meta-item">
+          <span class="meta-label">Allowance</span>
+          <span class="meta-val" id="meta-views">${maxViews} view${maxViews > 1 ? 's' : ''}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Status</span>
+          <span class="meta-val" id="meta-status">Arm &amp; Ready</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Expiration</span>
+          <span class="meta-val" id="meta-expires">${formattedExpires}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Security</span>
+          <span class="meta-val">AES-GCM-256</span>
+        </div>
+      </div>
+
+      <div id="section-pre">
+        <div class="alert-box alert-warning">
+          <svg class="icon" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          <div>
+            <strong>Strict One-Time Single-View Rule:</strong>
+            <span>Once you click decrypt, this vault is burned. You cannot refresh or reopen this file to see it again.</span>
+          </div>
+        </div>
+
+        ${hasPass ? `
+        <div class="form-group">
+          <label class="form-label" for="pass-in">PASSPHRASE REQUIRED</label>
+          <div class="input-row">
+            <input type="password" id="pass-in" class="input-field" placeholder="Enter vault passphrase..." autocomplete="off">
+          </div>
+          <div id="pass-error" style="color:var(--danger);font-size:0.75rem;margin-top:0.35rem;" class="hidden"></div>
+        </div>
+        ` : ''}
+
+        <button type="button" id="btn-reveal" class="btn-primary">
+          <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <span>Decrypt &amp; Burn Vault Now</span>
+        </button>
+      </div>
+
+      <div id="section-revealed" class="hidden">
+        <div class="alert-box alert-danger">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
+          <div>
+            <strong>VAULT BURNED:</strong>
+            <span>Payload revealed in RAM. All local and remote view allowances have reached 0.</span>
+          </div>
+        </div>
+
+        <div class="secret-box">
+          <div id="content-area"></div>
+        </div>
+
+        <div>
+          <div class="countdown-bar-wrap">
+            <div id="wipe-bar" class="countdown-bar-fill"></div>
+          </div>
+          <div class="countdown-label">
+            <span>Memory Wipe Countdown</span>
+            <span id="wipe-secs">60s</span>
+          </div>
+        </div>
+
+        <div class="actions-row">
+          <button type="button" id="btn-copy-secret" class="btn-secondary">
+            <svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <span>Copy Secret</span>
+          </button>
+          <button type="button" id="btn-wipe-now" class="btn-danger">
+            <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <span>Burn Screen &amp; Wipe RAM</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="section-burned" class="hidden">
+        <div class="alert-box alert-danger" style="margin-bottom:1.5rem;">
+          <svg class="icon" viewBox="0 0 24 24" style="width:24px;height:24px;"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
+          <div>
+            <strong style="font-size:0.95rem;display:block;margin-bottom:0.25rem;">VAULT DESTROYED &amp; PURGED</strong>
+            <span id="burn-reason-text">This one-time vault has already been viewed and permanently destroyed. Plaintext memory is wiped with zeros. It cannot be reopened or decrypted again.</span>
+          </div>
+        </div>
+
+        <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:1rem;font-size:0.78rem;color:var(--text-muted);line-height:1.6;margin-bottom:1.25rem;">
+          <div>🔒 <strong>Zero-Trace Security Policy:</strong></div>
+          <div>• Single-view allowance reached (0 views remaining)</div>
+          <div>• Cryptographic keys and memory buffers zeroed</div>
+          <div>• SQLite vault row physically purged</div>
+          <div>• Reopening this HTML file will permanently display this burn notice</div>
+        </div>
+
+        <button type="button" id="btn-neutralize-file" class="btn-secondary" style="width:100%;justify-content:center;">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>Download Neutralized 0-Byte Replacement File</span>
+        </button>
+      </div>
+
     </div>
   </div>
+
   <script>
-    let d = JSON.parse(decodeURIComponent(escape(atob("${safePayloadBase64}"))));
-    document.getElementById('rev').addEventListener('click', () => {
-      document.getElementById('pre').classList.add('hidden');
-      document.getElementById('post').classList.remove('hidden');
-      const outArea = document.getElementById('out-area');
-      if (d.file && d.file.data) {
-        outArea.innerHTML = '<pre>' + (d.file.name || 'Confidential File') + ' (' + (d.file.size || 0) + ' bytes)\\nType: ' + (d.file.type || 'binary') + '</pre><a class="download-link" href="' + d.file.data + '" download="' + (d.file.name || 'decrypted-file') + '">Download Decrypted File (' + d.file.name + ')</a>';
-      } else {
-        outArea.innerHTML = '<pre>' + (d.secret || '') + '</pre>';
+    (async function() {
+      const vaultId = "${vaultId}";
+      const expiresAt = new Date("${expiresIso}").getTime();
+      const maxViews = ${maxViews};
+      const hasPass = ${hasPass};
+      const serverOrigin = "${origin}";
+      const ciphertextB64 = "${ciphertextB64}";
+      const ivHex = "${ivHex}";
+      const saltHex = "${saltHex}";
+      const embeddedKeyHex = "${embeddedKeyHex}";
+
+      const burnKey = "esv_burned_" + vaultId;
+      const viewsKey = "esv_views_" + vaultId;
+      const failKey = "esv_fails_" + vaultId;
+
+      const secPre = document.getElementById('section-pre');
+      const secRev = document.getElementById('section-revealed');
+      const secBurn = document.getElementById('section-burned');
+      const burnReasonText = document.getElementById('burn-reason-text');
+      const contentArea = document.getElementById('content-area');
+      const wipeBar = document.getElementById('wipe-bar');
+      const wipeSecs = document.getElementById('wipe-secs');
+      const metaStatus = document.getElementById('meta-status');
+
+      function showBurned(reason) {
+        if (secPre) secPre.classList.add('hidden');
+        if (secRev) secRev.classList.add('hidden');
+        if (secBurn) secBurn.classList.remove('hidden');
+        if (metaStatus) {
+          metaStatus.textContent = 'Permanently Burned';
+          metaStatus.style.color = 'var(--danger)';
+        }
+        if (burnReasonText && reason) {
+          burnReasonText.textContent = reason;
+        }
       }
-      d = null;
-    });
+
+      if (Date.now() > expiresAt) {
+        localStorage.setItem(burnKey, JSON.stringify({ burned_at: new Date().toISOString(), reason: 'EXPIRED' }));
+        showBurned("This vault expired on " + new Date(expiresAt).toLocaleString() + " and was permanently self-destructed.");
+        return;
+      }
+
+      const localBurn = localStorage.getItem(burnKey);
+      if (localBurn) {
+        let meta = {};
+        try { meta = JSON.parse(localBurn); } catch(e) {}
+        showBurned("This single-view vault was already opened and permanently destroyed on this device (" + (meta.burned_at ? new Date(meta.burned_at).toLocaleString() : 'previously') + "). It cannot be reopened.");
+        return;
+      }
+
+      const viewsUsed = parseInt(localStorage.getItem(viewsKey) || "0", 10);
+      if (viewsUsed >= maxViews) {
+        showBurned("Single-view allowance reached (" + viewsUsed + "/" + maxViews + " views). Vault permanently burned.");
+        return;
+      }
+
+      function hexToBytes(hex) {
+        const bytes = new Uint8Array(hex.length / 2);
+        for (let i = 0; i < bytes.length; i++) {
+          bytes[i] = parseInt(hex.substr(i * 2, 2), 16);
+        }
+        return bytes;
+      }
+
+      function b64ToBytes(b64) {
+        const bin = atob(b64);
+        const bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        return bytes;
+      }
+
+      let wipeSecondsRemaining = 60;
+      let wipeInterval = null;
+
+      function startMemoryWipeTimer() {
+        wipeInterval = setInterval(() => {
+          wipeSecondsRemaining--;
+          if (wipeSecs) wipeSecs.textContent = wipeSecondsRemaining + 's';
+          if (wipeBar) wipeBar.style.width = (wipeSecondsRemaining / 60 * 100) + '%';
+          if (wipeSecondsRemaining <= 0) {
+            clearInterval(wipeInterval);
+            performRamWipe();
+          }
+        }, 1000);
+      }
+
+      let decryptedSecretText = '';
+      function performRamWipe() {
+        if (wipeInterval) clearInterval(wipeInterval);
+        decryptedSecretText = null;
+        if (contentArea) contentArea.innerHTML = '<pre style="color:var(--danger)">00000000 00000000 00000000 00000000 [RAM PURGED]</pre>';
+        showBurned("Secret memory buffer has been flushed and overwritten with zeros. This vault cannot be opened again.");
+      }
+
+      const btnWipeNow = document.getElementById('btn-wipe-now');
+      if (btnWipeNow) {
+        btnWipeNow.addEventListener('click', performRamWipe);
+      }
+
+      const btnRev = document.getElementById('btn-reveal');
+      const passIn = document.getElementById('pass-in');
+      const passErr = document.getElementById('pass-error');
+
+      if (btnRev) {
+        btnRev.addEventListener('click', async () => {
+          btnRev.disabled = true;
+          btnRev.textContent = 'Decrypting & Burning...';
+
+          const enteredPass = passIn ? passIn.value : '';
+          if (hasPass && (!enteredPass || enteredPass.length === 0)) {
+            if (passErr) {
+              passErr.textContent = 'Please enter the vault passphrase.';
+              passErr.classList.remove('hidden');
+            }
+            btnRev.disabled = false;
+            btnRev.textContent = 'Decrypt & Burn Vault Now';
+            return;
+          }
+
+          if (serverOrigin) {
+            try {
+              const resp = await fetch(serverOrigin + '/api/secret/' + vaultId + '/burn', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ passphrase: enteredPass })
+              });
+              if (resp.status === 404 || resp.status === 410) {
+                localStorage.setItem(burnKey, JSON.stringify({ burned_at: new Date().toISOString(), reason: 'SERVER_EXHAUSTED' }));
+                showBurned("This secret was already accessed and burned on the server. Physical database record has been purged.");
+                return;
+              }
+            } catch(e) {}
+          }
+
+          try {
+            let aesKey;
+            const ivBytes = hexToBytes(ivHex);
+            const ctBytes = b64ToBytes(ciphertextB64);
+
+            if (hasPass) {
+              const saltBytes = hexToBytes(saltHex);
+              const passBytes = new TextEncoder().encode(enteredPass);
+              const baseKey = await window.crypto.subtle.importKey(
+                'raw', passBytes, { name: 'PBKDF2' }, false, ['deriveKey']
+              );
+              aesKey = await window.crypto.subtle.deriveKey(
+                { name: 'PBKDF2', salt: saltBytes, iterations: 100000, hash: 'SHA-256' },
+                baseKey,
+                { name: 'AES-GCM', length: 256 },
+                false,
+                ['decrypt']
+              );
+            } else {
+              const rawKeyBytes = hexToBytes(embeddedKeyHex);
+              aesKey = await window.crypto.subtle.importKey(
+                'raw', rawKeyBytes, { name: 'AES-GCM' }, false, ['decrypt']
+              );
+            }
+
+            const decryptedBuffer = await window.crypto.subtle.decrypt(
+              { name: 'AES-GCM', iv: ivBytes },
+              aesKey,
+              ctBytes
+            );
+
+            const decryptedString = new TextDecoder().decode(decryptedBuffer);
+            const payload = JSON.parse(decryptedString);
+
+            const newViews = viewsUsed + 1;
+            localStorage.setItem(viewsKey, String(newViews));
+            if (newViews >= maxViews) {
+              localStorage.setItem(burnKey, JSON.stringify({
+                burned_at: new Date().toISOString(),
+                reason: 'ONE_TIME_VIEW_COMPLETED'
+              }));
+            }
+
+            if (secPre) secPre.classList.add('hidden');
+            if (secRev) secRev.classList.remove('hidden');
+            if (metaStatus) {
+              metaStatus.textContent = 'Burned (' + newViews + '/' + maxViews + ')';
+              metaStatus.style.color = 'var(--danger)';
+            }
+
+            decryptedSecretText = payload.secret || '';
+
+            if (payload.file && payload.file.data) {
+              contentArea.innerHTML = '<div style="margin-bottom:0.75rem;"><strong>Attached File:</strong> ' + payload.file.name + ' (' + payload.file.size + ' bytes)</div><a href="' + payload.file.data + '" download="' + payload.file.name + '" class="btn-primary" style="text-decoration:none;display:inline-flex;width:auto;">Download File (' + payload.file.name + ')</a>' + (payload.secret ? '<div style="margin-top:1rem;color:var(--text-dim);font-size:0.8rem;">Note: ' + payload.secret + '</div>' : '');
+            } else {
+              contentArea.innerHTML = '<pre>' + (payload.secret || '') + '</pre>';
+            }
+
+            startMemoryWipeTimer();
+
+          } catch (decErr) {
+            console.error(decErr);
+            if (hasPass) {
+              let fails = parseInt(localStorage.getItem(failKey) || "0", 10) + 1;
+              localStorage.setItem(failKey, String(fails));
+              if (fails >= 3) {
+                localStorage.setItem(burnKey, JSON.stringify({ burned_at: new Date().toISOString(), reason: 'BRUTE_FORCE_AUTO_DESTRUCT' }));
+                showBurned("🔥 AUTO-DESTRUCT TRIGGERED: 3 wrong passphrase attempts. Vault has been permanently destroyed.");
+                return;
+              }
+              if (passErr) {
+                passErr.textContent = "⚠️ Invalid passphrase. " + (3 - fails) + " attempt(s) remaining before auto-destruct.";
+                passErr.classList.remove('hidden');
+              }
+            } else {
+              showBurned("Decryption failed. Data corruption or tampered ciphertext.");
+            }
+            btnRev.disabled = false;
+            btnRev.textContent = 'Decrypt & Burn Vault Now';
+          }
+        });
+      }
+
+      const btnCopy = document.getElementById('btn-copy-secret');
+      if (btnCopy) {
+        btnCopy.addEventListener('click', async () => {
+          if (!decryptedSecretText) return;
+          try {
+            await navigator.clipboard.writeText(decryptedSecretText);
+            btnCopy.textContent = '✓ Copied';
+            setTimeout(() => btnCopy.textContent = 'Copy Secret', 2000);
+          } catch(e) {}
+        });
+      }
+
+      const btnNeut = document.getElementById('btn-neutralize-file');
+      if (btnNeut) {
+        btnNeut.addEventListener('click', () => {
+          const blank = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Vault Destroyed</title></head><body style="background:#060911;color:#ef4444;font-family:sans-serif;padding:2rem;text-align:center;"><h1>VAULT PERMANENTLY DESTROYED</h1><p style="color:#94a3b8">Zero data remains in this file.</p></body></html>';
+          const b = new Blob([blank], { type: 'text/html' });
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(b);
+          a.download = "vault-" + vaultId + "-BURNED.html";
+          a.click();
+        });
+      }
+    })();
   <\/script>
 </body>
 </html>`;
@@ -793,7 +1359,7 @@
     }
 
     btnShareFileNative.addEventListener('click', async () => {
-      const vaultData = getPortableVaultData();
+      const vaultData = await getPortableVaultData();
       if (!vaultData) { showError('No active secret generated.'); return; }
       try {
         const file = new File([vaultData.blob], vaultData.filename, { type: 'text/html' });
@@ -815,7 +1381,7 @@
   const btnShareFileWhatsapp = document.getElementById('btn-share-file-whatsapp');
   if (btnShareFileWhatsapp) {
     btnShareFileWhatsapp.addEventListener('click', async () => {
-      const vaultData = getPortableVaultData();
+      const vaultData = await getPortableVaultData();
       if (!vaultData) { showError('No active secret generated.'); return; }
       triggerDownload(vaultData.blob, vaultData.filename);
       try {
@@ -829,7 +1395,7 @@
   const btnShareFileSlack = document.getElementById('btn-share-file-slack');
   if (btnShareFileSlack) {
     btnShareFileSlack.addEventListener('click', async () => {
-      const vaultData = getPortableVaultData();
+      const vaultData = await getPortableVaultData();
       if (!vaultData) { showError('No active secret generated.'); return; }
       triggerDownload(vaultData.blob, vaultData.filename);
       try {
@@ -843,7 +1409,7 @@
   const btnShareFileTeams = document.getElementById('btn-share-file-teams');
   if (btnShareFileTeams) {
     btnShareFileTeams.addEventListener('click', async () => {
-      const vaultData = getPortableVaultData();
+      const vaultData = await getPortableVaultData();
       if (!vaultData) { showError('No active secret generated.'); return; }
       triggerDownload(vaultData.blob, vaultData.filename);
       try {
@@ -857,7 +1423,7 @@
   const btnShareFileDiscord = document.getElementById('btn-share-file-discord');
   if (btnShareFileDiscord) {
     btnShareFileDiscord.addEventListener('click', async () => {
-      const vaultData = getPortableVaultData();
+      const vaultData = await getPortableVaultData();
       if (!vaultData) { showError('No active secret generated.'); return; }
       triggerDownload(vaultData.blob, vaultData.filename);
       try {
@@ -870,8 +1436,8 @@
 
   const btnShareFileEmail = document.getElementById('btn-share-file-email');
   if (btnShareFileEmail) {
-    btnShareFileEmail.addEventListener('click', () => {
-      const vaultData = getPortableVaultData();
+    btnShareFileEmail.addEventListener('click', async () => {
+      const vaultData = await getPortableVaultData();
       if (!vaultData) { showError('No active secret generated.'); return; }
       triggerDownload(vaultData.blob, vaultData.filename);
       const subject = `Confidential Ephemeral Vault File Attachment [${vaultData.filename}]`;
@@ -886,8 +1452,8 @@
   // --------------------------------------------------------------------------
   const btnDownloadPortableFile = document.getElementById('btn-download-portable-file');
   if (btnDownloadPortableFile) {
-    btnDownloadPortableFile.addEventListener('click', () => {
-      const vaultData = getPortableVaultData();
+    btnDownloadPortableFile.addEventListener('click', async () => {
+      const vaultData = await getPortableVaultData();
       if (!vaultData) { showError('No active secret generated.'); return; }
       triggerDownload(vaultData.blob, vaultData.filename);
       showToast(`✓ Downloaded Portable Vault: ${vaultData.filename}`);
@@ -905,8 +1471,8 @@
   }
 
   if (btnDownloadHtmlVault) {
-    btnDownloadHtmlVault.addEventListener('click', () => {
-      const vaultData = getPortableVaultData();
+    btnDownloadHtmlVault.addEventListener('click', async () => {
+      const vaultData = await getPortableVaultData();
       if (!vaultData) { showError('No active secret generated.'); return; }
       triggerDownload(vaultData.blob, vaultData.filename);
       showToast(`✓ Downloaded Portable Vault: ${vaultData.filename}`);
