@@ -388,6 +388,64 @@
         // Stop countdown ticker
         if (tickerInterval) clearInterval(tickerInterval);
 
+        // Client-Side Zero-Knowledge Decryption via WebCrypto
+        if (data.client_encrypted) {
+          const hash = window.location.hash || '';
+          const match = hash.match(/key=([0-9a-fA-F]+)/);
+          if (!match || !match[1]) {
+            showError('Client-Side Zero-Knowledge secret: Decryption key is missing from URL fragment (#key=...). Without the key, decryption is mathematically impossible.');
+            burnBtn.disabled = false;
+            burnBtn.innerHTML = `${SVG.flame} <span>Retry Reveal</span>`;
+            resetSlideThumb();
+            return;
+          }
+
+          try {
+            const hexKey = match[1];
+            const keyBytes = new Uint8Array(hexKey.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+            const ivBytes = new Uint8Array(data.iv.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+            const cipherBytes = new Uint8Array(data.ciphertext.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+            const tagBytes = new Uint8Array(data.auth_tag.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+
+            const combined = new Uint8Array(cipherBytes.length + tagBytes.length);
+            combined.set(cipherBytes, 0);
+            combined.set(tagBytes, cipherBytes.length);
+
+            const cryptoKey = await window.crypto.subtle.importKey(
+              'raw',
+              keyBytes,
+              { name: 'AES-GCM' },
+              false,
+              ['decrypt']
+            );
+
+            const decryptedBuf = await window.crypto.subtle.decrypt(
+              { name: 'AES-GCM', iv: ivBytes },
+              cryptoKey,
+              combined
+            );
+
+            const decryptedText = new TextDecoder().decode(decryptedBuf);
+            if (decryptedText.startsWith('{"__vault_payload":true,')) {
+              try {
+                const parsed = JSON.parse(decryptedText);
+                data.secret = parsed.text || '';
+                data.file = parsed.file || null;
+              } catch {
+                data.secret = decryptedText;
+              }
+            } else {
+              data.secret = decryptedText;
+            }
+          } catch (decryptErr) {
+            showError('Client-side decryption failed: Invalid key or corrupted ciphertext.');
+            burnBtn.disabled = false;
+            burnBtn.innerHTML = `${SVG.flame} <span>Retry Reveal</span>`;
+            resetSlideThumb();
+            return;
+          }
+        }
+
         // Hide splash, show revealed section
         splashSection.classList.add('hidden');
         revealedSection.classList.remove('hidden');

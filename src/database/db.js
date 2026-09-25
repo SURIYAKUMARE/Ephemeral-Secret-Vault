@@ -19,6 +19,11 @@ let dbInstance = null;
 class InMemoryVaultDb {
   constructor() {
     this.records = new Map();
+    this.thresholdRecords = new Map();
+    this.deadmanRecords = new Map();
+    this.receiptRecords = new Map();
+    this.canaryRecords = new Map();
+    this.policyRecords = new Map();
   }
 
   pragma(cmd) {
@@ -33,11 +38,253 @@ class InMemoryVaultDb {
     const cleanSql = sql.trim().replace(/\s+/g, ' ');
     const self = this;
 
+    // INSERT INTO threshold_secrets
+    if (/^INSERT INTO threshold_secrets/i.test(cleanSql)) {
+      return {
+        run(id, ciphertext, iv, auth_tag, threshold_k, total_n, expires_at, created_at) {
+          self.thresholdRecords.set(id, {
+            id,
+            ciphertext: Buffer.from(ciphertext),
+            iv: Buffer.from(iv),
+            auth_tag: Buffer.from(auth_tag),
+            threshold_k: Number(threshold_k),
+            total_n: Number(total_n),
+            redeemed_shares: '[]',
+            expires_at: Number(expires_at),
+            created_at: Number(created_at)
+          });
+          return { changes: 1 };
+        }
+      };
+    }
+
+    // SELECT FROM threshold_secrets
+    if (/^SELECT .+ FROM threshold_secrets WHERE id = \?/i.test(cleanSql)) {
+      return {
+        get(targetId, currentTime) {
+          const rec = self.thresholdRecords.get(targetId);
+          if (!rec) return null;
+          if (currentTime && rec.expires_at <= currentTime) return null;
+          return { ...rec };
+        }
+      };
+    }
+
+    // UPDATE threshold_secrets
+    if (/^UPDATE threshold_secrets SET redeemed_shares = \? WHERE id = \?/i.test(cleanSql)) {
+      return {
+        run(redeemedJson, targetId) {
+          const rec = self.thresholdRecords.get(targetId);
+          if (rec) {
+            rec.redeemed_shares = redeemedJson;
+            return { changes: 1 };
+          }
+          return { changes: 0 };
+        }
+      };
+    }
+
+    // DELETE FROM threshold_secrets WHERE id = ?
+    if (/^DELETE FROM threshold_secrets WHERE id = \?/i.test(cleanSql)) {
+      return {
+        run(targetId) {
+          const rec = self.thresholdRecords.get(targetId);
+          if (rec) {
+            if (Buffer.isBuffer(rec.ciphertext)) rec.ciphertext.fill(0);
+            self.thresholdRecords.delete(targetId);
+            return { changes: 1 };
+          }
+          return { changes: 0 };
+        }
+      };
+    }
+
+    // INSERT INTO secret_policies
+    if (/^INSERT INTO secret_policies/i.test(cleanSql)) {
+      return {
+        run(id, allowed_ips, allowed_countries, client_encrypted, created_at) {
+          self.policyRecords.set(id, {
+            id,
+            allowed_ips,
+            allowed_countries,
+            client_encrypted: Number(client_encrypted),
+            created_at: Number(created_at)
+          });
+          return { changes: 1 };
+        }
+      };
+    }
+
+    // SELECT FROM secret_policies
+    if (/^SELECT .+ FROM secret_policies WHERE id = \?/i.test(cleanSql)) {
+      return {
+        get(targetId) {
+          const rec = self.policyRecords.get(targetId);
+          return rec ? { ...rec } : null;
+        }
+      };
+    }
+
+    // DELETE FROM secret_policies
+    if (/^DELETE FROM secret_policies WHERE id = \?/i.test(cleanSql)) {
+      return {
+        run(targetId) {
+          const deleted = self.policyRecords.delete(targetId);
+          return { changes: deleted ? 1 : 0 };
+        }
+      };
+    }
+
+    // INSERT INTO burn_receipts
+    if (/^INSERT INTO burn_receipts/i.test(cleanSql)) {
+      return {
+        run(id, burned_at, requester_ip_hash, signature, public_key, created_at) {
+          self.receiptRecords.set(id, {
+            id,
+            burned_at,
+            requester_ip_hash,
+            signature,
+            public_key,
+            created_at: Number(created_at)
+          });
+          return { changes: 1 };
+        }
+      };
+    }
+
+    // SELECT FROM burn_receipts
+    if (/^SELECT .+ FROM burn_receipts WHERE id = \?/i.test(cleanSql)) {
+      return {
+        get(targetId) {
+          const rec = self.receiptRecords.get(targetId);
+          return rec ? { ...rec } : null;
+        }
+      };
+    }
+
+    // INSERT INTO deadman_switches
+    if (/^INSERT INTO deadman_switches/i.test(cleanSql)) {
+      return {
+        run(id, checkin_token, checkin_interval_seconds, last_checkin, beneficiary, triggered, revealed_payload, created_at) {
+          self.deadmanRecords.set(id, {
+            id,
+            checkin_token,
+            checkin_interval_seconds: Number(checkin_interval_seconds),
+            last_checkin: Number(last_checkin),
+            beneficiary,
+            triggered: Number(triggered),
+            revealed_payload,
+            created_at: Number(created_at)
+          });
+          return { changes: 1 };
+        }
+      };
+    }
+
+    // SELECT FROM deadman_switches WHERE id = ?
+    if (/^SELECT .+ FROM deadman_switches WHERE id = \?/i.test(cleanSql)) {
+      return {
+        get(targetId) {
+          const rec = self.deadmanRecords.get(targetId);
+          return rec ? { ...rec } : null;
+        }
+      };
+    }
+
+    // SELECT active deadman_switches
+    if (/^SELECT .+ FROM deadman_switches WHERE triggered = 0/i.test(cleanSql)) {
+      return {
+        all() {
+          const list = [];
+          for (const rec of self.deadmanRecords.values()) {
+            if (rec.triggered === 0) list.push({ ...rec });
+          }
+          return list;
+        }
+      };
+    }
+
+    // UPDATE deadman_switches checkin
+    if (/^UPDATE deadman_switches SET last_checkin = \?/i.test(cleanSql)) {
+      return {
+        run(now, targetId, token) {
+          const rec = self.deadmanRecords.get(targetId);
+          if (rec && (!token || rec.checkin_token === token)) {
+            rec.last_checkin = Number(now);
+            return { changes: 1 };
+          }
+          return { changes: 0 };
+        }
+      };
+    }
+
+    // UPDATE deadman_switches triggered
+    if (/^UPDATE deadman_switches SET triggered = 1/i.test(cleanSql)) {
+      return {
+        run(payload, targetId) {
+          const rec = self.deadmanRecords.get(targetId);
+          if (rec) {
+            rec.triggered = 1;
+            rec.revealed_payload = payload;
+            return { changes: 1 };
+          }
+          return { changes: 0 };
+        }
+      };
+    }
+
+    // INSERT INTO canary_traps
+    if (/^INSERT INTO canary_traps/i.test(cleanSql)) {
+      return {
+        run(id, fake_secret, webhook_url, memo, created_at, triggered_count, last_triggered_at) {
+          self.canaryRecords.set(id, {
+            id,
+            fake_secret,
+            webhook_url,
+            memo,
+            created_at: Number(created_at),
+            triggered_count: Number(triggered_count || 0),
+            last_triggered_at: last_triggered_at ? Number(last_triggered_at) : null
+          });
+          return { changes: 1 };
+        }
+      };
+    }
+
+    // SELECT FROM canary_traps WHERE id = ?
+    if (/^SELECT .+ FROM canary_traps WHERE id = \?/i.test(cleanSql)) {
+      return {
+        get(targetId) {
+          const rec = self.canaryRecords.get(targetId);
+          return rec ? { ...rec } : null;
+        }
+      };
+    }
+
+    // UPDATE canary_traps trigger count
+    if (/^UPDATE canary_traps SET triggered_count = triggered_count \+ 1/i.test(cleanSql)) {
+      return {
+        run(now, targetId) {
+          const rec = self.canaryRecords.get(targetId);
+          if (rec) {
+            rec.triggered_count = (rec.triggered_count || 0) + 1;
+            rec.last_triggered_at = Number(now);
+            return { changes: 1 };
+          }
+          return { changes: 0 };
+        }
+      };
+    }
+
     // INSERT
     if (/^INSERT INTO secrets/i.test(cleanSql)) {
       return {
         run(...args) {
-          const [id, ciphertext, iv, auth_tag, max_views, views_remaining, expires_at, created_at, passphrase_hash, passphrase_salt] = args;
+          const [
+            id, ciphertext, iv, auth_tag, max_views, views_remaining, expires_at, created_at,
+            passphrase_hash, passphrase_salt, failed_attempts, max_failed_attempts,
+            duress_hash, duress_salt, cover_secret
+          ] = args;
           self.records.set(id, {
             id,
             ciphertext: Buffer.from(ciphertext),
@@ -48,9 +295,40 @@ class InMemoryVaultDb {
             expires_at: Number(expires_at),
             created_at: Number(created_at),
             passphrase_hash: passphrase_hash || null,
-            passphrase_salt: passphrase_salt || null
+            passphrase_salt: passphrase_salt || null,
+            failed_attempts: Number(failed_attempts || 0),
+            max_failed_attempts: Number(max_failed_attempts || 3),
+            duress_hash: duress_hash || null,
+            duress_salt: duress_salt || null,
+            cover_secret: cover_secret || null
           });
           return { changes: 1 };
+        }
+      };
+    }
+
+    // UPDATE failed_attempts ... RETURNING
+    if (/^UPDATE secrets SET failed_attempts = failed_attempts \+ 1/i.test(cleanSql)) {
+      return {
+        get(targetId, currentTime) {
+          const rec = self.records.get(targetId);
+          if (!rec) return null;
+          if (rec.views_remaining <= 0 || (currentTime && rec.expires_at <= currentTime)) {
+            return null;
+          }
+          if (rec.failed_attempts >= rec.max_failed_attempts) {
+            return null;
+          }
+          rec.failed_attempts += 1;
+          const ret = {
+            failed_attempts: rec.failed_attempts,
+            max_failed_attempts: rec.max_failed_attempts
+          };
+          if (rec.failed_attempts >= rec.max_failed_attempts) {
+            if (Buffer.isBuffer(rec.ciphertext)) rec.ciphertext.fill(0);
+            self.records.delete(targetId);
+          }
+          return ret;
         }
       };
     }
@@ -141,15 +419,20 @@ class InMemoryVaultDb {
     }
 
     // SELECT passphrase_hash, passphrase_salt
-    if (/^SELECT passphrase_hash, passphrase_salt/i.test(cleanSql)) {
+    if (/^SELECT passphrase_hash/i.test(cleanSql)) {
       return {
         get(targetId, currentTime) {
           const rec = self.records.get(targetId);
           if (!rec) return null;
-          if (rec.views_remaining <= 0 || rec.expires_at <= currentTime) return null;
+          if (rec.views_remaining <= 0 || (currentTime && rec.expires_at <= currentTime)) return null;
           return {
             passphrase_hash: rec.passphrase_hash,
-            passphrase_salt: rec.passphrase_salt
+            passphrase_salt: rec.passphrase_salt,
+            duress_hash: rec.duress_hash || null,
+            duress_salt: rec.duress_salt || null,
+            cover_secret: rec.cover_secret || null,
+            failed_attempts: rec.failed_attempts || 0,
+            max_failed_attempts: rec.max_failed_attempts || 3
           };
         }
       };
@@ -274,12 +557,24 @@ function initDb(customPath = databasePath) {
           expires_at INTEGER NOT NULL,
           created_at INTEGER NOT NULL,
           passphrase_hash TEXT,
-          passphrase_salt TEXT
+          passphrase_salt TEXT,
+          failed_attempts INTEGER NOT NULL DEFAULT 0,
+          max_failed_attempts INTEGER NOT NULL DEFAULT 3,
+          duress_hash TEXT,
+          duress_salt TEXT,
+          cover_secret TEXT
         );
         CREATE INDEX IF NOT EXISTS idx_secrets_expiry ON secrets(expires_at);
       `);
     } catch {}
   }
+
+  // Safe migrations for existing databases
+  try { db.exec('ALTER TABLE secrets ADD COLUMN failed_attempts INTEGER NOT NULL DEFAULT 0;'); } catch {}
+  try { db.exec('ALTER TABLE secrets ADD COLUMN max_failed_attempts INTEGER NOT NULL DEFAULT 3;'); } catch {}
+  try { db.exec('ALTER TABLE secrets ADD COLUMN duress_hash TEXT;'); } catch {}
+  try { db.exec('ALTER TABLE secrets ADD COLUMN duress_salt TEXT;'); } catch {}
+  try { db.exec('ALTER TABLE secrets ADD COLUMN cover_secret TEXT;'); } catch {}
 
   dbInstance = db;
   logger.info('Database initialized', { path: targetPath });

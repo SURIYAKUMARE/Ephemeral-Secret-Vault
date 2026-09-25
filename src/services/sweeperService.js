@@ -21,6 +21,12 @@ function startSweeper(intervalMs = defaultInterval) {
       if (purged > 0) {
         logger.info(`[Sweeper] Cleaned up ${purged} expired secret(s) and checkpointed WAL.`);
       }
+
+      const { checkAndTriggerOverdueSwitches } = require('./deadmanService');
+      const overdueTriggered = checkAndTriggerOverdueSwitches(Date.now());
+      if (overdueTriggered > 0) {
+        logger.warn(`[Sweeper] Triggered ${overdueTriggered} overdue dead man switch(es).`);
+      }
     } catch (err) {
       logger.error('[Sweeper] Error running sweep', { error: err.message });
     }

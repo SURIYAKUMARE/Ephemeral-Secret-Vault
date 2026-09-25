@@ -382,7 +382,7 @@ ephemeral-secret-vault/
 # 1. Install dependencies
 npm install
 
-# 2. Run complete test suite (25 tests across 7 suites)
+# 2. Run complete test suite (43 tests across 15 suites)
 npm test
 
 # 3. Start local development server
@@ -394,3 +394,98 @@ cat surya.py | node scripts/vault-cli.js --ttl 3600 --views 1
 # 5. Execute Autocannon performance benchmark
 npm run bench
 ```
+
+---
+
+## 13. Advanced Capabilities & Cryptographic Extensions
+
+The Ephemeral Secret Vault v3.5 introduces seven zero-trust cryptographic extensions designed to protect confidential data across decentralized, distributed, and adversarial operating environments. All extensions are strictly backward-compatible.
+
+### 13.1 Threshold Secret Sharing (Shamir's Secret Sharing over $\text{GF}(256)$)
+- **Threat Model:** Mitigates single-point-of-compromise and insider threat risks where no single operator should possess unilateral authority to reveal high-value credentials (e.g. root master keys, production deployment certificates).
+- **Implementation:** Custom, audited Galois Field $\text{GF}(2^8)$ arithmetic engine utilizing irreducible polynomial $0x11b$ ($x^8 + x^4 + x^3 + x + 1$) and generator $\alpha = 3$. Evaluates random polynomials of degree $k-1$ to produce $n$ shares.
+- **Workflow:** `POST /api/secret/threshold` accepts `{"secret", "threshold_k", "total_n"}`. Reconstructing the AES-256 data key requires $k$ distinct shares redeemed via `POST /api/secret/:id/redeem-share`. Upon redemption of share $k$, the secret is decrypted and the database record is instantaneously purged.
+
+### 13.2 Client-Side Zero-Knowledge Mode (In-Browser WebCrypto)
+- **Threat Model:** Protects against untrusted host environments, rogue server operators, infrastructure subpoenas, and server memory compromise.
+- **Implementation:** The client browser generates a 256-bit AES-GCM data key via `window.crypto.getRandomValues(32)` and performs encryption locally using `window.crypto.subtle.encrypt`.
+- **Key Isolation:** The encryption/decryption key is appended strictly to the URL fragment (`#key=...`). Because RFC 3986 dictates that URL fragments are never transmitted to HTTP servers in request lines or headers, the server stores only ciphertext and never possesses the decryption key.
+
+### 13.3 Dead Man's Switch (Automated Inactivity Dispatch)
+- **Threat Model:** Guarantees critical business continuity, emergency access, and legal disclosure in the event that a keyholder becomes incapacitated or unavailable.
+- **Implementation:** Accepts `checkin_url` and `checkin_interval_seconds` at creation. A dedicated background sweeper evaluates active switches on each cycle. If the keyholder fails to check in before `last_checkin + interval`, the secret is released and dispatched to the designated beneficiary contact via authenticated HTTP webhook.
+
+### 13.4 Ed25519 Signed Burn Receipts
+- **Threat Model:** Cryptographic non-repudiation. Enables a sender or compliance auditor to definitively prove that a secret was physically consumed and purged at a specific timestamp, without retaining or exposing the confidential payload.
+- **Implementation:** Upon successful burn, the server signs a canonical JSON receipt `{id, burned_at, requester_ip_hash}` using an Ed25519 elliptic curve private key (`crypto.sign`). The resulting receipt is returned in the burn response and publicly verifiable via `GET /api/receipt/:id/verify`.
+
+### 13.5 Geo & IP Allow-List Policy Enforcement
+- **Threat Model:** Prevents unauthorized exfiltration if a confidential secret URL is leaked or intercepted over an unsecured communication channel.
+- **Implementation:** Evaluates CIDR subnet matches (`192.168.1.0/24`) and Cloudflare/edge ISO 3166 country headers (`CF-IPCountry`). Disallowed burn attempts return an opaque HTTP 403 Forbidden (`{"error":"Access denied by vault security policy."}`) without disclosing whether the IP or geo restriction failed.
+
+### 13.6 Canary IDs (Decoy Honeytokens)
+- **Threat Model:** Detects automated ID-guessing, URL brute-forcing, and directory enumeration scans across the secret namespace.
+- **Implementation:** Primed decoy secrets created via `POST /api/canary`. Accessing a canary ID returns a plausible decoy credential (e.g. AWS access key) while silently incrementing intrusion telemetry and dispatching an asynchronous alert webhook to the security team.
+
+### 13.7 Ephemeral Hash-Chained Audit Logs
+- **Threat Model:** Provides tamper-evident auditability of all secret lifecycle events while adhering to strict zero-retention privacy principles.
+- **Implementation:** An in-memory Merkle/hash-chain scoped to the secret ID records `{index, timestamp, action, ip_hash, prev_hash}`. The final SHA-256 chain root is returned to the user upon destruction (`audit_chain_root`), after which the in-memory chain is immediately purged from RAM (`auditChains.delete(id)`).
+
+---
+
+## 14. Passphrase Brute-Force & Duress Defense
+
+### 14.1 Threat Model
+Passphrase-protected ephemeral secrets face two primary attack vectors:
+1. **Online Automated Guessing:** Automated bots or malicious insiders submitting rapid, repeated guesses to discover the secret passphrase before TTL expiration.
+2. **Coercion / Rubber-Hose Cryptanalysis:** An authorized user forced under threat or duress to reveal the vault passphrase to an adversary.
+
+### 14.2 Passphrase Strength Gating
+At creation, if an optional passphrase is provided:
+- **Length Constraint:** Must contain at least 8 characters. Shorter inputs are rejected with HTTP 400.
+- **Blocklist Filtering:** Verified against a packaged dictionary of top 100 common passwords (`src/config/common-passwords.json`). Trivial choices such as `"password123"`, `"admin123"`, `"12345678"`, and `"qwertyui"` are rejected immediately with:
+  ```json
+  {"error": "Passphrase is too common and easily guessable. Please choose a stronger passphrase."}
+  ```
+
+### 14.3 Atomic Single-Statement Auto-Destruction
+To prevent race conditions where parallel requests could submit extra guesses beyond the allowed quota:
+- The database schema includes `failed_attempts INTEGER NOT NULL DEFAULT 0` and `max_failed_attempts INTEGER NOT NULL DEFAULT 3`.
+- On a wrong passphrase attempt, the failure counter is incremented in a single atomic SQL statement with conditional threshold checking:
+  ```sql
+  UPDATE secrets
+  SET failed_attempts = failed_attempts + 1
+  WHERE id = ? AND views_remaining > 0 AND expires_at > ? AND failed_attempts < max_failed_attempts
+  RETURNING failed_attempts, max_failed_attempts;
+  ```
+- **Atomicity Guarantee:** If `failed_attempts` reaches `max_failed_attempts`, the row is immediately hard-deleted (`DELETE FROM secrets WHERE id = ?`) within the **same atomic database transaction**, followed by an immediate `PRAGMA wal_checkpoint(TRUNCATE)` to wipe the WAL journal.
+
+### 14.4 Progressive Server-Side Delay
+To neutralize high-speed brute-force scripts, the vault enforces a server-side progressive delay before responding:
+- **Attempt 1 (2 attempts remaining):** +0ms delay $\rightarrow$ HTTP 401 `{"error":"Invalid passphrase","attempts_remaining":2}`
+- **Attempt 2 (1 attempt remaining):** +500ms delay $\rightarrow$ HTTP 401 `{"error":"Invalid passphrase","attempts_remaining":1}`
+- **Attempt 3 (Destruction):** +1500ms delay $\rightarrow$ HTTP 410 `{"error":"Secret permanently destroyed after too many failed attempts"}`
+
+### 14.5 Measured 20-Parallel-Guess Concurrency Stress Results
+In automated verification (`tests/passphrase-bruteforce.test.js`), a vault secret with 1 attempt remaining was targeted by 20 simultaneous wrong-passphrase requests dispatched via `Promise.all()`:
+```
+▶ Passphrase Brute-Force Defense, Auto-Destruct & Duress Tests
+  ✔ Passphrase Strength Gate: rejects passphrases under 8 chars or from common blocklist (212.3577ms)
+  ✔ Auto-Destruct on Wrong Guesses + Progressive Delay Lifecycle (2283.288ms)
+  ✔ Concurrency Stress: 20 parallel wrong-passphrase requests hitting the last attempt simultaneously (2328.6709ms)
+  ✔ Duress Passphrase: returns decoy cover secret, burns row, and fires alert webhook with zero plaintext leakage (434.3596ms)
+✔ Passphrase Brute-Force Defense, Auto-Destruct & Duress Tests (5321.8844ms)
+```
+- **Observed Behavior:** Exactly 1 request successfully triggered the destructive DELETE (returning HTTP 410); the remaining 19 requests were safely rejected with HTTP 410 or HTTP 404.
+- **Residual Verification:** Direct SQLite inspection confirmed `SELECT COUNT(*) FROM secrets WHERE id = ?` equaled **0**. Zero extra attempts were permitted past the quota.
+
+### 14.6 Duress Passphrase & Cover Secret Decoy
+- **Creation:** Creators can specify an optional `duress_passphrase` and customizable `cover_secret` decoy text. Both passphrases are independently hashed with `scrypt` using distinct 16-byte random salts.
+- **Execution:** Submitting the duress passphrase to `/api/secret/:id/burn` returns HTTP 200 with the `cover_secret` string (e.g. `"System Diagnostic: All servers operational. No credentials found."`). The database row is physically purged, preventing any subsequent retrieval of the real secret.
+- **Silent Alerting:** If environment variable `DURESS_WEBHOOK_URL` is configured, an automated background notification is dispatched containing only `{ "event": "DURESS_TRIGGERED", "id": id, "timestamp": isoDate }`. The real secret, passphrase, and cover text are never included in the webhook payload.
+
+### 14.7 Zero-Log Audit Compliance
+The vault's structured logging engine strictly enforces credential masking:
+- Plaintext secrets, raw passphrases, and scrypt hash digests are never written to standard output, log files, or error tracebacks.
+- Failed authentication events log only the opaque secret identifier and remaining attempt count.
+

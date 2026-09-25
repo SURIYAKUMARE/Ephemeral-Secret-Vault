@@ -88,12 +88,13 @@ describe('TTL Expiration & Background Sweeper Tests', () => {
     const db = getDb();
     const now = Date.now();
 
-    db.prepare('INSERT INTO secrets VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').run(
-      'exp111111111', Buffer.from('c1'), Buffer.from('i1'), Buffer.from('t1'), 1, 1, now - 5000, now - 10000, null, null
-    );
-    db.prepare('INSERT INTO secrets VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').run(
-      'exp222222222', Buffer.from('c2'), Buffer.from('i2'), Buffer.from('t2'), 1, 1, now - 1000, now - 5000, null, null
-    );
+    const insertStmt = db.prepare(`
+      INSERT INTO secrets (id, ciphertext, iv, auth_tag, max_views, views_remaining, expires_at, created_at, passphrase_hash, passphrase_salt)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    insertStmt.run('exp111111111', Buffer.from('c1'), Buffer.from('i1'), Buffer.from('t1'), 1, 1, now - 5000, now - 10000, null, null);
+    insertStmt.run('exp222222222', Buffer.from('c2'), Buffer.from('i2'), Buffer.from('t2'), 1, 1, now - 1000, now - 5000, null, null);
 
     const purged = sweepExpired(now);
     assert.ok(purged >= 2);
