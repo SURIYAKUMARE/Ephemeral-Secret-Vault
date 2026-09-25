@@ -363,9 +363,29 @@
       }
 
       try {
-        const response = await fetch(`/api/secret/${secretId}/burn`, {
+        // Step 1: Request short-lived, single-use Reveal Authorization Token
+        let revealToken = null;
+        try {
+          const tokenRes = await fetch(`/api/vault/${secretId}/reveal/request`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          if (tokenRes.ok) {
+            const tokenJson = await tokenRes.json();
+            revealToken = tokenJson.reveal_token;
+          }
+        } catch (e) {}
+
+        // Step 2: Authorized Reveal using Bearer Token
+        const revealHeaders = { 'Content-Type': 'application/json' };
+        if (revealToken) {
+          revealHeaders['Authorization'] = `Bearer ${revealToken}`;
+        }
+
+        const revealEndpoint = revealToken ? `/api/vault/${secretId}/reveal` : `/api/secret/${secretId}/burn`;
+        const response = await fetch(revealEndpoint, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: revealHeaders,
           body: JSON.stringify(bodyPayload)
         });
 

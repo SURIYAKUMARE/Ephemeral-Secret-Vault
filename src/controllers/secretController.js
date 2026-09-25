@@ -4,6 +4,7 @@ const secretService = require('../services/secretService');
 const deadmanService = require('../services/deadmanService');
 const receiptService = require('../services/receiptService');
 const canaryService = require('../services/canaryService');
+const revealTokenService = require('../services/revealTokenService');
 
 const publicDir = fs.existsSync(path.join(process.cwd(), 'public'))
   ? path.join(process.cwd(), 'public')
@@ -212,6 +213,139 @@ async function burnSecret(req, res, next) {
 }
 
 /**
+ * Issues a short-lived, single-use Reveal Authorization Token for a vault.
+ */
+function requestRevealToken(req, res, next) {
+  try {
+    const { id } = req.params;
+    const tokenData = revealTokenService.createRevealToken(id, Date.now(), req);
+
+    if (!tokenData) {
+      return res.status(404).json({ error: 'Unable to reveal this secret.' });
+    }
+
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.setHeader('Surrogate-Control', 'no-store');
+    res.setHeader('Referrer-Policy', 'no-referrer');
+
+    return res.status(200).json({
+      reveal_token: tokenData.reveal_token,
+      expires_in: tokenData.expires_in,
+      expires_at: tokenData.expires_at
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * Authorized Reveal Endpoint requiring a valid Reveal Authorization Token.
+ */
+async function revealSecret(req, res, next) {
+  try {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.setHeader('Surrogate-Control', 'no-store');
+    res.setHeader('Referrer-Policy', 'no-referrer');
+
+    const { id } = req.params;
+
+    // Extract Reveal Token from Authorization header or body
+    let rawToken = null;
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      rawToken = authHeader.slice(7);
+    } else if (req.body && typeof req.body.reveal_token === 'string') {
+      rawToken = req.body.reveal_token;
+    }
+
+    if (!rawToken) {
+      return res.status(401).json({ error: 'Unable to reveal this secret.' });
+    }
+
+    // Validate and atomically consume the Reveal Token
+    const tokenResult = revealTokenService.validateAndConsumeToken(rawToken, id, Date.now());
+    if (!tokenResult.valid) {
+      return res.status(403).json({ error: tokenResult.error || 'Unable to reveal this secret.' });
+    }
+
+    let passphrase = null;
+    if (req.body && typeof req.body.passphrase === 'string') {
+      passphrase = req.body.passphrase.trim();
+    }
+
+    const result = secretService.claimAndBurnSecret(id, passphrase, Date.now(), req);
+
+    if (!result) {
+      return res.status(404).json({ error: 'Unable to reveal this secret.' });
+    }
+
+    if (result.policyDenied) {
+      return res.status(403).json({ error: 'Access denied by vault security policy.' });
+    }
+
+    if (result.destroyedTooManyAttempts) {
+      await new Promise(r => setTimeout(r, 1500));
+      return res.status(410).json({ error: 'Secret permanently destroyed after too many failed attempts' });
+    }
+
+    if (result.invalidPassphrase) {
+      const attempt = result.attemptNumber || 1;
+      const delayMs = attempt >= 3 ? 1500 : (attempt === 2 ? 500 : 0);
+      if (delayMs > 0) {
+        await new Promise(r => setTimeout(r, delayMs));
+      }
+      return res.status(401).json({
+        error: 'Invalid passphrase',
+        attempts_remaining: result.attempts_remaining
+      });
+    }
+
+    if (result.is_duress) {
+      return res.status(200).json({
+        secret: result.secret,
+        views_remaining: result.views_remaining,
+        burned: result.burned
+      });
+    }
+
+    if (result.client_encrypted) {
+      return res.status(200).json({
+        client_encrypted: true,
+        ciphertext: result.ciphertext,
+        iv: result.iv,
+        auth_tag: result.auth_tag,
+        views_remaining: result.views_remaining,
+        burned: result.burned,
+        burn_receipt: result.burn_receipt || undefined,
+        audit_chain_root: result.audit_chain_root || undefined
+      });
+    }
+
+    return res.status(200).json({
+      secret: result.secret,
+      file: result.file || undefined,
+      views_remaining: result.views_remaining,
+      burned: result.burned,
+      burn_receipt: result.burn_receipt || undefined,
+      audit_chain_root: result.audit_chain_root || undefined
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * Deny direct API access to plaintext secrets (Security Test B requirement).
+ */
+function denyDirectSecretAccess(req, res) {
+  return res.status(403).json({ error: 'Direct access to plaintext is denied. Authorized reveal flow required.' });
+}
+
+/**
  * Creates a threshold-split secret with Shamir's Secret Sharing (k of n).
  */
 function createThresholdSecret(req, res, next) {
@@ -412,5 +546,8 @@ module.exports = {
   deadmanCheckin,
   getDeadmanStatus,
   verifyBurnReceipt,
-  createCanaryTrap
+  createCanaryTrap,
+  requestRevealToken,
+  revealSecret,
+  denyDirectSecretAccess
 };

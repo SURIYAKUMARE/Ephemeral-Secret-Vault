@@ -7,6 +7,19 @@ const {
   validateThresholdSecret,
   validateRedeemShare
 } = require('../middleware/validation');
+const { createRateLimiter } = require('../middleware/rateLimiter');
+
+const apiCreateLimiter = createRateLimiter({
+  windowMs: 60000,
+  max: parseInt(process.env.RATE_LIMIT_CREATE_MAX, 10) || 30,
+  message: 'Too many secret creation requests from this IP, please try again later.'
+});
+
+const apiBurnLimiter = createRateLimiter({
+  windowMs: 60000,
+  max: parseInt(process.env.RATE_LIMIT_BURN_MAX, 10) || 60,
+  message: 'Too many secret reveal attempts from this IP, please try again later.'
+});
 
 const router = express.Router();
 const publicDir = path.join(process.cwd(), 'public');
@@ -30,8 +43,8 @@ router.get('/file', (req, res) => {
   res.sendFile(filePage);
 });
 
-// Safe view splash page
-router.get('/view/:id', validateSecretId, secretController.getSecretView);
+// Safe view splash page (supports /view/:id, /v/:id, and /vault/:id)
+router.get(['/view/:id', '/v/:id', '/vault/:id'], validateSecretId, secretController.getSecretView);
 
 // Threshold view page (safe landing)
 router.get('/view/threshold/:id', validateSecretId, (req, res) => {
@@ -42,10 +55,17 @@ router.get('/view/threshold/:id', validateSecretId, (req, res) => {
 });
 
 // Create secret API
-router.post('/api/secret', validateCreateSecret, secretController.createSecret);
+router.post('/api/secret', apiCreateLimiter, validateCreateSecret, secretController.createSecret);
 
-// Atomic burn API
-router.post('/api/secret/:id/burn', validateSecretId, secretController.burnSecret);
+// Reveal Authorization Token Flow (Two-Step Backend Enforced)
+router.post(['/api/vault/:id/reveal/request', '/api/secret/:id/reveal/request'], apiBurnLimiter, validateSecretId, secretController.requestRevealToken);
+router.post(['/api/vault/:id/reveal', '/api/secret/:id/reveal'], apiBurnLimiter, validateSecretId, secretController.revealSecret);
+
+// Direct API access protection (Test B)
+router.get(['/api/vault/:id/secret', '/api/secret/:id/secret'], validateSecretId, secretController.denyDirectSecretAccess);
+
+// Atomic burn API (Backward-compatible direct burn)
+router.post('/api/secret/:id/burn', apiBurnLimiter, validateSecretId, secretController.burnSecret);
 
 // Shamir Threshold Secret Sharing APIs (Feature 1)
 router.post('/api/secret/threshold', validateThresholdSecret, secretController.createThresholdSecret);

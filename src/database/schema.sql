@@ -82,3 +82,16 @@ CREATE TABLE IF NOT EXISTS secret_policies (
   client_encrypted INTEGER NOT NULL DEFAULT 0,
   created_at INTEGER NOT NULL
 );
+
+-- Reveal Authorization Tokens (Short-lived, single-use, cryptographically hashed)
+CREATE TABLE IF NOT EXISTS reveal_tokens (
+  token_hash TEXT PRIMARY KEY,
+  vault_id TEXT NOT NULL,
+  expires_at INTEGER NOT NULL,
+  consumed INTEGER NOT NULL DEFAULT 0,
+  consumed_at INTEGER,
+  created_at INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_reveal_tokens_vault ON reveal_tokens(vault_id);
+CREATE INDEX IF NOT EXISTS idx_reveal_tokens_expiry ON reveal_tokens(expires_at);

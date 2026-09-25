@@ -1078,9 +1078,32 @@
           }
 
           try {
-            const resp = await fetch(serverOrigin + '/api/secret/' + vaultId + '/burn', {
+            // Step 1: Request short-lived Reveal Token
+            let revealToken = null;
+            try {
+              const tokRes = await fetch(serverOrigin + '/api/vault/' + vaultId + '/reveal/request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+              });
+              if (tokRes.ok) {
+                const tokJson = await tokRes.json();
+                revealToken = tokJson.reveal_token;
+              }
+            } catch(e) {}
+
+            // Step 2: Authorized Reveal using Bearer Token
+            const revealHeaders = { 'Content-Type': 'application/json' };
+            if (revealToken) {
+              revealHeaders['Authorization'] = 'Bearer ' + revealToken;
+            }
+
+            const revealUrl = revealToken
+              ? serverOrigin + '/api/vault/' + vaultId + '/reveal'
+              : serverOrigin + '/api/secret/' + vaultId + '/burn';
+
+            const resp = await fetch(revealUrl, {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              headers: revealHeaders,
               body: JSON.stringify({ passphrase: enteredPass })
             });
 

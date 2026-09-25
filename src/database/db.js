@@ -24,6 +24,7 @@ class InMemoryVaultDb {
     this.receiptRecords = new Map();
     this.canaryRecords = new Map();
     this.policyRecords = new Map();
+    this.revealTokenRecords = new Map();
   }
 
   pragma(cmd) {
@@ -269,6 +270,38 @@ class InMemoryVaultDb {
           if (rec) {
             rec.triggered_count = (rec.triggered_count || 0) + 1;
             rec.last_triggered_at = Number(now);
+            return { changes: 1 };
+          }
+          return { changes: 0 };
+        }
+      };
+    }
+
+    // INSERT INTO reveal_tokens
+    if (/^INSERT INTO reveal_tokens/i.test(cleanSql)) {
+      return {
+        run(token_hash, vault_id, expires_at, created_at) {
+          self.revealTokenRecords.set(token_hash, {
+            token_hash,
+            vault_id,
+            expires_at: Number(expires_at),
+            consumed: 0,
+            consumed_at: null,
+            created_at: Number(created_at)
+          });
+          return { changes: 1 };
+        }
+      };
+    }
+
+    // UPDATE reveal_tokens SET consumed = 1
+    if (/^UPDATE reveal_tokens SET consumed = 1/i.test(cleanSql)) {
+      return {
+        run(consumed_at, token_hash, vault_id, now) {
+          const rec = self.revealTokenRecords.get(token_hash);
+          if (rec && rec.vault_id === vault_id && rec.consumed === 0 && rec.expires_at > now) {
+            rec.consumed = 1;
+            rec.consumed_at = Number(consumed_at);
             return { changes: 1 };
           }
           return { changes: 0 };
@@ -575,6 +608,20 @@ function initDb(customPath = databasePath) {
   try { db.exec('ALTER TABLE secrets ADD COLUMN duress_hash TEXT;'); } catch {}
   try { db.exec('ALTER TABLE secrets ADD COLUMN duress_salt TEXT;'); } catch {}
   try { db.exec('ALTER TABLE secrets ADD COLUMN cover_secret TEXT;'); } catch {}
+  try {
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS reveal_tokens (
+        token_hash TEXT PRIMARY KEY,
+        vault_id TEXT NOT NULL,
+        expires_at INTEGER NOT NULL,
+        consumed INTEGER NOT NULL DEFAULT 0,
+        consumed_at INTEGER,
+        created_at INTEGER NOT NULL
+      );
+      CREATE INDEX IF NOT EXISTS idx_reveal_tokens_vault ON reveal_tokens(vault_id);
+      CREATE INDEX IF NOT EXISTS idx_reveal_tokens_expiry ON reveal_tokens(expires_at);
+    `);
+  } catch {}
 
   dbInstance = db;
   logger.info('Database initialized', { path: targetPath });
