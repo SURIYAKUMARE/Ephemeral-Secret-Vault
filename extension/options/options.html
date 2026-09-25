@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings — Ephemeral Secret Vault</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="settings-wrapper">
+    <!-- Header -->
+    <header class="settings-header">
+      <div class="header-brand">
+        <img src="../icons/icon48.png" alt="Ephemeral Vault Logo" class="brand-logo">
+        <div>
+          <h1 class="brand-title">Ephemeral <span class="gradient-text">Secret Vault</span></h1>
+          <p class="brand-sub">Browser Extension Settings &amp; Security Controls</p>
+        </div>
+      </div>
+      <div class="header-tag">
+        <span class="status-dot-pulse"></span>
+        <span>Secure Sharing Extension</span>
+      </div>
+    </header>
+
+    <main class="settings-main">
+      <!-- Section 1: Server Connection -->
+      <section class="card-section">
+        <div class="section-title-row">
+          <h2 class="section-title">🌐 Vault Server Connection</h2>
+          <span class="section-badge">Backend Configuration</span>
+        </div>
+        <p class="section-desc">Point the browser extension to your active Ephemeral Secret Vault server instance.</p>
+
+        <div class="form-group">
+          <label for="setting-server-url" class="field-label">VAULT SERVER ORIGIN URL</label>
+          <div class="input-with-button">
+            <input type="url" id="setting-server-url" class="text-input" placeholder="http://localhost:3000">
+            <button type="button" id="btn-test-connection" class="btn-secondary">Test Connection</button>
+          </div>
+          <span id="connection-status" class="field-hint">Default: http://localhost:3000 (Local instance)</span>
+        </div>
+      </section>
+
+      <!-- Section 2: Vault Defaults -->
+      <section class="card-section">
+        <div class="section-title-row">
+          <h2 class="section-title">⏱️ Default Security Policies</h2>
+          <span class="section-badge">Lifecycle Rules</span>
+        </div>
+        <p class="section-desc">Default expiration and view limits prefilled when protecting new secrets.</p>
+
+        <div class="grid-2col">
+          <div class="form-group">
+            <label for="setting-default-ttl" class="field-label">DEFAULT EXPIRATION</label>
+            <select id="setting-default-ttl" class="select-input">
+              <option value="600">10 minutes (Recommended)</option>
+              <option value="3600">1 hour</option>
+              <option value="21600">6 hours</option>
+              <option value="86400">24 hours</option>
+              <option value="604800">7 days</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="setting-default-views" class="field-label">DEFAULT MAXIMUM VIEWS</label>
+            <select id="setting-default-views" class="select-input">
+              <option value="1">1 view (Instant Burn)</option>
+              <option value="2">2 views</option>
+              <option value="5">5 views</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Smart Detection -->
+      <section class="card-section">
+        <div class="section-title-row">
+          <h2 class="section-title">🧠 Smart Sensitive Content Detection</h2>
+          <span class="section-badge">Client-Side Heuristics</span>
+        </div>
+        <p class="section-desc">Locally inspects selected text for API keys, passwords, and tokens without sending any data over the network.</p>
+
+        <label class="toggle-control">
+          <input type="checkbox" id="setting-auto-detect" checked>
+          <span class="toggle-slider"></span>
+          <span class="toggle-label">
+            <strong>Enable Smart Sensitive Detection</strong>
+            <span class="toggle-sub">Shows a small non-intrusive '🔐 Protect' button when you highlight passwords or API tokens.</span>
+          </span>
+        </label>
+      </section>
+
+      <!-- Section 4: Platform Integrations -->
+      <section class="card-section">
+        <div class="section-title-row">
+          <h2 class="section-title">💬 Platform Integrations</h2>
+          <span class="section-badge">Composer Adapters</span>
+        </div>
+        <p class="section-desc">Enable or disable in-page toolbar buttons and replacement hooks for specific messaging platforms.</p>
+
+        <div class="integrations-list">
+          <label class="toggle-item">
+            <input type="checkbox" id="int-whatsapp" checked>
+            <span class="toggle-item-name">WhatsApp Web (web.whatsapp.com)</span>
+          </label>
+          <label class="toggle-item">
+            <input type="checkbox" id="int-gmail" checked>
+            <span class="toggle-item-name">Gmail (mail.google.com)</span>
+          </label>
+          <label class="toggle-item">
+            <input type="checkbox" id="int-outlook" checked>
+            <span class="toggle-item-name">Outlook Web (outlook.live.com / office.com)</span>
+          </label>
+          <label class="toggle-item">
+            <input type="checkbox" id="int-slack" checked>
+            <span class="toggle-item-name">Slack Web (app.slack.com)</span>
+          </label>
+          <label class="toggle-item">
+            <input type="checkbox" id="int-discord" checked>
+            <span class="toggle-item-name">Discord Web (discord.com)</span>
+          </label>
+          <label class="toggle-item">
+            <input type="checkbox" id="int-teams" checked>
+            <span class="toggle-item-name">Microsoft Teams (teams.microsoft.com)</span>
+          </label>
+          <label class="toggle-item">
+            <input type="checkbox" id="int-telegram" checked>
+            <span class="toggle-item-name">Telegram Web (web.telegram.org)</span>
+          </label>
+        </div>
+      </section>
+
+      <!-- Section 5: Permissions Transparency -->
+      <section class="card-section">
+        <div class="section-title-row">
+          <h2 class="section-title">🛡️ Permissions &amp; Privacy Transparency</h2>
+          <span class="section-badge">Least Privilege</span>
+        </div>
+        <div class="security-bullet-box">
+          <p><strong>Why does this extension need permissions?</strong></p>
+          <ul class="permission-reasons">
+            <li><code>activeTab</code> — Allows reading selected text only when you explicitly click 'Protect' or right-click.</li>
+            <li><code>contextMenus</code> — Adds the '🔐 Protect with Ephemeral Vault' item to your right-click context menu.</li>
+            <li><code>storage</code> — Saves your preferred server URL and settings locally on your machine.</li>
+            <li><code>scripting</code> — Injects the secure in-page protection modal when triggered.</li>
+          </ul>
+          <p style="margin-top: 8px; font-size: 12px; color: #34d399;">
+            ✓ Zero telemetry. Zero analytics. Zero plaintext stored. Your sensitive secrets are never logged.
+          </p>
+        </div>
+      </section>
+
+      <!-- Save & Feedback Footer -->
+      <div class="settings-actions">
+        <button type="button" id="btn-save-settings" class="btn-primary">
+          <span>Save Changes</span>
+        </button>
+        <button type="button" id="btn-reset-defaults" class="btn-ghost">
+          <span>Reset to Defaults</span>
+        </button>
+        <span id="save-status" class="save-status-msg hidden">✓ Settings saved successfully</span>
+      </div>
+    </main>
+  </div>
+
+  <script src="../shared/api-client.js"></script>
+  <script src="../shared/storage-manager.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

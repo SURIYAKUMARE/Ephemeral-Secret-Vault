@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ephemeral Secret Vault</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <!-- Header Bar -->
+  <header class="popup-header">
+    <div class="header-left">
+      <img src="../icons/icon32.png" alt="Ephemeral Vault Logo" class="header-logo">
+      <div class="header-text">
+        <h1 class="brand-title">Ephemeral <span class="gradient-text">Secret Vault</span></h1>
+        <div class="status-indicator" id="vault-status">
+          <span class="status-dot"></span>
+          <span class="status-label" id="status-text">Checking...</span>
+        </div>
+      </div>
+    </div>
+    <button type="button" id="btn-open-settings" class="btn-icon" title="Open Settings" aria-label="Extension Settings">
+      <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+    </button>
+  </header>
+
+  <!-- Tagline Banner -->
+  <div class="tagline-strip">
+    <span>Share the link. Not the secret.</span>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <nav class="tab-nav" role="tablist">
+    <button type="button" class="tab-btn active" id="tab-protect" role="tab" aria-selected="true">
+      <span>🔐 Protect</span>
+    </button>
+    <button type="button" class="tab-btn" id="tab-history" role="tab" aria-selected="false">
+      <span>📋 Recent</span>
+    </button>
+    <button type="button" class="tab-btn" id="tab-about" role="tab" aria-selected="false">
+      <span>🛡️ Security</span>
+    </button>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="popup-content">
+
+    <!-- Tab 1: Protect Secret -->
+    <section id="panel-protect" class="tab-panel active">
+      <div id="create-view">
+        <div class="field-header">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <label for="popup-secret" class="field-label">SECRET CONTENT</label>
+            <span id="detection-badge" class="badge-sensitive hidden">⚠ Sensitive</span>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <button type="button" id="btn-paste-secret" class="btn-micro" title="Paste from clipboard">Paste</button>
+            <button type="button" id="btn-mask-secret" class="btn-micro">Hide</button>
+          </div>
+        </div>
+
+        <textarea
+          id="popup-secret"
+          class="text-input"
+          placeholder="Type or paste sensitive credentials, API keys, passwords..."
+          rows="4"
+          spellcheck="false"
+        ></textarea>
+
+        <div class="config-row">
+          <div class="config-group">
+            <label for="popup-ttl" class="config-label">EXPIRES AFTER</label>
+            <select id="popup-ttl" class="select-input">
+              <option value="600" selected>10 minutes</option>
+              <option value="3600">1 hour</option>
+              <option value="21600">6 hours</option>
+              <option value="86400">24 hours</option>
+              <option value="604800">7 days</option>
+            </select>
+          </div>
+
+          <div class="config-group">
+            <label for="popup-views" class="config-label">MAX VIEWS</label>
+            <select id="popup-views" class="select-input">
+              <option value="1" selected>1 view (Instant Burn)</option>
+              <option value="2">2 views</option>
+              <option value="5">5 views</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="config-group" style="margin-top: 10px;">
+          <label for="popup-passphrase" class="config-label">PASSPHRASE <span style="font-weight:normal;opacity:0.6;">(Optional)</span></label>
+          <div class="passphrase-row">
+            <input type="password" id="popup-passphrase" class="text-input-single" placeholder="Sender passphrase">
+            <button type="button" id="btn-toggle-eye" class="btn-icon-eye" aria-label="Toggle password visibility">👁</button>
+          </div>
+        </div>
+
+        <div id="popup-error" class="alert-box alert-danger hidden"></div>
+
+        <button type="button" id="btn-create-vault" class="btn-primary-action">
+          <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <span id="btn-create-text">Create Secure Link</span>
+        </button>
+      </div>
+
+      <!-- Result View -->
+      <div id="result-view" class="result-card hidden">
+        <div class="result-success-badge">
+          <span>✓</span>
+          <span>Secret Protected</span>
+        </div>
+
+        <div class="link-output-box">
+          <input type="text" id="popup-link-output" class="link-input-display" readonly>
+        </div>
+
+        <div class="result-actions-grid">
+          <button type="button" id="btn-copy-popup-link" class="btn-primary-action" style="margin-top:0;">
+            <span>📋 Copy Link</span>
+          </button>
+          <a id="btn-open-popup-link" href="#" target="_blank" class="btn-secondary-action">
+            <span>🌐 Open</span>
+          </a>
+        </div>
+
+        <div class="security-compact-box">
+          <div class="sec-row">
+            <span class="sec-k">Vault Protection</span>
+            <span class="sec-v sec-v-active">Active</span>
+          </div>
+          <div class="sec-row">
+            <span class="sec-k">Status</span>
+            <span class="sec-v sec-v-ready">Access available</span>
+          </div>
+        </div>
+
+        <div class="destruction-hint">
+          🛡️ Your secret was designed to disappear. Once expired or destroyed, access is permanently closed.
+        </div>
+
+        <button type="button" id="btn-reset-popup" class="btn-secondary-action" style="margin-top:4px;">
+          <span>+ Create Another Secret</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Tab 2: Recent History -->
+    <section id="panel-history" class="tab-panel">
+      <div class="panel-header-row">
+        <span class="panel-title">RECENT VAULTS (METADATA ONLY)</span>
+        <button type="button" id="btn-clear-history" class="btn-micro-danger">Clear</button>
+      </div>
+      <div id="history-list" class="history-list-container">
+        <!-- Injected via popup.js -->
+      </div>
+    </section>
+
+    <!-- Tab 3: Security & Architecture -->
+    <section id="panel-about" class="tab-panel">
+      <div class="security-sheet">
+        <h3 class="sheet-title">🔐 Zero-Trace Architecture</h3>
+        <p class="sheet-desc">Ephemeral Secret Vault never stores plaintext secrets, encryption keys, or authentication tokens in extension storage or browser history.</p>
+
+        <ul class="features-list">
+          <li><strong>Zero Plaintext Storage:</strong> Secrets are encrypted at rest via AES-256-GCM.</li>
+          <li><strong>Atomic Self-Destruction:</strong> The secret is purged from the database immediately upon view or expiry.</li>
+          <li><strong>Anti-Leak Headers:</strong> Response headers prevent browser and proxy caching.</li>
+          <li><strong>Bot Guard:</strong> Link preview crawlers (WhatsApp, Slack, Discord) never trigger premature burns.</li>
+        </ul>
+
+        <div class="sheet-footer">
+          <a href="http://localhost:3000" id="link-visit-vault" target="_blank" class="btn-secondary-action">
+            <span>Open Vault Web Application →</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="../shared/api-client.js"></script>
+  <script src="../shared/storage-manager.js"></script>
+  <script src="../shared/sensitive-detector.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

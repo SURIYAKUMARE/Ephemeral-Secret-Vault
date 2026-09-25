@@ -1,0 +1,84 @@
+{
+  "manifest_version": 3,
+  "name": "Ephemeral Secret Vault — Secure Sharing",
+  "version": "1.0.0",
+  "description": "Share the link, not the secret. Encrypt sensitive text and credentials directly inside WhatsApp, Gmail, Slack, and web composers into ephemeral vault links.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "Ephemeral Secret Vault",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background/service-worker.js",
+    "type": "module"
+  },
+  "permissions": [
+    "activeTab",
+    "contextMenus",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "http://localhost:*/*",
+    "http://127.0.0.1:*/*",
+    "https://*/*"
+  ],
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://web.whatsapp.com/*",
+        "https://mail.google.com/*",
+        "https://outlook.live.com/*",
+        "https://outlook.office.com/*",
+        "https://outlook.office365.com/*",
+        "https://web.telegram.org/*",
+        "https://discord.com/*",
+        "https://app.slack.com/*",
+        "https://teams.microsoft.com/*"
+      ],
+      "js": [
+        "shared/sensitive-detector.js",
+        "shared/api-client.js",
+        "content/adapters/adapter-base.js",
+        "content/adapters/whatsapp.js",
+        "content/adapters/gmail.js",
+        "content/adapters/outlook.js",
+        "content/adapters/telegram.js",
+        "content/adapters/discord.js",
+        "content/adapters/slack.js",
+        "content/adapters/teams.js",
+        "content/adapters/generic.js",
+        "content/modal.js",
+        "content/content.js"
+      ],
+      "css": [
+        "content/content.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "icons/*",
+        "content/content.css"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

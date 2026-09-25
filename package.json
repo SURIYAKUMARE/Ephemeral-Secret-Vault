@@ -9,6 +9,7 @@
   "scripts": {
     "start": "node src/server.js",
     "test": "node --test --test-concurrency=1 \"tests/*.test.js\"",
+    "test:ext": "node --test \"tests/extension.test.js\"",
     "test:race": "node --test \"tests/race.test.js\"",
     "bench": "node scripts/bench.js",
     "gen-key": "node scripts/gen-key.js"

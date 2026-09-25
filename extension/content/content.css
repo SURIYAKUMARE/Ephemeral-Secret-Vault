@@ -1,0 +1,67 @@
+/**
+ * Ephemeral Secret Vault — Content Script Toolbar & Floating Button Styles
+ */
+
+.ephemeral-toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 4px 6px;
+  border-radius: 6px;
+  color: #38bdf8;
+  font-size: 16px;
+  line-height: 1;
+  transition: all 0.2s ease;
+  user-select: none;
+  vertical-align: middle;
+}
+
+.ephemeral-toolbar-btn:hover {
+  background: rgba(56, 189, 248, 0.15);
+  transform: scale(1.1);
+}
+
+.ephemeral-toolbar-btn:active {
+  transform: scale(0.95);
+}
+
+/* Floating Quick Protect Action for text selection */
+.ephemeral-floating-bubble {
+  position: absolute;
+  z-index: 2147483640;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(10, 16, 35, 0.95);
+  border: 1px solid rgba(120, 120, 255, 0.3);
+  border-radius: 20px;
+  padding: 4px 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 16px rgba(99, 102, 241, 0.25);
+  color: #f8fafc;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  animation: bubblePop 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  user-select: none;
+}
+
+.ephemeral-floating-bubble:hover {
+  background: rgba(15, 23, 50, 0.98);
+  border-color: #38bdf8;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.7), 0 0 20px rgba(56, 189, 248, 0.35);
+}
+
+@keyframes bubblePop {
+  from {
+    transform: scale(0.8) translateY(6px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
