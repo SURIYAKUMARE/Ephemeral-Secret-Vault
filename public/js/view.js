@@ -35,6 +35,7 @@
   // Live Timer & Date-Time Elements
   const countdownTimer = document.getElementById('countdown-timer');
   const timerProgressFill = document.getElementById('timer-progress-fill');
+  const gaugeProgress = document.getElementById('gauge-progress');
   const secretMetricsChars = document.getElementById('secret-metrics-chars');
   const memoryWipeNote = document.getElementById('memory-wipe-note');
   const viewLiveTime = document.getElementById('view-live-time');
@@ -85,6 +86,7 @@
   const secretId = vaultCard ? vaultCard.dataset.id : '';
   const hasPassphrase = vaultCard ? vaultCard.dataset.hasPassphrase === 'true' : false;
   const expiresIso = vaultCard ? vaultCard.dataset.expires : null;
+  const createdIso = vaultCard ? vaultCard.dataset.created : null;
 
   let decryptedFileData = null;
   let decodedScriptText = '';
@@ -154,11 +156,14 @@
   }
 
   // ==========================================================================
-  // Live Expiry Countdown Ticker
+  // Live Expiry Countdown Ticker & Circular Gauge
   // ==========================================================================
   function initLiveCountdown() {
     if (!expiresIso || !countdownTimer) return;
     const expiryTime = new Date(expiresIso).getTime();
+    const createdTime = createdIso ? new Date(createdIso).getTime() : (expiryTime - 3600 * 1000);
+    const totalDuration = Math.max(1000, expiryTime - createdTime);
+    const GAUGE_CIRCUMFERENCE = 376.99; // 2 * PI * 60
 
     function updateTicker() {
       const now = Date.now();
@@ -168,6 +173,7 @@
         countdownTimer.textContent = 'EXPIRED';
         countdownTimer.style.color = '#ef4444';
         if (timerProgressFill) timerProgressFill.style.width = '0%';
+        if (gaugeProgress) gaugeProgress.style.strokeDashoffset = GAUGE_CIRCUMFERENCE;
         if (burnBtn) {
           burnBtn.disabled = true;
           burnBtn.innerHTML = '<span>Secret Expired &amp; Purged</span>';
@@ -188,10 +194,14 @@
         countdownTimer.textContent = `${pad(minutes)}m ${pad(seconds)}s`;
       }
 
-      // Smooth progress bar calculation
+      // Smooth progress calculation
+      const fraction = Math.min(1, Math.max(0, diff / totalDuration));
       if (timerProgressFill) {
-        const percent = Math.min(100, Math.max(0, (diff / (3600 * 1000)) * 100));
-        timerProgressFill.style.width = `${percent}%`;
+        timerProgressFill.style.width = `${(fraction * 100).toFixed(1)}%`;
+      }
+      if (gaugeProgress) {
+        const offset = GAUGE_CIRCUMFERENCE * (1 - fraction);
+        gaugeProgress.style.strokeDashoffset = offset.toFixed(2);
       }
     }
 

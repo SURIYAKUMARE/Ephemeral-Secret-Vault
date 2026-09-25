@@ -35,6 +35,7 @@
   // Live Timer & Date-Time Elements
   const countdownTimer = document.getElementById('countdown-timer');
   const timerProgressFill = document.getElementById('timer-progress-fill');
+  const gaugeProgress = document.getElementById('gauge-progress');
   const secretMetricsChars = document.getElementById('secret-metrics-chars');
   const memoryWipeNote = document.getElementById('memory-wipe-note');
   const viewLiveTime = document.getElementById('view-live-time');
@@ -85,6 +86,7 @@
   const secretId = vaultCard ? vaultCard.dataset.id : '';
   const hasPassphrase = vaultCard ? vaultCard.dataset.hasPassphrase === 'true' : false;
   const expiresIso = vaultCard ? vaultCard.dataset.expires : null;
+  const createdIso = vaultCard ? vaultCard.dataset.created : null;
 
   let decryptedFileData = null;
   let decodedScriptText = '';
@@ -154,11 +156,14 @@
   }
 
   // ==========================================================================
-  // Live Expiry Countdown Ticker
+  // Live Expiry Countdown Ticker & Circular Gauge
   // ==========================================================================
   function initLiveCountdown() {
     if (!expiresIso || !countdownTimer) return;
     const expiryTime = new Date(expiresIso).getTime();
+    const createdTime = createdIso ? new Date(createdIso).getTime() : (expiryTime - 3600 * 1000);
+    const totalDuration = Math.max(1000, expiryTime - createdTime);
+    const GAUGE_CIRCUMFERENCE = 376.99; // 2 * PI * 60
 
     function updateTicker() {
       const now = Date.now();
@@ -168,6 +173,7 @@
         countdownTimer.textContent = 'EXPIRED';
         countdownTimer.style.color = '#ef4444';
         if (timerProgressFill) timerProgressFill.style.width = '0%';
+        if (gaugeProgress) gaugeProgress.style.strokeDashoffset = GAUGE_CIRCUMFERENCE;
         if (burnBtn) {
           burnBtn.disabled = true;
           burnBtn.innerHTML = '<span>Secret Expired &amp; Purged</span>';
@@ -188,10 +194,14 @@
         countdownTimer.textContent = `${pad(minutes)}m ${pad(seconds)}s`;
       }
 
-      // Smooth progress bar calculation
+      // Smooth progress calculation
+      const fraction = Math.min(1, Math.max(0, diff / totalDuration));
       if (timerProgressFill) {
-        const percent = Math.min(100, Math.max(0, (diff / (3600 * 1000)) * 100));
-        timerProgressFill.style.width = `${percent}%`;
+        timerProgressFill.style.width = `${(fraction * 100).toFixed(1)}%`;
+      }
+      if (gaugeProgress) {
+        const offset = GAUGE_CIRCUMFERENCE * (1 - fraction);
+        gaugeProgress.style.strokeDashoffset = offset.toFixed(2);
       }
     }
 
@@ -387,6 +397,64 @@
 
         // Stop countdown ticker
         if (tickerInterval) clearInterval(tickerInterval);
+
+        // Client-Side Zero-Knowledge Decryption via WebCrypto
+        if (data.client_encrypted) {
+          const hash = window.location.hash || '';
+          const match = hash.match(/key=([0-9a-fA-F]+)/);
+          if (!match || !match[1]) {
+            showError('Client-Side Zero-Knowledge secret: Decryption key is missing from URL fragment (#key=...). Without the key, decryption is mathematically impossible.');
+            burnBtn.disabled = false;
+            burnBtn.innerHTML = `${SVG.flame} <span>Retry Reveal</span>`;
+            resetSlideThumb();
+            return;
+          }
+
+          try {
+            const hexKey = match[1];
+            const keyBytes = new Uint8Array(hexKey.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+            const ivBytes = new Uint8Array(data.iv.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+            const cipherBytes = new Uint8Array(data.ciphertext.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+            const tagBytes = new Uint8Array(data.auth_tag.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+
+            const combined = new Uint8Array(cipherBytes.length + tagBytes.length);
+            combined.set(cipherBytes, 0);
+            combined.set(tagBytes, cipherBytes.length);
+
+            const cryptoKey = await window.crypto.subtle.importKey(
+              'raw',
+              keyBytes,
+              { name: 'AES-GCM' },
+              false,
+              ['decrypt']
+            );
+
+            const decryptedBuf = await window.crypto.subtle.decrypt(
+              { name: 'AES-GCM', iv: ivBytes },
+              cryptoKey,
+              combined
+            );
+
+            const decryptedText = new TextDecoder().decode(decryptedBuf);
+            if (decryptedText.startsWith('{"__vault_payload":true,')) {
+              try {
+                const parsed = JSON.parse(decryptedText);
+                data.secret = parsed.text || '';
+                data.file = parsed.file || null;
+              } catch {
+                data.secret = decryptedText;
+              }
+            } else {
+              data.secret = decryptedText;
+            }
+          } catch (decryptErr) {
+            showError('Client-side decryption failed: Invalid key or corrupted ciphertext.');
+            burnBtn.disabled = false;
+            burnBtn.innerHTML = `${SVG.flame} <span>Retry Reveal</span>`;
+            resetSlideThumb();
+            return;
+          }
+        }
 
         // Hide splash, show revealed section
         splashSection.classList.add('hidden');
