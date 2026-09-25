@@ -113,6 +113,22 @@
     errorMessage.textContent = '';
   }
 
+  function renderUnavailableState(title, subtitle, explanation, statusVal, accessVal) {
+    const destroyedTitle = document.getElementById('destroyed-title');
+    const destroyedSubtitle = document.getElementById('destroyed-subtitle');
+    const destroyedSupporting = document.getElementById('destroyed-supporting-text');
+    const destroyedStatus = document.getElementById('destroyed-status-val');
+    const destroyedAccess = document.getElementById('destroyed-access-val');
+    if (destroyedTitle) destroyedTitle.textContent = title || 'Secret Not Found';
+    if (destroyedSubtitle) destroyedSubtitle.textContent = subtitle || 'This secure link is no longer available.';
+    if (destroyedSupporting) destroyedSupporting.textContent = explanation || 'The secret may have expired, reached its view limit, or already been securely destroyed.';
+    if (destroyedStatus) destroyedStatus.textContent = statusVal || 'Unavailable';
+    if (destroyedAccess) destroyedAccess.textContent = accessVal || 'Closed';
+    if (splashSection) splashSection.classList.add('hidden');
+    if (destroyedSection) destroyedSection.classList.remove('hidden');
+    resetSlideThumb();
+  }
+
   function formatBytes(bytes) {
     if (!bytes || bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -394,7 +410,7 @@
         if (response.status === 401) {
           showError(data.error || 'Invalid passphrase.');
           burnBtn.disabled = false;
-          burnBtn.innerHTML = `${SVG.flame} <span>Reveal &amp; Destroy Secret</span>`;
+          burnBtn.innerHTML = `${SVG.flame} <span>Reveal &amp; Destroy Secret →</span>`;
           resetSlideThumb();
           if (passphraseInput) {
             passphraseInput.focus();
@@ -404,13 +420,32 @@
         }
 
         if (response.status === 404) {
-          splashSection.classList.add('hidden');
-          destroyedSection.classList.remove('hidden');
-          resetSlideThumb();
+          const errText = (data.error || '').toLowerCase();
+          if (errText.includes('expired')) {
+            renderUnavailableState('Secret Expired', 'This secure link is no longer available.', 'The expiration timeframe set for this secret has passed, and the content was securely purged.', 'Unavailable', 'Closed');
+          } else if (errText.includes('view') || errText.includes('burned') || errText.includes('destroy')) {
+            renderUnavailableState('Secret Already Viewed', 'This secret has already been accessed.', 'This secret was configured for single viewing and was destroyed upon access.', 'Burned', 'Closed');
+          } else {
+            renderUnavailableState('Secret Not Found', 'This secure link is no longer available.', 'The secret may have expired, reached its view limit, or already been securely destroyed.', 'Unavailable', 'Closed');
+          }
+          return;
+        }
+
+        if (response.status === 403) {
+          renderUnavailableState('Access Denied', 'Access policy restricted.', 'This secret cannot be decrypted from your current network location.', 'Restricted', 'Closed');
+          return;
+        }
+
+        if (response.status === 429) {
+          renderUnavailableState('Rate Limited', 'Too many requests.', 'Please wait a moment before trying to access or reveal this secret again.', 'Protected', 'Paused');
           return;
         }
 
         if (!response.ok) {
+          if (response.status >= 500) {
+            renderUnavailableState('Temporary Server Error', 'Service temporarily unavailable.', 'A temporary server error occurred. Please refresh or try again shortly.', 'Protected', 'Temporary');
+            return;
+          }
           resetSlideThumb();
           throw new Error(data.error || 'Failed to reveal secret.');
         }

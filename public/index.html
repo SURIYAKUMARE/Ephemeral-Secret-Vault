@@ -11,10 +11,10 @@
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body id="top">
-  <!-- Cyber Background Neon Arcs & Reflective Floor -->
+  <!-- Atmospheric Cyber Background with Deep Navy/Black & Subtle Grid -->
   <div class="cyber-background" aria-hidden="true">
     <div class="neon-arc-left"></div>
     <div class="neon-arc-left-glow"></div>
@@ -23,53 +23,51 @@
     <div class="reflective-floor"></div>
   </div>
 
-  <!-- Navigation Bar -->
+  <!-- Minimal Sticky Header: Logo + Brand on Left, "Secure ●" Status on Right -->
   <header class="navbar">
     <div class="nav-container">
       <a href="/" class="nav-brand" title="Ephemeral Secret Vault">
         <img src="/images/logo-icon.png" alt="Ephemeral Secret Vault Logo" class="nav-logo-img">
-        <span class="brand-text">Ephemeral <span class="brand-secret">Secret</span> <span class="brand-vault">Vault</span></span>
+        <span class="brand-text">Ephemeral <span class="gradient-text">Secret Vault</span></span>
       </a>
 
-      <!-- Center Nav Links -->
-      <nav class="nav-center" aria-label="Main Navigation">
-        <a href="/" class="nav-link active">Home</a>
-        <button type="button" class="nav-link" id="nav-btn-how-it-works">How It Works</button>
-        <button type="button" class="nav-link" id="nav-btn-security">Security</button>
-        <button type="button" class="nav-link" id="nav-btn-faq">FAQ</button>
-      </nav>
-
-      <!-- Right Actions -->
-      <div class="nav-actions">
+      <!-- Right Actions: Security Status Dot + Theme Toggle -->
+      <div class="nav-actions" style="display:flex;align-items:center;gap:0.75rem;">
+        <div class="nav-security-status" title="Active End-to-End Cryptographic Security">
+          <span class="status-indicator-dot"></span>
+          <span class="status-indicator-text">Secure</span>
+        </div>
         <button type="button" class="btn-theme-circle" id="theme-toggle" aria-label="Toggle Theme" title="Toggle Dark/Light Mode">
           <svg id="theme-icon" class="svg-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-        </button>
-        <button type="button" class="btn-nav-gradient" id="nav-create-btn">
-          <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-          <span>Create Secret</span>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Main Container -->
-  <main class="page-container">
-    
-    <!-- Hero Header (Image 1) -->
-    <header class="hero-section" id="hero-header">
-      <div class="hero-pill">
-        <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-        <span>SECURE • TEMPORARY • PRIVATE</span>
-      </div>
-      <h1 class="hero-title">Create a <span class="gradient-text">Secret Vault</span></h1>
-      <p class="hero-subtitle">Share sensitive information securely. Encrypted at rest with AES-256-GCM and automatically destroyed after viewing or expiration.</p>
-    </header>
+  <!-- Two-Column Desktop Layout (45% 3D Lock Illustration / 55% Glass Creation Card) -->
+  <main class="vault-split-layout">
+    <!-- Left Column: 3D Pedestal Glass Lock Graphic with Atmospheric Glow -->
+    <aside class="vault-visual-col" aria-hidden="true">
+      <div class="lock-visual-aura"></div>
+      <img src="/images/pedestal-lock.png" alt="3D Ephemeral Security Vault" class="pedestal-lock-3d">
+      <div class="lock-pedestal-shadow"></div>
+    </aside>
 
-    <!-- Main Glowing Gradient Card -->
-    <div class="vault-card-wrapper">
+    <!-- Right Column: Glass Security Card -->
+    <div class="vault-card-col">
       <div class="main-card">
         
-        <!-- Creation Form (Image 1) -->
+        <!-- Hero Header -->
+        <header class="vault-card-header" id="hero-header">
+          <div class="hero-badge hero-badge-clean" style="margin-bottom:0.75rem;">
+            <span class="status-dot-pulse"></span>
+            <span>SECURE • TEMPORARY • PRIVATE</span>
+          </div>
+          <h1 class="vault-card-title">Create a <span class="gradient-text">Secret Vault</span></h1>
+          <p class="vault-card-subtitle">Share sensitive information securely. Encrypted at rest with AES-256-GCM and automatically destroyed after viewing or expiration.</p>
+        </header>
+
+        <!-- Creation Form -->
         <form id="create-form" aria-label="Create a secure secret or share a confidential file">
           
           <!-- Mode Tabs (Secret Text vs Upload File) -->
@@ -89,7 +87,7 @@
             <div class="field-header-row">
               <div class="field-title-group">
                 <span class="field-title">SECRET CONTENT</span>
-                <button type="button" class="btn-info-icon" title="Encrypted in memory with AES-256-GCM. Plaintext never touches disk." aria-label="Information about secret encryption">
+                <button type="button" class="btn-info-icon" title="Encrypted in memory with AES-256-GCM. Plaintext never touches persistent disk." aria-label="Information about secret encryption">
                   <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                 </button>
               </div>
@@ -143,7 +141,7 @@
             </div>
           </div>
 
-          <!-- 3-Column Configuration Grid (Image 1) -->
+          <!-- 3-Column Configuration Grid -->
           <div class="config-grid">
             
             <!-- Col 1: Expires After -->
@@ -211,23 +209,23 @@
             <span id="submit-error-message"></span>
           </div>
 
-          <!-- Primary Submit CTA (Image 1) -->
-          <button type="submit" id="submit-btn" class="btn-primary-action">
+          <!-- Primary Submit CTA -->
+          <button type="submit" id="submit-btn" class="btn-primary-gradient">
             <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
             <span id="submit-btn-text">Encrypt &amp; Generate Secure Link →</span>
           </button>
         </form>
 
-        <!-- Result Screen (Image 2: Revealed upon successful secret generation) -->
+        <!-- Result Screen (Revealed upon successful secret generation) -->
         <section id="result-section" class="result-section hidden" aria-label="Secret generated successfully">
           
-          <!-- Glowing Circular Cyan Checkmark Badge -->
+          <!-- Glowing Circular Checkmark Badge -->
           <div class="result-success-circle">
             <svg class="svg-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
           </div>
 
           <!-- Result Header -->
-          <h2 class="result-title">Vault Created &amp; <span class="text-cyan">Encrypted</span></h2>
+          <h2 class="result-title">Vault Created &amp; <span class="gradient-text">Protected</span></h2>
           <p class="result-desc">Your secret is encrypted with AES-256-GCM and will automatically self-destruct once viewed or expired.</p>
 
           <!-- Secret Access Link Box -->
@@ -249,7 +247,7 @@
             </div>
           </div>
 
-          <!-- Share via Apps Card (Image 2: 5 Apps in a Single Row) -->
+          <!-- Share via Apps Card -->
           <div class="share-apps-card" aria-label="Share secret through apps">
             <div class="share-apps-header">
               <div class="share-apps-title">
@@ -339,7 +337,7 @@
             <div class="qr-hint">Scan with mobile camera to view secret</div>
           </div>
 
-          <!-- 3-Column Metadata Strip (Image 2) -->
+          <!-- 3-Column Metadata Strip -->
           <div class="metadata-strip">
             <div class="meta-item">
               <div class="meta-icon-circle">
@@ -367,13 +365,13 @@
               </div>
               <div class="meta-texts">
                 <span class="meta-title">Security</span>
-                <span class="meta-val">AES-256-GCM</span>
+                <span class="meta-val">Protected</span>
               </div>
             </div>
           </div>
 
-          <!-- Full-Width Bottom CTA: + Create Another Secret (Image 2) -->
-          <button type="button" id="reset-btn" class="btn-reset-gradient">
+          <!-- Full-Width Bottom CTA: + Create Another Secret -->
+          <button type="button" id="reset-btn" class="btn-primary-gradient" style="margin-top:1.25rem;">
             <svg class="svg-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             <span>+ Create Another Secret</span>
           </button>
@@ -381,11 +379,11 @@
 
       </div>
 
-      <!-- Trust Badges Strip (Under Card in Image 1) -->
+      <!-- Trust Badges Strip (Under Card) -->
       <div class="trust-badges-strip" id="trust-strip">
         <div class="trust-badge-item">
           <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-          <span>AES-256-GCM Encryption</span>
+          <span>Zero Plaintext Storage</span>
         </div>
         <span class="trust-divider">|</span>
         <div class="trust-badge-item">
@@ -401,7 +399,7 @@
     </div>
   </main>
 
-  <!-- Informational Modals (How It Works, Security, FAQ) -->
+  <!-- Informational Modals (Preserved for app.js click & escape handling) -->
   <div id="modal-how-it-works" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-hiw-title">
     <div class="modal-dialog">
       <div class="modal-header">
@@ -415,11 +413,11 @@
       </div>
       <div class="modal-body">
         <h4>1. Enter &amp; Configure</h4>
-        <p>Type your credentials, paste confidential keys, or attach files. Choose your expiration time (e.g. 1 hour) and maximum view limit (default: 1 view burn).</p>
+        <p>Type your credentials, paste confidential keys, or attach files. Choose your expiration time and view limit.</p>
         <h4>2. Encrypted at Rest</h4>
-        <p>Every payload is encrypted using authenticated AES-256-GCM with a fresh cryptographic IV. If a passphrase is provided, it is derived via scrypt.</p>
+        <p>Every payload is securely encrypted with AES-256-GCM. Plaintext never touches persistent disk.</p>
         <h4>3. Single-View Atomic Burn</h4>
-        <p>When the recipient opens the link, the server decrypts the payload in memory and immediately executes an atomic SQL burn, wiping it permanently from memory and disk.</p>
+        <p>When opened, the payload is decrypted only in memory and immediately erased permanently from storage.</p>
       </div>
     </div>
   </div>
@@ -436,14 +434,10 @@
         </button>
       </div>
       <div class="modal-body">
-        <h4>Military-Grade Authenticated Encryption</h4>
-        <p>We use standard AES-256-GCM. An authentication tag guarantees that the ciphertext cannot be tampered with in storage.</p>
+        <h4>Authenticated Encryption</h4>
+        <p>Every secret is protected with authenticated encryption. Ciphertext cannot be tampered with in storage.</p>
         <h4>Zero Plaintext on Disk</h4>
-        <p>Plaintext never touches persistent storage. In-memory buffers are immediately zeroized with <code>buf.fill(0)</code> after transmission.</p>
-        <h4>Passphrase Brute-Force Auto-Destruct</h4>
-        <p>Secrets protected by passphrase automatically hard-delete themselves after 3 failed attempts, accompanied by progressive delay defense.</p>
-        <h4>Crawler &amp; Link-Preview Immunity</h4>
-        <p>Automated chat preview bots (Slackbot, Discordbot, WhatsApp) only receive static metadata shells and never burn secrets prematurely.</p>
+        <p>Plaintext never touches persistent storage. In-memory buffers are immediately zeroized after transmission.</p>
       </div>
     </div>
   </div>
@@ -461,23 +455,24 @@
       </div>
       <div class="modal-body">
         <h4>Can an expired or burned secret be recovered?</h4>
-        <p>No. Once burned or expired, SQLite hard-deletes the row and memory buffers are purged. Recovery is mathematically impossible.</p>
-        <h4>Can chat apps accidentally burn the secret when generating a link preview?</h4>
-        <p>No. Our bot guard intercepts crawler requests and serves a harmless preview shell without triggering decryption or decrementing view counters.</p>
+        <p>No. Once burned or expired, storage is permanently wiped. Recovery is mathematically impossible.</p>
         <h4>What is the Portable Vault (.html) download?</h4>
-        <p>A portable offline decryptor file that can be saved or emailed. It decrypts client-side in the browser and self-destructs locally after viewing.</p>
+        <p>A portable offline decryptor file that can be saved or emailed. It decrypts client-side and self-destructs locally.</p>
       </div>
     </div>
   </div>
 
-  <!-- Enterprise Footer -->
-  <footer class="page-footer">
-    <div class="footer-content">
-      <span>Ephemeral Secret Vault • AES-256-GCM Zero-Trace Cryptographic Service</span>
-      <a href="https://github.com/SURIYAKUMARE/Ephemeral-Secret-Vault.git" target="_blank" rel="noopener noreferrer" class="footer-github-link">
-        <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
-        <span>GitHub Repository</span>
-      </a>
+  <!-- Minimal Enterprise Security Footer -->
+  <footer class="footer-enterprise">
+    <div class="footer-trust-strip">
+      <span>Protected</span>
+      <span class="strip-sep">•</span>
+      <span>Zero Plaintext Storage</span>
+      <span class="strip-sep">•</span>
+      <span>Permanent Overwrite</span>
+    </div>
+    <div class="footer-meta-text">
+      Ephemeral Secret Vault • Production-Grade Security Service
     </div>
   </footer>
 

@@ -5,27 +5,28 @@
    ========================================================================== */
 
 :root {
-  --bg-deep: #050814;
+  --bg-deep: #050816;
   --bg-space: #070c1e;
-  --bg-card: rgba(8, 13, 30, 0.88);
-  --bg-card-inner: rgba(5, 9, 22, 0.75);
+  --bg-card: rgba(10, 16, 35, 0.72);
+  --bg-card-inner: rgba(6, 11, 26, 0.75);
   --bg-input: #050916;
   --bg-input-focus: #070e24;
   
-  /* Cyber Neons */
-  --neon-cyan: #00d2ff;
-  --neon-cyan-glow: rgba(0, 210, 255, 0.4);
-  --neon-blue: #0084ff;
-  --neon-purple: #8b5cf6;
+  /* Cyber Neons & Accents */
+  --neon-cyan: #38bdf8;
+  --neon-cyan-glow: rgba(56, 189, 248, 0.4);
+  --neon-blue: #0284c7;
+  --neon-purple: #818cf8;
   --neon-violet: #a855f7;
+  --neon-magenta: #c084fc;
   --neon-purple-glow: rgba(168, 85, 247, 0.35);
 
   /* Gradients */
-  --grad-primary: linear-gradient(90deg, #0084ff 0%, #3b82f6 50%, #8b5cf6 100%);
-  --grad-nav-btn: linear-gradient(90deg, #0084ff 0%, #a855f7 100%);
-  --grad-tab: linear-gradient(90deg, #0077ff 0%, #8b5cf6 100%);
-  --grad-card-border: linear-gradient(135deg, #00d2ff 0%, #38bdf8 25%, #8b5cf6 75%, #a855f7 100%);
-  --grad-text: linear-gradient(90deg, #00b4d8 0%, #38bdf8 30%, #a855f7 100%);
+  --grad-primary: linear-gradient(135deg, #0284c7 0%, #6366f1 50%, #8b5cf6 100%);
+  --grad-nav-btn: linear-gradient(135deg, #0284c7 0%, #6366f1 100%);
+  --grad-tab: linear-gradient(135deg, #0284c7 0%, #6366f1 100%);
+  --grad-card-border: linear-gradient(135deg, rgba(56, 189, 248, 0.4) 0%, rgba(99, 102, 241, 0.3) 50%, rgba(192, 132, 252, 0.4) 100%);
+  --grad-text: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
 
   /* Neutrals */
   --text-white: #ffffff;
@@ -118,17 +119,22 @@ body {
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
+  background-color: #050816;
 }
 
-/* Deep Cosmic Radial Backdrop */
+/* Deep Cosmic Radial Backdrop & Subtle Grid */
 .cyber-background::before {
   content: "";
   position: absolute;
   inset: 0;
   background: 
-    radial-gradient(ellipse 90% 70% at 50% 30%, rgba(13, 27, 62, 0.45) 0%, rgba(5, 8, 20, 0.95) 75%, #030611 100%),
-    radial-gradient(circle at 15% 45%, rgba(0, 210, 255, 0.12) 0%, transparent 50%),
-    radial-gradient(circle at 85% 45%, rgba(168, 85, 247, 0.12) 0%, transparent 50%);
+    radial-gradient(circle at 20% 25%, rgba(56, 189, 248, 0.14) 0%, transparent 55%),
+    radial-gradient(circle at 80% 75%, rgba(168, 85, 247, 0.13) 0%, transparent 55%),
+    radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 70%),
+    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    radial-gradient(ellipse at center, transparent 40%, rgba(5, 8, 22, 0.85) 100%);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 48px 48px, 48px 48px, 100% 100%;
 }
 
 /* Sweeping Electric Cyan Arc (Left Side) */
@@ -480,7 +486,7 @@ body {
 
 .vault-card-wrapper {
   width: 100%;
-  max-width: 700px;
+  max-width: 720px;
 }
 
 .main-card {
@@ -488,25 +494,34 @@ body {
   background: var(--bg-card);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border-radius: var(--radius-lg);
-  padding: 2rem 2.25rem;
-  box-shadow: 
-    0 0 35px rgba(0, 210, 255, 0.22),
-    0 0 65px rgba(168, 85, 247, 0.14),
-    0 25px 50px rgba(0, 0, 0, 0.6);
-  border: 1.5px solid transparent;
+  border-radius: 24px;
+  padding: 2.25rem 2.25rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 20px rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(120, 120, 255, 0.20);
   background-clip: padding-box;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Dual-Color Glowing Gradient Border */
+.main-card:hover {
+  border-color: rgba(120, 120, 255, 0.32);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85), 0 0 28px rgba(99, 102, 241, 0.15);
+}
+
+/* Subtle Gradient Border Highlight */
 .main-card::before {
   content: "";
   position: absolute;
-  inset: -1.5px;
-  border-radius: calc(var(--radius-lg) + 1.5px);
+  inset: -1px;
+  border-radius: 25px;
   background: var(--grad-card-border);
   z-index: -1;
   pointer-events: none;
+  opacity: 0.75;
+  transition: opacity 0.3s ease;
+}
+
+.main-card:hover::before {
+  opacity: 1;
 }
 
 /* ==========================================================================
@@ -2532,4 +2547,435 @@ body {
   color: #6ee7b7;
   border: 1px solid rgba(16, 185, 129, 0.35);
 }
+
+/* ==========================================================================
+   CYBERSECURITY SAAS REDESIGN SYSTEM
+   Two-Column Split Layout • Minimal Header • Security Status • Compact UX
+   ========================================================================== */
+
+/* Minimal Sticky Header Security Status Indicator */
+.nav-security-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.28);
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #6ee7b7;
+  letter-spacing: 0.02em;
+  transition: all 0.2s ease;
+}
+
+.nav-security-status:hover {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.45);
+}
+
+.status-indicator-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 10px #10b981;
+  animation: pulseDot 2.2s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 10px #10b981;
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.85);
+    box-shadow: 0 0 4px #10b981;
+  }
+}
+
+/* Two-Column Split Layout (Desktop 45% visual / 55% card) */
+.vault-split-layout {
+  display: grid;
+  grid-template-columns: 45% 55%;
+  align-items: center;
+  gap: 3.5rem;
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+@media (max-width: 992px) {
+  .vault-split-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin: 1rem auto;
+    padding: 0 1rem;
+  }
+}
+
+/* Left Column: 3D Pedestal Lock Visual */
+.vault-visual-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  animation: entranceVisual 0.7s ease-out;
+}
+
+.pedestal-lock-3d {
+  max-width: 100%;
+  width: 380px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 30px rgba(99, 102, 241, 0.35)) drop-shadow(0 0 65px rgba(56, 189, 248, 0.25));
+  animation: floatLock 4.5s ease-in-out infinite;
+  position: relative;
+  z-index: 2;
+  transition: transform 0.3s ease;
+}
+
+@media (max-width: 992px) {
+  .pedestal-lock-3d {
+    width: 220px;
+  }
+}
+
+.lock-visual-aura {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.22) 0%, rgba(56, 189, 248, 0.15) 45%, transparent 70%);
+  filter: blur(32px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.lock-pedestal-shadow {
+  width: 260px;
+  height: 22px;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.8) 0%, transparent 70%);
+  margin-top: -12px;
+  filter: blur(6px);
+  z-index: 1;
+}
+
+/* Right Column: Security Glass Card */
+.vault-card-col {
+  width: 100%;
+  position: relative;
+  z-index: 2;
+  animation: entranceCard 0.6s ease-out;
+}
+
+/* Card Header & Typography */
+.vault-card-header {
+  margin-bottom: 1.5rem;
+}
+
+.vault-card-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #f8fafc;
+  letter-spacing: -0.02em;
+  margin: 0.5rem 0 0.35rem;
+  line-height: 1.2;
+}
+
+.vault-card-subtitle {
+  font-size: 0.95rem;
+  color: #a5b4cf;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Compact Security Status Panel */
+.security-status-panel {
+  background: rgba(4, 8, 22, 0.65);
+  border: 1px solid rgba(120, 120, 255, 0.18);
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.sec-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #38bdf8;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+}
+
+.sec-panel-header .icon-shield-check {
+  width: 16px;
+  height: 16px;
+  stroke: #38bdf8;
+  stroke-width: 2.2;
+}
+
+.sec-panel-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.sec-panel-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.86rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.sec-panel-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.sec-key {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.sec-val {
+  font-weight: 600;
+}
+
+.sec-val-active {
+  color: #38bdf8;
+}
+
+.sec-val-ready {
+  color: #34d399;
+}
+
+.sec-val-danger {
+  color: #f87171;
+}
+
+/* Concise Destruction Message Box */
+.destruction-message-box {
+  background: rgba(99, 102, 241, 0.06);
+  border: 1px solid rgba(120, 120, 255, 0.16);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #c7d2fe;
+}
+
+.destruction-message-box .svg-icon {
+  width: 18px;
+  height: 18px;
+  stroke: #818cf8;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* Compact Expiration Countdown Strip */
+.countdown-bar-wrapper {
+  background: rgba(6, 11, 26, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.countdown-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.countdown-meta-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.countdown-meta-label .svg-icon {
+  width: 14px;
+  height: 14px;
+  stroke: #38bdf8;
+}
+
+.countdown-meta-time {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #38bdf8;
+  letter-spacing: 0.02em;
+}
+
+/* Primary CTA Button (Blue -> Violet Gradient) */
+.btn-primary-gradient,
+.btn-burn-fiery {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.95rem 1.6rem;
+  background: linear-gradient(135deg, #0284c7 0%, #6366f1 50%, #8b5cf6 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.35);
+  text-decoration: none;
+  outline: none;
+  min-height: 48px;
+}
+
+.btn-primary-gradient:hover,
+.btn-burn-fiery:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(99, 102, 241, 0.55);
+  filter: brightness(1.08);
+}
+
+.btn-primary-gradient:active,
+.btn-burn-fiery:active {
+  transform: translateY(0);
+}
+
+.btn-primary-gradient:focus-visible,
+.btn-burn-fiery:focus-visible {
+  outline: 2px solid #38bdf8;
+  outline-offset: 2px;
+}
+
+/* Secondary Actions */
+.btn-secondary-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  color: #94a3b8;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  margin-top: 0.85rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.btn-secondary-link:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.btn-secondary-glass {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  padding: 0.85rem 1.4rem;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  width: 100%;
+  min-height: 44px;
+}
+
+.btn-secondary-glass:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.22);
+  transform: translateY(-1px);
+}
+
+/* Hero Badge */
+.hero-badge-clean {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #38bdf8;
+  text-transform: uppercase;
+}
+
+.hero-badge-clean.badge-unavailable {
+  background: rgba(244, 63, 94, 0.1);
+  border-color: rgba(244, 63, 94, 0.35);
+  color: #fb7185;
+}
+
+/* Entrance Keyframes */
+@keyframes entranceCard {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes entranceVisual {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Accessibility: Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 
