@@ -493,11 +493,17 @@
           isClientOffline = true;
         }
 
-        // Store active secret state
+        // Store active secret state (Zero Plaintext Policy)
         activeSecretData = data;
         activeSecretUrl = data.view_url;
-        activeSecretText = secretText;
+        activeSecretText = ''; // Never store plaintext secret in global frontend state
         activePassphrase = passphrase;
+
+        // Immediately flush plaintext from input fields and dropzone
+        if (secretInput) secretInput.value = '';
+        if (byteCounter) byteCounter.textContent = '0 bytes';
+        if (fileInput) fileInput.value = '';
+        currentFile = null;
 
         // Populate Result Elements Safely
         if (linkOutput) linkOutput.value = activeSecretUrl;
@@ -616,54 +622,7 @@
     const packageTitle = currentFile ? currentFile.name : `Secret ${vaultId.slice(0, 8)}`;
     const origin = (window.location.origin && window.location.origin !== 'null') ? window.location.origin : 'http://localhost:3000';
 
-    const payloadObj = {
-      id: vaultId,
-      secret: activeSecretText || '',
-      file: currentFile || null,
-      created_at: new Date().toISOString()
-    };
-
-    const enc = new TextEncoder();
-    const payloadBytes = enc.encode(JSON.stringify(payloadObj));
-    const salt = window.crypto.getRandomValues(new Uint8Array(16));
-    const iv = window.crypto.getRandomValues(new Uint8Array(12));
-
-    let aesKey;
     const hasPass = !!(activePassphrase && activePassphrase.trim().length > 0);
-    let embeddedKeyHex = '';
-
-    if (hasPass) {
-      const passBytes = enc.encode(activePassphrase.trim());
-      const baseKey = await window.crypto.subtle.importKey(
-        'raw', passBytes, { name: 'PBKDF2' }, false, ['deriveKey']
-      );
-      aesKey = await window.crypto.subtle.deriveKey(
-        { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
-        baseKey,
-        { name: 'AES-GCM', length: 256 },
-        false,
-        ['encrypt', 'decrypt']
-      );
-    } else {
-      aesKey = await window.crypto.subtle.generateKey(
-        { name: 'AES-GCM', length: 256 },
-        true,
-        ['encrypt', 'decrypt']
-      );
-      const rawKey = await window.crypto.subtle.exportKey('raw', aesKey);
-      embeddedKeyHex = Array.from(new Uint8Array(rawKey))
-        .map(b => b.toString(16).padStart(2, '0')).join('');
-    }
-
-    const ctBuffer = await window.crypto.subtle.encrypt(
-      { name: 'AES-GCM', iv },
-      aesKey,
-      payloadBytes
-    );
-
-    const ciphertextB64 = btoa(String.fromCharCode(...new Uint8Array(ctBuffer)));
-    const ivHex = Array.from(iv).map(b => b.toString(16).padStart(2, '0')).join('');
-    const saltHex = Array.from(salt).map(b => b.toString(16).padStart(2, '0')).join('');
 
     const portableHtml = `<!DOCTYPE html>
 <html lang="en">
@@ -879,8 +838,8 @@
         <span>AES-256-GCM One-Time Ephemeral Vault</span>
       </div>
 
-      <h1 id="title-text">${packageTitle}</h1>
-      <p id="desc-text" class="subtitle">This is a self-contained zero-trace cryptographic vault. Decrypting burns the capsule permanently.</p>
+      <h1 id="title-text">🔐 Secret Vault</h1>
+      <p id="desc-text" class="subtitle">This secret is protected. Encrypted with AES-256-GCM.</p>
 
       <div id="meta-strip" class="meta-grid">
         <div class="meta-item">
@@ -897,7 +856,7 @@
         </div>
         <div class="meta-item">
           <span class="meta-label">Security</span>
-          <span class="meta-val">AES-GCM-256</span>
+          <span class="meta-val">Zero Plaintext • AES-256-GCM</span>
         </div>
       </div>
 
@@ -906,7 +865,7 @@
           <svg class="icon" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
           <div>
             <strong>Strict One-Time Single-View Rule:</strong>
-            <span>Once you click decrypt, this vault is burned. You cannot refresh or reopen this file to see it again.</span>
+            <span>This file contains ZERO plaintext and ZERO keys. Clicking Reveal issues an authenticated burn request to the vault server. Once revealed, the server physically overwrites and deletes the secret row.</span>
           </div>
         </div>
 
@@ -922,7 +881,7 @@
 
         <button type="button" id="btn-reveal" class="btn-primary">
           <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-          <span>Decrypt &amp; Burn Vault Now</span>
+          <span>Reveal Secret</span>
         </button>
       </div>
 
@@ -931,7 +890,7 @@
           <svg class="icon" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
           <div>
             <strong>VAULT BURNED:</strong>
-            <span>Payload revealed in RAM. All local and remote view allowances have reached 0.</span>
+            <span>Payload revealed in volatile RAM. Database record has been zero-overwritten and destroyed.</span>
           </div>
         </div>
 
@@ -954,9 +913,13 @@
             <svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
             <span>Copy Secret</span>
           </button>
+          <button type="button" id="btn-mask-secret" class="btn-secondary">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            <span id="mask-btn-text">Hide (Mask)</span>
+          </button>
           <button type="button" id="btn-wipe-now" class="btn-danger">
             <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            <span>Burn Screen &amp; Wipe RAM</span>
+            <span>Wipe RAM Now</span>
           </button>
         </div>
       </div>
@@ -977,11 +940,6 @@
           <div>• SQLite vault row physically purged</div>
           <div>• Reopening this HTML file will permanently display this burn notice</div>
         </div>
-
-        <button type="button" id="btn-neutralize-file" class="btn-secondary" style="width:100%;justify-content:center;">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-          <span>Download Neutralized 0-Byte Replacement File</span>
-        </button>
       </div>
 
     </div>
@@ -994,10 +952,6 @@
       const maxViews = ${maxViews};
       const hasPass = ${hasPass};
       const serverOrigin = "${origin}";
-      const ciphertextB64 = "${ciphertextB64}";
-      const ivHex = "${ivHex}";
-      const saltHex = "${saltHex}";
-      const embeddedKeyHex = "${embeddedKeyHex}";
 
       const burnKey = "esv_burned_" + vaultId;
       const viewsKey = "esv_views_" + vaultId;
@@ -1011,6 +965,18 @@
       const wipeBar = document.getElementById('wipe-bar');
       const wipeSecs = document.getElementById('wipe-secs');
       const metaStatus = document.getElementById('meta-status');
+      const btnReveal = document.getElementById('btn-reveal');
+      const passIn = document.getElementById('pass-in');
+      const passErr = document.getElementById('pass-error');
+      const btnCopy = document.getElementById('btn-copy-secret');
+      const btnMask = document.getElementById('btn-mask-secret');
+      const maskBtnText = document.getElementById('mask-btn-text');
+      const btnWipeNow = document.getElementById('btn-wipe-now');
+
+      let decryptedSecretText = '';
+      let isMasked = false;
+      let wipeSecondsRemaining = 60;
+      let wipeInterval = null;
 
       function showBurned(reason) {
         if (secPre) secPre.classList.add('hidden');
@@ -1039,30 +1005,6 @@
         return;
       }
 
-      const viewsUsed = parseInt(localStorage.getItem(viewsKey) || "0", 10);
-      if (viewsUsed >= maxViews) {
-        showBurned("Single-view allowance reached (" + viewsUsed + "/" + maxViews + " views). Vault permanently burned.");
-        return;
-      }
-
-      function hexToBytes(hex) {
-        const bytes = new Uint8Array(hex.length / 2);
-        for (let i = 0; i < bytes.length; i++) {
-          bytes[i] = parseInt(hex.substr(i * 2, 2), 16);
-        }
-        return bytes;
-      }
-
-      function b64ToBytes(b64) {
-        const bin = atob(b64);
-        const bytes = new Uint8Array(bin.length);
-        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-        return bytes;
-      }
-
-      let wipeSecondsRemaining = 60;
-      let wipeInterval = null;
-
       function startMemoryWipeTimer() {
         wipeInterval = setInterval(() => {
           wipeSecondsRemaining--;
@@ -1075,120 +1017,85 @@
         }, 1000);
       }
 
-      let decryptedSecretText = '';
       function performRamWipe() {
         if (wipeInterval) clearInterval(wipeInterval);
         decryptedSecretText = null;
         if (contentArea) contentArea.innerHTML = '<pre style="color:var(--danger)">00000000 00000000 00000000 00000000 [RAM PURGED]</pre>';
+        localStorage.setItem(burnKey, JSON.stringify({ burned_at: new Date().toISOString(), reason: 'RAM_WIPED' }));
         showBurned("Secret memory buffer has been flushed and overwritten with zeros. This vault cannot be opened again.");
       }
 
-      const btnWipeNow = document.getElementById('btn-wipe-now');
       if (btnWipeNow) {
         btnWipeNow.addEventListener('click', performRamWipe);
       }
 
-      const btnRev = document.getElementById('btn-reveal');
-      const passIn = document.getElementById('pass-in');
-      const passErr = document.getElementById('pass-error');
+      if (btnMask) {
+        btnMask.addEventListener('click', () => {
+          isMasked = !isMasked;
+          const preEl = contentArea ? contentArea.querySelector('pre') : null;
+          if (preEl) {
+            if (isMasked) {
+              preEl.style.webkitTextSecurity = 'disc';
+              preEl.style.filter = 'blur(4px)';
+              preEl.style.userSelect = 'none';
+              if (maskBtnText) maskBtnText.textContent = 'Reveal';
+            } else {
+              preEl.style.webkitTextSecurity = '';
+              preEl.style.filter = '';
+              preEl.style.userSelect = '';
+              if (maskBtnText) maskBtnText.textContent = 'Hide (Mask)';
+            }
+          }
+        });
+      }
 
-      if (btnRev) {
-        btnRev.addEventListener('click', async () => {
-          btnRev.disabled = true;
-          btnRev.textContent = 'Decrypting & Burning...';
+      if (btnCopy) {
+        btnCopy.addEventListener('click', async () => {
+          if (!decryptedSecretText) return;
+          try {
+            await navigator.clipboard.writeText(decryptedSecretText);
+            const original = btnCopy.innerHTML;
+            btnCopy.textContent = '✓ Copied';
+            setTimeout(() => { btnCopy.innerHTML = original; }, 2000);
+          } catch(e) {}
+        });
+      }
 
-          const enteredPass = passIn ? passIn.value : '';
-          if (hasPass && (!enteredPass || enteredPass.length === 0)) {
+      if (btnReveal) {
+        btnReveal.addEventListener('click', async () => {
+          btnReveal.disabled = true;
+          btnReveal.innerHTML = '<span>Decrypting &amp; Burning on Server...</span>';
+
+          const enteredPass = passIn ? passIn.value.trim() : '';
+          if (hasPass && !enteredPass) {
             if (passErr) {
               passErr.textContent = 'Please enter the vault passphrase.';
               passErr.classList.remove('hidden');
             }
-            btnRev.disabled = false;
-            btnRev.textContent = 'Decrypt & Burn Vault Now';
+            btnReveal.disabled = false;
+            btnReveal.innerHTML = '<span>Reveal Secret</span>';
             return;
           }
 
-          if (serverOrigin) {
-            try {
-              const resp = await fetch(serverOrigin + '/api/secret/' + vaultId + '/burn', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ passphrase: enteredPass })
-              });
-              if (resp.status === 404 || resp.status === 410) {
-                localStorage.setItem(burnKey, JSON.stringify({ burned_at: new Date().toISOString(), reason: 'SERVER_EXHAUSTED' }));
-                showBurned("This secret was already accessed and burned on the server. Physical database record has been purged.");
-                return;
-              }
-            } catch(e) {}
-          }
-
           try {
-            let aesKey;
-            const ivBytes = hexToBytes(ivHex);
-            const ctBytes = b64ToBytes(ciphertextB64);
+            const resp = await fetch(serverOrigin + '/api/secret/' + vaultId + '/burn', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ passphrase: enteredPass })
+            });
 
-            if (hasPass) {
-              const saltBytes = hexToBytes(saltHex);
-              const passBytes = new TextEncoder().encode(enteredPass);
-              const baseKey = await window.crypto.subtle.importKey(
-                'raw', passBytes, { name: 'PBKDF2' }, false, ['deriveKey']
-              );
-              aesKey = await window.crypto.subtle.deriveKey(
-                { name: 'PBKDF2', salt: saltBytes, iterations: 100000, hash: 'SHA-256' },
-                baseKey,
-                { name: 'AES-GCM', length: 256 },
-                false,
-                ['decrypt']
-              );
-            } else {
-              const rawKeyBytes = hexToBytes(embeddedKeyHex);
-              aesKey = await window.crypto.subtle.importKey(
-                'raw', rawKeyBytes, { name: 'AES-GCM' }, false, ['decrypt']
-              );
+            const data = await resp.json();
+
+            if (resp.status === 404 || resp.status === 410) {
+              localStorage.setItem(burnKey, JSON.stringify({ burned_at: new Date().toISOString(), reason: 'SERVER_PURGED' }));
+              showBurned("This secret was already accessed and burned on the server. Physical database record has been purged.");
+              return;
             }
 
-            const decryptedBuffer = await window.crypto.subtle.decrypt(
-              { name: 'AES-GCM', iv: ivBytes },
-              aesKey,
-              ctBytes
-            );
-
-            const decryptedString = new TextDecoder().decode(decryptedBuffer);
-            const payload = JSON.parse(decryptedString);
-
-            const newViews = viewsUsed + 1;
-            localStorage.setItem(viewsKey, String(newViews));
-            if (newViews >= maxViews) {
-              localStorage.setItem(burnKey, JSON.stringify({
-                burned_at: new Date().toISOString(),
-                reason: 'ONE_TIME_VIEW_COMPLETED'
-              }));
-            }
-
-            if (secPre) secPre.classList.add('hidden');
-            if (secRev) secRev.classList.remove('hidden');
-            if (metaStatus) {
-              metaStatus.textContent = 'Burned (' + newViews + '/' + maxViews + ')';
-              metaStatus.style.color = 'var(--danger)';
-            }
-
-            decryptedSecretText = payload.secret || '';
-
-            if (payload.file && payload.file.data) {
-              contentArea.innerHTML = '<div style="margin-bottom:0.75rem;"><strong>Attached File:</strong> ' + payload.file.name + ' (' + payload.file.size + ' bytes)</div><a href="' + payload.file.data + '" download="' + payload.file.name + '" class="btn-primary" style="text-decoration:none;display:inline-flex;width:auto;">Download File (' + payload.file.name + ')</a>' + (payload.secret ? '<div style="margin-top:1rem;color:var(--text-dim);font-size:0.8rem;">Note: ' + payload.secret + '</div>' : '');
-            } else {
-              contentArea.innerHTML = '<pre>' + (payload.secret || '') + '</pre>';
-            }
-
-            startMemoryWipeTimer();
-
-          } catch (decErr) {
-            console.error(decErr);
-            if (hasPass) {
+            if (resp.status === 401) {
               let fails = parseInt(localStorage.getItem(failKey) || "0", 10) + 1;
               localStorage.setItem(failKey, String(fails));
-              if (fails >= 3) {
+              if (fails >= 3 || (data.error && data.error.includes('destroyed'))) {
                 localStorage.setItem(burnKey, JSON.stringify({ burned_at: new Date().toISOString(), reason: 'BRUTE_FORCE_AUTO_DESTRUCT' }));
                 showBurned("🔥 AUTO-DESTRUCT TRIGGERED: 3 wrong passphrase attempts. Vault has been permanently destroyed.");
                 return;
@@ -1197,36 +1104,42 @@
                 passErr.textContent = "⚠️ Invalid passphrase. " + (3 - fails) + " attempt(s) remaining before auto-destruct.";
                 passErr.classList.remove('hidden');
               }
-            } else {
-              showBurned("Decryption failed. Data corruption or tampered ciphertext.");
+              btnReveal.disabled = false;
+              btnReveal.innerHTML = '<span>Reveal Secret</span>';
+              return;
             }
-            btnRev.disabled = false;
-            btnRev.textContent = 'Decrypt & Burn Vault Now';
+
+            if (!resp.ok) {
+              throw new Error(data.error || 'Server error occurred');
+            }
+
+            // Successfully revealed and destroyed on server!
+            localStorage.setItem(burnKey, JSON.stringify({
+              burned_at: new Date().toISOString(),
+              reason: 'ONE_TIME_VIEW_COMPLETED'
+            }));
+
+            if (secPre) secPre.classList.add('hidden');
+            if (secRev) secRev.classList.remove('hidden');
+            if (metaStatus) {
+              metaStatus.textContent = 'Burned (0 views left)';
+              metaStatus.style.color = 'var(--danger)';
+            }
+
+            decryptedSecretText = data.secret || '';
+
+            if (data.file && data.file.data) {
+              contentArea.innerHTML = '<div style="margin-bottom:0.75rem;"><strong>Attached File:</strong> ' + data.file.name + ' (' + data.file.size + ' bytes)</div><a href="' + data.file.data + '" download="' + data.file.name + '" class="btn-primary" style="text-decoration:none;display:inline-flex;width:auto;">Download File (' + data.file.name + ')</a>' + (data.secret ? '<div style="margin-top:1rem;color:var(--text-dim);font-size:0.8rem;">Note: ' + data.secret + '</div>' : '');
+            } else {
+              contentArea.innerHTML = '<pre>' + (data.secret || '') + '</pre>';
+            }
+
+            startMemoryWipeTimer();
+
+          } catch (err) {
+            console.error(err);
+            showBurned("Failed to decrypt: " + (err.message || 'Connection or verification error.'));
           }
-        });
-      }
-
-      const btnCopy = document.getElementById('btn-copy-secret');
-      if (btnCopy) {
-        btnCopy.addEventListener('click', async () => {
-          if (!decryptedSecretText) return;
-          try {
-            await navigator.clipboard.writeText(decryptedSecretText);
-            btnCopy.textContent = '✓ Copied';
-            setTimeout(() => btnCopy.textContent = 'Copy Secret', 2000);
-          } catch(e) {}
-        });
-      }
-
-      const btnNeut = document.getElementById('btn-neutralize-file');
-      if (btnNeut) {
-        btnNeut.addEventListener('click', () => {
-          const blank = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Vault Destroyed</title></head><body style="background:#060911;color:#ef4444;font-family:sans-serif;padding:2rem;text-align:center;"><h1>VAULT PERMANENTLY DESTROYED</h1><p style="color:#94a3b8">Zero data remains in this file.</p></body></html>';
-          const b = new Blob([blank], { type: 'text/html' });
-          const a = document.createElement('a');
-          a.href = URL.createObjectURL(b);
-          a.download = "vault-" + vaultId + "-BURNED.html";
-          a.click();
         });
       }
     })();
@@ -1254,7 +1167,7 @@
       file_size: currentFile ? currentFile.size : null,
       file_type: currentFile ? currentFile.type : null,
       security: "AES-256-GCM Zero-Trace",
-      payload_preview: currentFile ? `[Encrypted File: ${currentFile.name}]` : (activeSecretText ? activeSecretText.slice(0, 32) + '...' : '')
+      payload_status: "Protected Zero-Trace Payload (Server Authenticated)"
     };
     const blob = new Blob([JSON.stringify(capsule, null, 2)], { type: 'application/json;charset=utf-8' });
     const filename = `vault-${activeSecretData.id.slice(0, 8)}.vault`;

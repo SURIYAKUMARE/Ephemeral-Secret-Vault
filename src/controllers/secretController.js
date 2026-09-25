@@ -120,7 +120,11 @@ function getSecretView(req, res, next) {
       .replace(/\{\{CLIENT_ENCRYPTED\}\}/g, meta.client_encrypted ? 'true' : 'false');
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.setHeader('Surrogate-Control', 'no-store');
+    res.setHeader('Referrer-Policy', 'no-referrer');
     res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
     return res.status(200).send(html);
   } catch (err) {
@@ -133,6 +137,12 @@ function getSecretView(req, res, next) {
  */
 async function burnSecret(req, res, next) {
   try {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.setHeader('Surrogate-Control', 'no-store');
+    res.setHeader('Referrer-Policy', 'no-referrer');
+
     const { id } = req.params;
     let passphrase = null;
     if (req.body && typeof req.body.passphrase === 'string') {
