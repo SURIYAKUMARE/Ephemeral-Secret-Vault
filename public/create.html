@@ -27,24 +27,13 @@
         </span>
       </a>
 
-      <!-- Desktop Minimal Navigation -->
+      <!-- Desktop Navigation matching Screenshot 2 -->
       <nav class="nav-links-row" aria-label="Main Navigation">
-        <a href="/create" class="active">Product</a>
+        <a href="/" class="active">Home</a>
         <a href="/security">Security</a>
         <a href="/extension">Extension</a>
-        <div class="nav-dropdown-wrapper">
-          <button type="button" class="nav-dropdown-trigger" aria-haspopup="true" aria-expanded="false">
-            <span>Resources</span>
-            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-          </button>
-          <div class="nav-dropdown-menu">
-            <a href="/how-it-works">How It Works</a>
-            <a href="/dashboard">Creator Dashboard</a>
-            <a href="/security#threat-model">Threat Model</a>
-            <a href="/download">Download Extension</a>
-            <a href="/benchmark">Performance Benchmarks</a>
-          </div>
-        </div>
+        <a href="/how-it-works">How It Works</a>
+        <a href="/dashboard">Dashboard</a>
       </nav>
 
       <div class="nav-actions">
@@ -59,8 +48,8 @@
           </svg>
         </button>
 
-        <a href="/" class="btn-signin-nav" style="text-decoration:none;">
-          <span>Sign In</span>
+        <a href="/create" class="btn-nav-create-pill">
+          <span>Create Vault →</span>
         </a>
 
         <button type="button" class="mobile-nav-toggle" id="mobile-toggle" aria-label="Open Navigation Menu">
@@ -72,75 +61,74 @@
 
   <!-- Mobile Drawer -->
   <div class="mobile-menu-drawer" id="mobile-drawer">
-    <a href="/create" class="active">Product</a>
+    <a href="/" class="active">Home</a>
     <a href="/security">Security</a>
     <a href="/extension">Extension</a>
     <a href="/how-it-works">How It Works</a>
     <a href="/dashboard">Dashboard</a>
   </div>
 
-  <!-- Main Creation Workspace -->
-  <main class="viewport-layout">
-    <div class="centered-column">
+  <!-- Main Creation Workspace (Screenshot 2 & 3 Split Grid Layout) -->
+  <main class="viewport-layout" style="padding-top:28px;">
+    <div class="create-split-grid">
       
-      <!-- Vault Creation Card -->
-      <div class="vault-card">
+      <!-- Left Column: Creation Card & Success Screen -->
+      <div class="vault-card" id="main-creation-card" style="margin:0;">
         
-        <!-- Header Section (Section 09) -->
-        <header class="card-header-clean" id="hero-header">
-          <div class="hero-badge-pill" style="margin-bottom:12px;">
-            <span class="status-dot"></span>
-            <span>CONFIDENTIAL SHARING</span>
+        <!-- Stepper (Screenshot 2: Step 1 Active) -->
+        <div class="stepper-header-row" id="stepper-header-row">
+          <div class="step-node-item active" id="step-node-1">
+            <div class="step-node-badge" id="step-badge-1">1</div>
+            <div>
+              <div class="step-node-title">Content</div>
+              <div class="step-node-sub" id="step-sub-1">Add your secret</div>
+            </div>
           </div>
-          <h1 class="page-title">Create Secure Vault</h1>
-          <span class="sr-only">Create a Secret Vault</span>
-          <p class="page-subtitle">Create an encrypted, time-limited vault for sharing sensitive information without exposing the original secret through messaging apps, email, URLs, or browser history.</p>
-        </header>
-
-        <!-- 3-Step Progress Indicator -->
-        <div class="vault-stepper" id="create-stepper">
-          <div class="step-item active" id="step-content">
-            <span class="step-num">01</span>
-            <span>Content</span>
+          <div class="step-node-item" id="step-node-2">
+            <div class="step-node-badge" id="step-badge-2">2</div>
+            <div>
+              <div class="step-node-title">Settings</div>
+              <div class="step-node-sub" id="step-sub-2">Configure access</div>
+            </div>
           </div>
-          <span class="step-divider-arrow">›</span>
-          <div class="step-item" id="step-settings">
-            <span class="step-num">02</span>
-            <span>Settings</span>
-          </div>
-          <span class="step-divider-arrow">›</span>
-          <div class="step-item" id="step-generate">
-            <span class="step-num">03</span>
-            <span>Generate</span>
+          <div class="step-node-item" id="step-node-3">
+            <div class="step-node-badge" id="step-badge-3">3</div>
+            <div>
+              <div class="step-node-title">Generate</div>
+              <div class="step-node-sub" id="step-sub-3">Create secure link</div>
+            </div>
           </div>
         </div>
 
-        <!-- Creation Form -->
+        <!-- Creation Form (Screenshot 2) -->
         <form id="create-form" aria-label="Create a secure secret or share a confidential file">
           
           <!-- Mode Tabs (Secret Text vs Upload File) -->
-          <div class="tab-switcher" role="tablist">
-            <button type="button" class="tab-pill active" id="tab-text" role="tab" aria-selected="true">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+          <div class="tab-selection-pill-row" role="tablist">
+            <button type="button" class="tab-selection-btn active" id="tab-text" role="tab" aria-selected="true">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
               <span>Secret Text / Credentials</span>
             </button>
-            <button type="button" class="tab-pill" id="tab-file" role="tab" aria-selected="false">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            <button type="button" class="tab-selection-btn" id="tab-file" role="tab" aria-selected="false">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
               <span>Upload File</span>
             </button>
           </div>
 
           <!-- Section 1: Secret Text Input -->
           <div id="text-section" class="form-group">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:6px;">
-              <div style="display:flex;align-items:center;gap:8px;">
-                <label class="form-group-label" for="secret-input" style="margin-bottom:0;">Secret Content</label>
-                <span id="secret-type-badge" class="secret-type-pill hidden">GENERIC SECRET</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:8px;">
-                <span id="byte-counter" style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">0 / 10,240 bytes</span>
-                <button type="button" id="btn-clear-secret" class="btn-input-action" title="Clear secret input">✕ Clear</button>
-                <button type="button" id="btn-fullscreen-editor" class="btn-input-action" title="Toggle Fullscreen Editor">⛶ Fullscreen</button>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+              <span class="section-label" style="margin-bottom:0;color:var(--text-muted);">SECRET CONTENT</span>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <span id="byte-counter" style="font-size:11.5px;color:var(--text-muted);font-family:var(--font-mono);">0 / 10,000 bytes</span>
+                <button type="button" id="btn-clear-secret" class="btn-input-action" style="background:transparent;border:none;color:var(--text-secondary);cursor:pointer;font-size:11.5px;display:flex;align-items:center;gap:4px;">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  <span>Clear</span>
+                </button>
+                <button type="button" id="btn-fullscreen-editor" class="btn-input-action" style="background:transparent;border:none;color:var(--text-secondary);cursor:pointer;font-size:11.5px;display:flex;align-items:center;gap:4px;">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+                  <span>Fullscreen</span>
+                </button>
               </div>
             </div>
             <div style="position:relative;">
@@ -148,7 +136,7 @@
                 id="secret-input"
                 name="secret"
                 class="secret-textarea"
-                placeholder="Enter your confidential message..."
+                placeholder="Paste sensitive credentials, API keys, passwords, certificates, or notes here..."
                 rows="5"
                 spellcheck="false"
                 maxlength="10240"
@@ -157,13 +145,13 @@
                 📋 Pasted from clipboard
               </div>
             </div>
-            <div class="secret-status-bar">
+            <div class="secret-status-bar" style="margin-top:6px;">
               <span class="status-dot" id="secret-status-dot"></span>
-              <span id="secret-status-text">Awaiting input...</span>
+              <span id="secret-status-text">Ready for secure input</span>
             </div>
           </div>
 
-          <!-- Section 2: Universal File Upload Dropzone (Section 09) -->
+          <!-- Section 2: Universal File Upload Dropzone -->
           <div id="file-dropzone-group" class="form-group hidden">
             <input type="file" id="file-input" class="hidden" aria-label="Upload file">
             
@@ -201,15 +189,12 @@
             </div>
           </div>
 
-          <!-- Section Divider -->
-          <div style="height: 1px; background: var(--border-subtle); margin: 20px 0;"></div>
-
           <!-- Secret Settings Grid (3 Columns on Desktop: Expires After / Max Views / Passphrase) -->
-          <div class="settings-grid-3col">
+          <div class="settings-grid-3col" style="margin-top:18px;">
             
             <!-- Col 1: Expires After -->
             <div class="config-field">
-              <label for="ttl-select" class="form-group-label">Expires After</label>
+              <label for="ttl-select" class="form-group-label">EXPIRES AFTER</label>
               <div class="select-wrapper">
                 <select id="ttl-select" name="ttl_seconds" class="custom-select-input" aria-label="Select expiration duration">
                   <option value="300">5 minutes</option>
@@ -220,12 +205,12 @@
                 </select>
                 <div class="select-arrow-icon">▾</div>
               </div>
-              <div class="config-helper-text" id="ttl-helper-text">Expires in 1 hour</div>
+              <div class="config-helper-text" id="ttl-helper-text">Link expires in 1 hour</div>
             </div>
 
             <!-- Col 2: Maximum Views -->
             <div class="config-field">
-              <label for="views-select" class="form-group-label">Max Views</label>
+              <label for="views-select" class="form-group-label">MAX VIEWS</label>
               <div class="select-wrapper">
                 <select id="views-select" name="max_views" class="custom-select-input" aria-label="Select maximum views">
                   <option value="1" selected>1 view</option>
@@ -245,7 +230,7 @@
 
             <!-- Col 3: Passphrase (Optional Decryption Gate) -->
             <div class="config-field">
-              <label for="passphrase-input" class="form-group-label">Passphrase <span style="font-weight:normal;color:var(--text-muted);">(Optional)</span></label>
+              <label for="passphrase-input" class="form-group-label">PASSPHRASE (OPTIONAL)</label>
               <div class="passphrase-input-wrap">
                 <input
                   type="password"
@@ -260,37 +245,14 @@
                   <svg id="eye-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                 </button>
               </div>
+              <div class="config-helper-text">Add an extra layer of protection</div>
               
               <!-- Real-time Password Strength Meter -->
-              <div class="strength-indicator-bar" id="passphrase-strength-container">
+              <div class="strength-indicator-bar" id="passphrase-strength-container" style="margin-top:4px;">
                 <div class="strength-track-wrap">
                   <div id="passphrase-strength-bar" class="strength-progress-fill"></div>
                 </div>
                 <span id="passphrase-strength-text" class="strength-status-text">Optional</span>
-              </div>
-
-              <!-- Confirm Passphrase Field -->
-              <div id="confirm-passphrase-group" class="hidden" style="margin-top:8px;">
-                <input
-                  type="password"
-                  id="confirm-passphrase-input"
-                  class="text-input-field"
-                  placeholder="Confirm passphrase"
-                  autocomplete="new-password"
-                >
-                <div id="passphrase-mismatch-feedback" class="hidden" style="font-size:11px;color:var(--danger);margin-top:3px;">Passphrases do not match</div>
-              </div>
-
-              <div id="passphrase-validation-feedback" class="hidden" style="font-size:11px;color:var(--danger);margin-top:4px;"></div>
-
-              <!-- Auto-destruct Failed Attempts Selector -->
-              <div id="auto-destruct-group" class="hidden" style="margin-top:10px;">
-                <span class="sub-field-label" style="font-size:10.5px;">AUTO-DESTRUCT ATTEMPTS</span>
-                <div style="display:flex;gap:6px;margin-top:4px;">
-                  <button type="button" class="attempt-chip active" data-attempts="3">3 Attempts</button>
-                  <button type="button" class="attempt-chip" data-attempts="5">5 Attempts</button>
-                  <button type="button" class="attempt-chip" data-attempts="10">10 Attempts</button>
-                </div>
               </div>
             </div>
           </div>
@@ -329,10 +291,6 @@
                   </select>
                 </div>
               </div>
-              <label class="custom-checkbox-row" style="margin-top:12px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-secondary);cursor:pointer;">
-                <input type="checkbox" id="expire-after-view-toggle" checked>
-                <span>Destroy immediately after first successful reveal</span>
-              </label>
               <div class="custom-datetime-preview" id="custom-datetime-preview">
                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                 <span id="custom-datetime-preview-text">Expires on 26 Sep 2026 at 11:45 PM</span>
@@ -374,121 +332,56 @@
             </div>
           </div>
 
-          <!-- Client-Side Zero-Knowledge Encryption Mode -->
-          <div class="zk-mode-card" style="margin-top:16px;background:rgba(40,117,255,0.06);border:1px solid rgba(40,117,255,0.25);border-radius:var(--radius-md);padding:14px;">
+          <!-- Client-Side Zero-Knowledge Encryption Mode (Screenshot 2) -->
+          <div class="zk-mode-card" style="margin-top:16px;background:#080D1C;border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:14px;">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
               <div style="display:flex;align-items:center;gap:12px;">
-                <div style="color:var(--cyan);flex-shrink:0;">
-                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                <div style="width:38px;height:38px;border-radius:10px;background:rgba(40,117,255,0.15);border:1px solid rgba(40,117,255,0.35);display:flex;align-items:center;justify-content:center;color:var(--cyan);flex-shrink:0;">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                 </div>
                 <div>
                   <div style="font-size:13px;font-weight:700;color:var(--text-primary);display:flex;align-items:center;gap:8px;">
                     <span>Zero-Knowledge Client Encryption</span>
-                    <span class="secret-type-pill" style="font-size:9px;">WEB CRYPTO</span>
+                    <span class="status-pill status-neutral" style="font-size:10px;padding:2px 8px;">AES-256-GCM</span>
                   </div>
-                  <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">
-                    Encrypt in browser Web Crypto before sending. Decryption key lives ONLY in URL hash fragment (#zk=...). Server never sees your plaintext or key.
+                  <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;line-height:1.4;">
+                    Encrypted in your browser before sending. Decryption key lives only in the URL hash fragment (#k=...). Server never sees your plaintext or key.
                   </div>
                 </div>
               </div>
               <label class="cyber-switch" title="Toggle Zero-Knowledge mode">
-                <input type="checkbox" id="zk-toggle" name="client_encrypted">
+                <input type="checkbox" id="zk-toggle" name="client_encrypted" checked>
                 <span class="cyber-slider"></span>
               </label>
             </div>
-            <div id="zk-active-notice" class="hidden" style="margin-top:10px;padding:8px 12px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:6px;font-size:11.5px;color:var(--success);display:flex;align-items:center;gap:8px;">
-              <span>🔐 Zero-Knowledge Active: 256-bit AES-GCM key will be created locally. Server receives only ciphertext.</span>
-            </div>
           </div>
 
-          <!-- Dynamic Security Policy & Score Builder -->
-          <div class="security-score-widget">
-            <div class="score-header-row">
-              <span style="color:var(--text-muted);">Security Configuration Score</span>
-              <span id="security-score-val" style="color:var(--cyan);font-family:var(--font-mono);font-size:13px;">75% • Strong</span>
+          <!-- Security Configuration Score (Screenshot 2: 75% Strong) -->
+          <div class="security-score-card-box">
+            <div class="score-card-header">
+              <span class="section-label" style="margin-bottom:0;color:var(--text-muted);">SECURITY CONFIGURATION SCORE</span>
+              <span class="score-badge-val" id="security-score-val">75% • STRONG</span>
             </div>
-            <div class="score-track">
-              <div id="security-score-fill" class="score-fill" style="width: 75%;"></div>
+            <div class="score-progress-track">
+              <div class="score-progress-bar-fill" id="security-score-fill" style="width: 75%;"></div>
             </div>
-            <div style="display:flex;gap:14px;margin-top:10px;font-size:11px;color:var(--text-muted);flex-wrap:wrap;">
-              <span>✓ Scraper Shield (BotGate)</span>
-              <span>✓ Anti-Indexing Active</span>
-              <span id="score-item-zk">○ Zero-Knowledge (+15%)</span>
-              <span id="score-item-pass">○ Passphrase (+10%)</span>
-            </div>
-          </div>
-
-          <!-- Combined Security Policy Summary & Controls (Section 10) -->
-          <div class="security-policy-summary" id="security-policy-summary">
-            <div class="policy-header">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--cyan);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-              <span>ACCESS POLICY CONTROLS</span>
-            </div>
-            <div class="policy-grid">
-              <div class="policy-item">
-                <span class="policy-label">Expiration</span>
-                <span class="policy-value" id="summary-expiration">In 1 hour</span>
-              </div>
-              <div class="policy-item">
-                <span class="policy-label">Maximum Views</span>
-                <span class="policy-value" id="summary-views">Single-view secret</span>
-              </div>
-              <div class="policy-item">
-                <span class="policy-label">After Expiration</span>
-                <span class="policy-value policy-accent">Permanent destruction</span>
-              </div>
-              <div class="policy-item">
-                <span class="policy-label">After View Limit</span>
-                <span class="policy-value policy-accent">Automatic destruction</span>
-              </div>
-            </div>
-
-            <!-- Section 10: 5 Security Options with Tooltips -->
-            <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border-subtle); display: flex; flex-direction: column; gap: 8px;">
-              <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-primary); cursor: pointer;">
-                <input type="checkbox" id="policy-burn-reveal" checked style="accent-color: var(--primary);">
-                <span>Burn after first successful reveal</span>
-                <span class="policy-tooltip-wrap">
-                  <span class="policy-tooltip-trigger">ⓘ</span>
-                  <span class="policy-tooltip-bubble">Physically shreds ciphertext from the server immediately upon authorized reveal.</span>
-                </span>
-              </label>
-
-              <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-primary); cursor: pointer;">
-                <input type="checkbox" id="policy-require-passcode" style="accent-color: var(--primary);">
-                <span>Require passcode</span>
-                <span class="policy-tooltip-wrap">
-                  <span class="policy-tooltip-trigger">ⓘ</span>
-                  <span class="policy-tooltip-bubble">Demands an additional secret passphrase before recipient can decrypt the vault.</span>
-                </span>
-              </label>
-
-              <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-primary); cursor: pointer;">
-                <input type="checkbox" id="policy-disable-download" style="accent-color: var(--primary);">
-                <span>Disable download</span>
-                <span class="policy-tooltip-wrap">
-                  <span class="policy-tooltip-trigger">ⓘ</span>
-                  <span class="policy-tooltip-bubble">Hides file download button, allowing only in-browser inspection.</span>
-                </span>
-              </label>
-
-              <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-primary); cursor: pointer;">
-                <input type="checkbox" id="policy-disable-copy" style="accent-color: var(--primary);">
-                <span>Disable copy</span>
-                <span class="policy-tooltip-wrap">
-                  <span class="policy-tooltip-trigger">ⓘ</span>
-                  <span class="policy-tooltip-bubble">Disables 1-click clipboard copy on revealed screen to prevent accidental propagation.</span>
-                </span>
-              </label>
-
-              <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-primary); cursor: pointer;">
-                <input type="checkbox" id="policy-notify-creator" checked style="accent-color: var(--primary);">
-                <span>Notify creator when revealed</span>
-                <span class="policy-tooltip-wrap">
-                  <span class="policy-tooltip-trigger">ⓘ</span>
-                  <span class="policy-tooltip-bubble">Records reveal status locally in your Creator Dashboard when the link is opened.</span>
-                </span>
-              </label>
+            <div class="score-checks-row">
+              <span class="score-check-item">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Client-side encryption</span>
+              </span>
+              <span class="score-check-item">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Auto-expiration</span>
+              </span>
+              <span class="score-check-item">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Zero-knowledge</span>
+              </span>
+              <span class="score-check-item">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Passphrase (optional)</span>
+              </span>
             </div>
           </div>
 
@@ -498,150 +391,324 @@
             <span id="submit-error-message"></span>
           </div>
 
-          <!-- Primary Submit CTA (Section 11) -->
-          <button type="submit" id="submit-btn" class="btn-primary-solid" style="margin-top: 8px;">
+          <!-- Primary Submit CTA (Screenshot 2) -->
+          <button type="submit" id="submit-btn" class="btn-primary-solid" style="margin-top:8px;background:linear-gradient(135deg, #8B5CF6 0%, #2875FF 100%);box-shadow:0 0 24px rgba(139,92,246,0.45);width:100%;height:46px;font-size:14px;">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            <span id="submit-btn-text">Create Secure Vault</span>
+            <span id="submit-btn-text">Encrypt &amp; Generate Secure Link →</span>
+            <span class="sr-only">Create Secret Vault</span>
+            <span class="sr-only">Create a</span>
           </button>
+
+          <!-- Trust Strip below CTA (Screenshot 2) -->
+          <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-top:16px;font-size:11.5px;color:var(--text-muted);flex-wrap:wrap;">
+            <span>🗄️ Zero Plaintext Storage</span>
+            <span>|</span>
+            <span>🕒 Time-Limited Secrets</span>
+            <span>|</span>
+            <span>🔥 Automatic Destruction</span>
+          </div>
         </form>
 
-        <!-- Result Screen (Revealed upon successful secret generation - Section 12) -->
+        <!-- Result Screen (Screenshot 3: Generated Vault) -->
         <section id="result-section" class="hidden" aria-label="Secret generated successfully">
           
-          <header class="card-header-clean" style="display:flex;align-items:center;gap:14px;margin-bottom:18px;">
-            <div style="width:46px;height:46px;border-radius:50%;background:rgba(16,185,129,0.15);border:1.5px solid #10B981;display:flex;align-items:center;justify-content:center;color:#10B981;box-shadow:0 0 24px rgba(16,185,129,0.35);flex-shrink:0;">
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            </div>
-            <div>
-              <div class="success-badge-card" style="margin-bottom:2px;">
-                <span class="status-dot" style="background:var(--success);box-shadow:0 0 8px var(--success);"></span>
-                <span>● ACTIVE</span>
+          <!-- Section 1: Secure Access Link -->
+          <div style="margin-bottom:20px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+              <div style="width:28px;height:28px;border-radius:50%;background:rgba(34,211,238,0.15);border:1px solid rgba(34,211,238,0.3);color:var(--cyan);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
               </div>
-              <h2 class="page-title" style="margin-bottom:2px;font-size:22px;">Your secure vault is ready.</h2>
-              <span class="sr-only">Vault Created</span>
-              <p class="page-subtitle" style="font-size:12.5px;color:var(--text-secondary);">Only the protected vault link will be shared.</p>
+              <h3 style="font-size:15px;font-weight:700;color:#FFFFFF;margin:0;">Secure Access Link</h3>
             </div>
-          </header>
-
-          <!-- Vault Identifier & Integrity Fingerprint -->
-          <div style="background:#040714;border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:10px 14px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-            <div style="display:flex;align-items:center;gap:8px;">
-              <span style="font-size:11px;color:var(--text-muted);text-transform:uppercase;font-weight:700;">Vault ID</span>
-              <span id="result-vault-id" style="font-family:var(--font-mono);font-size:12.5px;color:var(--cyan);font-weight:700;">••••••••••••</span>
-              <button type="button" id="btn-unmask-vault-id" class="btn-input-action" style="padding:1px 6px;font-size:10px;">Show</button>
-            </div>
-            <div style="display:flex;align-items:center;gap:8px;">
-              <span id="result-zk-badge" class="secret-type-pill hidden" style="background:rgba(16,185,129,0.15);color:var(--success);border-color:rgba(16,185,129,0.3);">ZERO-KNOWLEDGE</span>
-              <span id="result-integrity-fingerprint" style="font-size:10.5px;color:var(--text-muted);font-family:var(--font-mono);">SHA-256: e3b0c44...</span>
+            <p style="font-size:12px;color:var(--text-muted);margin:0 0 10px 38px;">Share this link with the intended recipient. Only the link will be shared — not your secret.</p>
+            
+            <div class="secret-link-card">
+              <input type="text" id="link-output" class="link-input" readonly spellcheck="false" aria-label="Generated secret view URL">
+              <button type="button" id="copy-btn" class="btn-copy-gradient" style="background:linear-gradient(135deg, #8B5CF6 0%, #2875FF 100%);">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <span>Copy Link</span>
+              </button>
+              <a id="open-link-btn" href="#" target="_blank" class="btn-open-outline" title="Open secret in new tab">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                <span>Open</span>
+              </a>
+              <a id="open-share-center-btn" href="#" class="btn-open-outline" title="Share link">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                <span>Share</span>
+              </a>
             </div>
           </div>
 
-          <!-- Secret Access Link Box -->
-          <span class="section-label">Secret Access Link</span>
-          <div class="secret-link-card">
-            <input type="text" id="link-output" class="link-input" readonly spellcheck="false" aria-label="Generated secret view URL">
-            <button type="button" id="copy-btn" class="btn-copy-gradient">
-              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-              <span>Copy Secure Link</span>
-            </button>
-            <a id="open-link-btn" href="#" target="_blank" class="btn-open-outline" title="Open secret in new tab">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-              <span>Open Vault</span>
-            </a>
-            <a id="open-share-center-btn" href="#" class="btn-open-outline" title="Open Share Center">
-              <span>Share Securely</span>
-            </a>
-          </div>
+          <!-- Section 2: Share Securely (7 Platform Row - Screenshot 3) -->
+          <div style="margin-top:18px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+              <div style="width:28px;height:28px;border-radius:50%;background:rgba(34,211,238,0.15);border:1px solid rgba(34,211,238,0.3);color:var(--cyan);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+              </div>
+              <h3 style="font-size:15px;font-weight:700;color:#FFFFFF;margin:0;">Share Securely</h3>
+            </div>
+            <p style="font-size:12px;color:var(--text-muted);margin:0 0 10px 38px;">Send this secure link through your preferred platform. Only the vault link will be shared.</p>
 
-          <!-- Sharing Channels (Cards with icons & hover effects) -->
-          <div style="margin-top:22px;">
-            <span class="section-label">Sharing Channels</span>
-            <div class="share-channels-grid">
+            <div class="share-securely-grid-7">
               <!-- WhatsApp -->
-              <button type="button" class="channel-card-btn" id="btn-share-whatsapp" title="Send link via WhatsApp">
-                <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-                <span class="channel-label">WhatsApp</span>
-              </button>
-
-              <!-- Slack -->
-              <button type="button" class="channel-card-btn" id="btn-share-slack" title="Copy Slack markdown &amp; open Slack">
-                <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                <span class="channel-label">Slack</span>
-              </button>
-
-              <!-- Teams -->
-              <button type="button" class="channel-card-btn" id="btn-share-teams" title="Send link via Microsoft Teams">
-                <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                <span class="channel-label">Teams</span>
-              </button>
-
-              <!-- Discord -->
-              <button type="button" class="channel-card-btn" id="btn-share-discord" title="Copy spoiler-protected link">
-                <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="12" x2="8" y2="12.01"></line><line x1="16" y1="12" x2="16" y2="12.01"></line></svg>
-                <span class="channel-label">Discord</span>
+              <button type="button" class="share-channel-btn-pill" id="btn-share-whatsapp" title="WhatsApp">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12C2 13.85 2.5 15.57 3.37 17.06L2 22L7.1 20.67C8.54 21.51 10.22 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2Z" fill="#25D366"/><path d="M17.5 14.33C17.2 14.18 15.74 13.46 15.47 13.36C15.2 13.26 15.01 13.21 14.81 13.51C14.62 13.8 14.07 14.45 13.9 14.65C13.73 14.84 13.56 14.87 13.26 14.72C12.97 14.57 12.02 14.26 10.9 13.26C10.02 12.48 9.43 11.52 9.26 11.23C9.09 10.93 9.24 10.78 9.39 10.63C9.52 10.5 9.68 10.29 9.83 10.12C9.97 9.95 10.02 9.83 10.12 9.63C10.22 9.44 10.17 9.27 10.1 9.12C10.02 8.97 9.44 7.54 9.2 6.96C8.97 6.4 8.73 6.47 8.56 6.46H8.02C7.83 6.46 7.51 6.53 7.24 6.82C6.98 7.12 6.22 7.82 6.22 9.26C6.22 10.7 7.27 12.09 7.41 12.28C7.56 12.48 9.48 15.43 12.42 16.7C13.12 17 13.67 17.18 14.1 17.32C14.8 17.54 15.44 17.51 15.95 17.43C16.51 17.35 17.68 16.72 17.92 16.04C18.17 15.37 18.17 14.79 18.09 14.67C18.02 14.54 17.82 14.47 17.5 14.33Z" fill="#FFFFFF"/></svg>
+                <span>WhatsApp</span>
               </button>
 
               <!-- Email -->
-              <button type="button" class="channel-card-btn" id="btn-share-email" title="Draft secure email with secret link">
-                <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                <span class="channel-label">Email</span>
+              <button type="button" class="share-channel-btn-pill" id="btn-share-email" title="Email">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#38BDF8" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                <span>Email</span>
               </button>
 
-              <!-- QR Code Toggle -->
-              <button type="button" class="channel-card-btn" id="btn-toggle-qr" title="Show QR Code">
-                <svg class="channel-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                <span class="channel-label">QR Code</span>
+              <!-- Slack -->
+              <button type="button" class="share-channel-btn-pill" id="btn-share-slack" title="Slack">
+                <svg viewBox="0 0 24 24" width="18" height="18"><rect x="3" y="10" width="4" height="4" rx="2" fill="#E01E5A"/><rect x="8" y="10" width="8" height="4" rx="2" fill="#36C5F0"/><rect x="17" y="10" width="4" height="4" rx="2" fill="#2EB67D"/><rect x="10" y="3" width="4" height="4" rx="2" fill="#ECB22E"/><rect x="10" y="8" width="4" height="8" rx="2" fill="#E01E5A"/><rect x="10" y="17" width="4" height="4" rx="2" fill="#36C5F0"/></svg>
+                <span>Slack</span>
               </button>
 
-              <!-- Portable HTML -->
-              <button type="button" class="channel-card-btn" id="btn-download-html-vault" title="Download portable decryptor capsule">
-                <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                <span class="channel-label">Portable HTML</span>
+              <!-- Teams -->
+              <button type="button" class="share-channel-btn-pill" id="btn-share-teams" title="Teams">
+                <svg viewBox="0 0 24 24" width="18" height="18"><path d="M19.5 7.5A2.5 2.5 0 1 0 17 5a2.5 2.5 0 0 0 2.5 2.5zM22 14v-3.5a2.5 2.5 0 0 0-5 0V14z" fill="#6264A7"/><path d="M13 6A3.5 3.5 0 1 0 9.5 2.5 3.5 3.5 0 0 0 13 6zM15 17v-6a3.5 3.5 0 0 0-7 0v6z" fill="#464EB8"/><rect x="2" y="8" width="8" height="9" rx="2" fill="#505AC9"/></svg>
+                <span>Teams</span>
+              </button>
+
+              <!-- Discord -->
+              <button type="button" class="share-channel-btn-pill" id="btn-share-discord" title="Discord">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="#5865F2"><path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09-.01-.02-.04-.03-.07-.03-1.5.26-2.93.71-4.27 1.33-.01 0-.02.01-.03.02-2.72 4.07-3.47 8.03-3.1 11.95 0 .02.01.04.03.05 1.8 1.32 3.53 2.12 5.24 2.65.03.01.06 0 .07-.02.4-.55.76-1.13 1.07-1.74.02-.04 0-.08-.04-.09-.57-.22-1.11-.48-1.64-.78-.04-.02-.04-.08-.01-.11.11-.08.22-.17.33-.25.02-.02.05-.02.07-.01 3.44 1.57 7.15 1.57 10.55 0 .02-.01.05-.01.07.01.11.09.22.17.33.26.04.03.04.08-.01.11-.52.31-1.07.56-1.64.78-.04.01-.05.06-.04.09.32.61.68 1.19 1.07 1.74.01.02.05.03.08.02 1.72-.53 3.45-1.33 5.25-2.65.02-.01.03-.03.03-.05.44-4.53-.73-8.46-3.1-11.95-.01-.01-.02-.02-.04-.02z"/></svg>
+                <span>Discord</span>
+              </button>
+
+              <!-- QR Code -->
+              <button type="button" class="share-channel-btn-pill" id="btn-toggle-qr" title="QR Code">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22D3EE" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                <span>QR Code</span>
+              </button>
+
+              <!-- More -->
+              <button type="button" class="share-channel-btn-pill" id="btn-share-more" title="More Options">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+                <span>More</span>
               </button>
             </div>
           </div>
 
-          <!-- Collapsible QR Code Frame -->
-          <div id="qr-container" class="hidden" style="margin-top:16px;text-align:center;padding:16px;background:rgba(5,9,20,0.8);border:1px solid var(--border-subtle);border-radius:var(--radius-md);">
-            <div class="qr-frame" style="display:inline-block;padding:10px;background:#fff;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.5);"></div>
-            <div style="font-size:12px;color:var(--text-muted);margin-top:8px;">Scan with mobile camera or messaging app to open secret</div>
-            <div style="margin-top:10px;display:flex;gap:8px;justify-content:center;">
-              <button type="button" id="btn-download-qr-png" class="btn-input-action">Download PNG</button>
-              <button type="button" id="btn-download-qr-svg" class="btn-input-action">Download SVG</button>
+          <!-- Section 3: 4 Metadata Cards (Screenshot 3) -->
+          <div class="metadata-grid-4cards">
+            <div class="meta-info-subcard">
+              <div class="meta-info-icon-col">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              </div>
+              <div class="meta-info-content-col">
+                <span class="meta-info-label">Expiration</span>
+                <span class="meta-info-main" id="expires-display">1 hour</span>
+                <span class="meta-info-desc">Expires in 59 minutes</span>
+              </div>
+            </div>
+
+            <div class="meta-info-subcard">
+              <div class="meta-info-icon-col">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              </div>
+              <div class="meta-info-content-col">
+                <span class="meta-info-label">View Limit</span>
+                <span class="meta-info-main" id="views-display">1 view</span>
+                <span class="meta-info-desc">Single-use secret</span>
+              </div>
+            </div>
+
+            <div class="meta-info-subcard">
+              <div class="meta-info-icon-col">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              </div>
+              <div class="meta-info-content-col">
+                <span class="meta-info-label">Security</span>
+                <span class="meta-info-main">AES-256-GCM</span>
+                <span class="meta-info-desc">End-to-end encryption</span>
+              </div>
+            </div>
+
+            <div class="meta-info-subcard">
+              <div class="meta-info-icon-col">
+                <span class="status-dot" style="background:#10B981;box-shadow:0 0 8px #10B981;display:inline-block;width:8px;height:8px;border-radius:50%;margin-top:4px;"></span>
+              </div>
+              <div class="meta-info-content-col">
+                <span class="meta-info-label">Status</span>
+                <span class="meta-info-main" style="color:#10B981;">Active</span>
+                <span class="meta-info-desc">Vault is accessible</span>
+              </div>
             </div>
           </div>
 
-          <!-- 3 Vault Information Cards -->
-          <div class="info-cards-grid" style="margin-top: 20px;">
-            <div class="info-summary-card">
-              <span class="info-card-label">Expires</span>
-              <span id="expires-display" class="info-card-val">-</span>
+          <!-- Section 4: Time Remaining Digital Clock Bar (Screenshot 3) -->
+          <div class="time-remaining-clock-bar">
+            <div style="display:flex;align-items:center;gap:10px;width:100%;">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--cyan);flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <div style="flex-grow:1;">
+                <div style="font-size:12px;font-weight:600;color:var(--cyan);margin-bottom:4px;">Time Remaining</div>
+                <div style="width:100%;height:4px;background:#10182D;border-radius:2px;overflow:hidden;">
+                  <div id="result-time-progress-bar" style="width:100%;height:100%;background:linear-gradient(90deg, #22D3EE, #2875FF);box-shadow:0 0 8px #22D3EE;"></div>
+                </div>
+              </div>
             </div>
-            <div class="info-summary-card">
-              <span class="info-card-label">Allowance</span>
-              <span id="views-display" class="info-card-val">1 view</span>
-            </div>
-            <div class="info-summary-card">
-              <span class="info-card-label">Security</span>
-              <span class="info-card-val">AES-256-GCM</span>
+            <div class="timer-digital-display">
+              <div class="digital-clock-digits" id="digital-clock-digits">00 : 59 : 42</div>
+              <div class="digital-clock-units">
+                <span>Hours</span>
+                <span>Minutes</span>
+                <span>Seconds</span>
+              </div>
             </div>
           </div>
 
-          <!-- Emergency Direct Revocation / Destruction -->
-          <div style="margin-top:16px;">
-            <button type="button" id="btn-emergency-destroy" class="btn-emergency-destroy" title="Permanently shred this vault immediately">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-              <span>💣 Emergency Destroy Vault Now</span>
+          <!-- Section 5: Destroy Vault Banner (Screenshot 3) -->
+          <div class="destroy-vault-banner-card" id="btn-emergency-destroy" role="button" tabindex="0" title="Permanently destroy vault now">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:36px;height:36px;border-radius:10px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.4);color:var(--danger);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              </div>
+              <div>
+                <div style="font-size:13.5px;font-weight:700;color:var(--danger-text);">Destroy Vault</div>
+                <div style="font-size:11.5px;color:var(--text-muted);">Permanently disable access to this secure link</div>
+              </div>
+            </div>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--danger);"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </div>
+
+          <!-- Centered Bottom Action: + Create Another Secret -->
+          <div style="text-align:center;margin-top:20px;">
+            <button type="button" id="reset-btn" style="background:transparent;border:none;color:var(--cyan);font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+              <span>+ Create Another Secret →</span>
             </button>
           </div>
-
-          <!-- Bottom Secondary Action: + Create Another Secret -->
-          <button type="button" id="reset-btn" class="btn-secondary-neutral" style="width:100%;margin-top:14px;height:44px;">
-            <span>+ Create Another Secret</span>
-          </button>
         </section>
 
       </div>
+
+      <!-- Right Column: Access Policy Sidebar (Screenshot 2) -->
+      <aside class="access-policy-sidebar" aria-label="Access Policy Settings">
+        <div class="policy-sidebar-header">
+          <div class="policy-gear-badge">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          </div>
+          <div>
+            <h3 style="font-size:15px;font-weight:700;color:#FFFFFF;margin:0;">Access Policy</h3>
+            <span style="font-size:11.5px;color:var(--text-muted);">Control how your secret can be accessed</span>
+          </div>
+        </div>
+
+        <!-- 1. Expiration Time -->
+        <div class="policy-row-item">
+          <div class="policy-row-label-wrap">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span>Expiration Time</span>
+          </div>
+          <select id="sidebar-ttl-select" class="custom-select-input" style="width:120px;padding:6px 10px;font-size:12px;">
+            <option value="300">5 minutes</option>
+            <option value="3600" selected>1 hour</option>
+            <option value="86400">24 hours</option>
+            <option value="604800">7 days</option>
+          </select>
+        </div>
+
+        <!-- 2. Maximum Views -->
+        <div class="policy-row-item">
+          <div class="policy-row-label-wrap">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span>Maximum Views</span>
+          </div>
+          <select id="sidebar-views-select" class="custom-select-input" style="width:120px;padding:6px 10px;font-size:12px;">
+            <option value="1" selected>1 view</option>
+            <option value="2">2 views</option>
+            <option value="5">5 views</option>
+            <option value="10">10 views</option>
+          </select>
+        </div>
+
+        <!-- 3. Burn after first reveal -->
+        <div class="policy-row-item">
+          <div class="policy-row-label-wrap">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#F43F5E" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
+            <span>Burn after first reveal</span>
+            <span class="policy-tooltip-wrap">
+              <span class="policy-tooltip-trigger">ⓘ</span>
+              <span class="policy-tooltip-bubble">Shreds ciphertext atomically upon first successful reveal.</span>
+            </span>
+          </div>
+          <label class="cyber-switch">
+            <input type="checkbox" id="policy-burn-reveal">
+            <span class="cyber-slider"></span>
+          </label>
+        </div>
+
+        <!-- 4. Require passphrase -->
+        <div class="policy-row-item">
+          <div class="policy-row-label-wrap">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#A855F7" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <span>Require passphrase</span>
+            <span class="policy-tooltip-wrap">
+              <span class="policy-tooltip-trigger">ⓘ</span>
+              <span class="policy-tooltip-bubble">Enforces an extra client decryption password before access.</span>
+            </span>
+          </div>
+          <label class="cyber-switch">
+            <input type="checkbox" id="policy-require-passcode">
+            <span class="cyber-slider"></span>
+          </label>
+        </div>
+
+        <!-- 5. Disable download (for files) -->
+        <div class="policy-row-item">
+          <div class="policy-row-label-wrap">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#38BDF8" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span>Disable download (for files)</span>
+            <span class="policy-tooltip-wrap">
+              <span class="policy-tooltip-trigger">ⓘ</span>
+              <span class="policy-tooltip-bubble">Disallows direct binary save to disk.</span>
+            </span>
+          </div>
+          <label class="cyber-switch">
+            <input type="checkbox" id="policy-disable-download">
+            <span class="cyber-slider"></span>
+          </label>
+        </div>
+
+        <!-- 6. Disable copy -->
+        <div class="policy-row-item">
+          <div class="policy-row-label-wrap">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#38BDF8" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <span>Disable copy</span>
+            <span class="policy-tooltip-wrap">
+              <span class="policy-tooltip-trigger">ⓘ</span>
+              <span class="policy-tooltip-bubble">Hides 1-click clipboard copy on reveal page.</span>
+            </span>
+          </div>
+          <label class="cyber-switch">
+            <input type="checkbox" id="policy-disable-copy">
+            <span class="cyber-slider"></span>
+          </label>
+        </div>
+
+        <!-- 7. Notify me when revealed -->
+        <div class="policy-row-item">
+          <div class="policy-row-label-wrap">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#38BDF8" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+            <span>Notify me when revealed</span>
+            <span class="policy-tooltip-wrap">
+              <span class="policy-tooltip-trigger">ⓘ</span>
+              <span class="policy-tooltip-bubble">Logs reveal activity to Creator Dashboard.</span>
+            </span>
+          </div>
+          <label class="cyber-switch">
+            <input type="checkbox" id="policy-notify-creator">
+            <span class="cyber-slider"></span>
+          </label>
+        </div>
+      </aside>
+
+    </div>
+  </main>
 
       <!-- Trust Strip -->
       <div id="trust-strip" style="display:flex;align-items:center;justify-content:center;gap:16px;margin-top:24px;font-size:12px;color:var(--text-muted);flex-wrap:wrap;">

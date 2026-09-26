@@ -385,29 +385,73 @@
     const stepContent = document.getElementById('step-content');
     const stepSettings = document.getElementById('step-settings');
     const stepGenerate = document.getElementById('step-generate');
-    if (!stepContent || !stepSettings || !stepGenerate) return;
+    const node1 = document.getElementById('step-node-1');
+    const node2 = document.getElementById('step-node-2');
+    const node3 = document.getElementById('step-node-3');
+    const b1 = document.getElementById('step-badge-1');
+    const b2 = document.getElementById('step-badge-2');
+    const b3 = document.getElementById('step-badge-3');
+    const sub1 = document.getElementById('step-sub-1');
+    const sub2 = document.getElementById('step-sub-2');
+    const sub3 = document.getElementById('step-sub-3');
 
-    if (step === 1) {
-      stepContent.className = 'step-item active';
-      stepContent.innerHTML = '<span class="step-num">01</span><span>Content</span>';
-      stepSettings.className = 'step-item';
-      stepSettings.innerHTML = '<span class="step-num">02</span><span>Settings</span>';
-      stepGenerate.className = 'step-item';
-      stepGenerate.innerHTML = '<span class="step-num">03</span><span>Generate</span>';
-    } else if (step === 2) {
-      stepContent.className = 'step-item completed';
-      stepContent.innerHTML = '<span class="step-num" style="color:var(--success);">✓</span><span>Content</span>';
-      stepSettings.className = 'step-item active';
-      stepSettings.innerHTML = '<span class="step-num">02</span><span>Settings</span>';
-      stepGenerate.className = 'step-item';
-      stepGenerate.innerHTML = '<span class="step-num">03</span><span>Generate</span>';
-    } else if (step === 3) {
-      stepContent.className = 'step-item completed';
-      stepContent.innerHTML = '<span class="step-num" style="color:var(--success);">✓</span><span>Content</span>';
-      stepSettings.className = 'step-item completed';
-      stepSettings.innerHTML = '<span class="step-num" style="color:var(--success);">✓</span><span>Settings</span>';
-      stepGenerate.className = 'step-item active';
-      stepGenerate.innerHTML = '<span class="step-num" style="color:var(--cyan);">✓</span><span>Generated</span>';
+    if (node1 && node2 && node3) {
+      if (step === 1) {
+        node1.className = 'step-node-item active';
+        node2.className = 'step-node-item';
+        node3.className = 'step-node-item';
+        if (b1) b1.textContent = '1';
+        if (b2) b2.textContent = '2';
+        if (b3) b3.textContent = '3';
+        if (sub1) sub1.textContent = 'Add your secret';
+        if (sub2) sub2.textContent = 'Configure access';
+        if (sub3) sub3.textContent = 'Create secure link';
+      } else if (step === 2) {
+        node1.className = 'step-node-item completed';
+        node2.className = 'step-node-item active';
+        node3.className = 'step-node-item';
+        if (b1) b1.innerHTML = '✓';
+        if (b2) b2.textContent = '2';
+        if (b3) b3.textContent = '3';
+        if (sub1) sub1.textContent = 'Secret added';
+        if (sub2) sub2.textContent = 'Configure access';
+        if (sub3) sub3.textContent = 'Create secure link';
+      } else if (step === 3) {
+        node1.className = 'step-node-item completed';
+        node2.className = 'step-node-item completed';
+        node3.className = 'step-node-item active';
+        if (b1) b1.innerHTML = '✓';
+        if (b2) b2.innerHTML = '✓';
+        if (b3) b3.textContent = '3';
+        if (sub1) sub1.textContent = 'Secret added';
+        if (sub2) sub2.textContent = 'Access configured';
+        if (sub3) sub3.textContent = 'Secure link ready';
+      }
+    }
+
+    if (stepContent && stepSettings && stepGenerate) {
+      if (step === 1) {
+        stepContent.className = 'step-item active';
+        stepContent.innerHTML = '<span class="step-num">01</span><span>Content</span>';
+        stepSettings.className = 'step-item';
+        stepSettings.innerHTML = '<span class="step-num">02</span><span>Settings</span>';
+        stepGenerate.className = 'step-item';
+        stepGenerate.innerHTML = '<span class="step-num">03</span><span>Generate</span>';
+      } else if (step === 2) {
+        stepContent.className = 'step-item completed';
+        stepContent.innerHTML = '<span class="step-num" style="color:var(--success);">✓</span><span>Content</span>';
+        stepSettings.className = 'step-item active';
+        stepSettings.innerHTML = '<span class="step-num">02</span><span>Settings</span>';
+        stepGenerate.className = 'step-item';
+        stepGenerate.innerHTML = '<span class="step-num">03</span><span>Generate</span>';
+      } else if (step === 3) {
+        stepContent.className = 'step-item completed';
+        stepContent.innerHTML = '<span class="step-num" style="color:var(--success);">✓</span><span>Content</span>';
+        stepSettings.className = 'step-item completed';
+        stepSettings.innerHTML = '<span class="step-num" style="color:var(--success);">✓</span><span>Settings</span>';
+        stepGenerate.className = 'step-item active';
+        stepGenerate.innerHTML = '<span class="step-num" style="color:var(--cyan);">✓</span><span>Generated</span>';
+      }
     }
   }
 
@@ -1219,11 +1263,16 @@
         createForm.classList.add('hidden');
         if (heroHeader) heroHeader.classList.add('hidden');
         if (trustStrip) trustStrip.classList.add('hidden');
+        const sidebarEl = document.querySelector('.access-policy-sidebar');
+        if (sidebarEl) sidebarEl.classList.add('hidden');
+        const splitGridEl = document.querySelector('.create-split-grid');
+        if (splitGridEl) splitGridEl.style.gridTemplateColumns = '1fr';
         if (resultSection) {
           resultSection.classList.remove('hidden');
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }
         updateStepperState(3);
+        startDigitalCountdown(data.expires_at || (Date.now() + 3600000));
 
         if (isClientOffline) {
           showToast('✓ Client-Side Vault Generated (Offline Mode)');
@@ -2242,10 +2291,47 @@
       if (heroHeader) heroHeader.classList.remove('hidden');
       if (trustStrip) trustStrip.classList.remove('hidden');
       if (createForm) createForm.classList.remove('hidden');
+      const sidebarEl = document.querySelector('.access-policy-sidebar');
+      if (sidebarEl) sidebarEl.classList.remove('hidden');
+      const splitGridEl = document.querySelector('.create-split-grid');
+      if (splitGridEl) splitGridEl.style.gridTemplateColumns = '';
+      if (countdownTimerInterval) clearInterval(countdownTimerInterval);
       updateStepperState(1);
       hideError();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
+  }
+
+  let countdownTimerInterval = null;
+  function startDigitalCountdown(expiresAt) {
+    if (countdownTimerInterval) clearInterval(countdownTimerInterval);
+    const clockDigits = document.getElementById('digital-clock-digits');
+    const progressBar = document.getElementById('result-time-progress-bar');
+    if (!clockDigits) return;
+
+    const totalDuration = Math.max(1, expiresAt - Date.now());
+
+    function update() {
+      const remainingMs = Math.max(0, expiresAt - Date.now());
+      const hours = Math.floor(remainingMs / 3600000);
+      const minutes = Math.floor((remainingMs % 3600000) / 60000);
+      const seconds = Math.floor((remainingMs % 60000) / 1000);
+
+      const pad = (n) => String(n).padStart(2, '0');
+      clockDigits.textContent = `${pad(hours)} : ${pad(minutes)} : ${pad(seconds)}`;
+
+      if (progressBar) {
+        const pct = Math.max(0, Math.min(100, (remainingMs / totalDuration) * 100));
+        progressBar.style.width = pct + '%';
+      }
+
+      if (remainingMs <= 0) {
+        clearInterval(countdownTimerInterval);
+      }
+    }
+
+    update();
+    countdownTimerInterval = setInterval(update, 1000);
   }
 
   // ==========================================================================

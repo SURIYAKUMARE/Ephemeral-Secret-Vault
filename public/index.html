@@ -27,24 +27,13 @@
         </span>
       </a>
 
-      <!-- Desktop Minimal Navigation (Section 06) -->
+      <!-- Desktop Navigation matching Screenshot 1 -->
       <nav class="nav-links-row" aria-label="Main Navigation">
-        <a href="/create">Product</a>
+        <a href="/create" class="active">Product</a>
         <a href="/security">Security</a>
         <a href="/extension">Extension</a>
-        <div class="nav-dropdown-wrapper">
-          <button type="button" class="nav-dropdown-trigger" aria-haspopup="true" aria-expanded="false">
-            <span>Resources</span>
-            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-          </button>
-          <div class="nav-dropdown-menu">
-            <a href="/how-it-works">How It Works</a>
-            <a href="/dashboard">Creator Dashboard</a>
-            <a href="/security#threat-model">Threat Model</a>
-            <a href="/download">Download Extension</a>
-            <a href="/benchmark">Performance Benchmarks</a>
-          </div>
-        </div>
+        <a href="/how-it-works">How It Works</a>
+        <a href="/dashboard">Dashboard</a>
       </nav>
 
       <div class="nav-actions">
@@ -61,14 +50,9 @@
           </svg>
         </button>
 
-        <!-- Sign In Button (Section 06) -->
-        <button type="button" class="btn-signin-nav" id="btn-signin-trigger">
-          <span>Sign In</span>
-        </button>
-
-        <!-- Primary CTA in header (Section 06) -->
-        <a href="/create" class="btn-primary-solid btn-nav-cta">
-          <span>Create Secret</span>
+        <!-- Create Vault Pill CTA (Screenshot 1) -->
+        <a href="/create" class="btn-nav-create-pill">
+          <span>Create Vault →</span>
         </a>
 
         <!-- Mobile Nav Toggle -->
@@ -81,292 +65,299 @@
 
   <!-- Mobile Drawer -->
   <div class="mobile-menu-drawer" id="mobile-drawer">
-    <a href="/create">Product</a>
+    <a href="/create" class="active">Product</a>
     <a href="/security">Security</a>
     <a href="/extension">Extension</a>
     <a href="/how-it-works">How It Works</a>
     <a href="/dashboard">Dashboard</a>
     <div style="padding: 16px 20px; border-top: 1px solid var(--border-subtle); margin-top: 12px;">
-      <a href="/create" class="btn-primary-solid" style="width: 100%; text-decoration: none; justify-content: center;">
-        <span>Create Secret</span>
+      <a href="/create" class="btn-nav-create-pill" style="width: 100%; text-decoration: none; justify-content: center;">
+        <span>Create Vault →</span>
       </a>
     </div>
   </div>
 
-  <!-- Hero Composition (Section 07) -->
+  <!-- Hero Composition (Screenshot 1 Exact Match) -->
   <main class="hero-wrapper">
     <div class="hero-grid">
       
       <!-- Left Column: Headline and CTAs -->
       <section class="hero-headline-column">
-        <div class="hero-badge-pill">
-          <span class="status-dot"></span>
-          <span>ZERO-KNOWLEDGE • AES-256-GCM</span>
+        <div class="hero-badge-pill" style="color:var(--cyan);border-color:rgba(34,211,238,0.35);">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--cyan);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          <span>ZERO-KNOWLEDGE • AES-256-GCM • SECURE SHARING</span>
         </div>
 
-        <h1 class="hero-title" style="font-size: clamp(36px, 5vw, 64px); line-height: 1.08; letter-spacing: -0.03em; margin-bottom: 14px;">
-          Share the link.<br>
-          <span class="text-cyan-gradient">Never the secret.</span>
+        <h1 class="hero-title" style="font-size: clamp(34px, 4.4vw, 54px); line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 16px;">
+          Share sensitive<br>
+          information.<br>
+          <span class="hero-gradient-headline">Not the secret itself.</span>
         </h1>
 
-        <div style="font-size: 13.5px; font-weight: 600; color: var(--cyan); margin-bottom: 12px; letter-spacing: 0.02em;">
+        <div style="display:none;" aria-hidden="true">
           <span>Share sensitive information.</span> <span>Not the secret itself.</span>
         </div>
 
-        <p class="hero-desc">
-          Create encrypted, self-expiring vaults for sensitive messages and files. Share the secure link anywhere.
+        <p class="hero-desc" style="font-size:14.5px;color:var(--text-secondary);line-height:1.6;margin-bottom:20px;max-width:440px;">
+          Create an encrypted, self-expiring vault for confidential messages and files. Share the secure link anywhere with end-to-end protection and two-step authorization.
         </p>
 
-        <div class="hero-actions-row">
-          <a href="/create" class="btn-primary-solid" style="width: auto; padding: 13px 26px; text-decoration: none; font-size: 14px;">
+        <!-- CTAs Row (Screenshot 1) -->
+        <div class="hero-actions-container">
+          <a href="/create" class="btn-hero-primary-pill">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            <span>Create Secure Secret</span>
+            <span>Create Secure Vault →</span>
             <span class="sr-only">Create Secret Now</span>
           </a>
-          <a href="/security" class="btn-secondary-neutral" style="width: auto; padding: 13px 22px; text-decoration: none; font-size: 13.5px;">
-            <span>Explore Security →</span>
+          <a href="/extension" class="btn-hero-glass-pill">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4"></circle><line x1="21.17" y1="8" x2="12" y2="8"></line><line x1="3.95" y1="6.06" x2="8.54" y2="14"></line><line x1="10.88" y1="21.94" x2="15.46" y2="14"></line></svg>
+            <span>Browser Extension</span>
           </a>
         </div>
 
-        <div class="hero-trust-badge" style="display:inline-flex;align-items:center;gap:8px;font-size:11.5px;color:var(--text-muted);margin-top:14px;background:rgba(255,255,255,0.03);border:1px solid var(--border-subtle);padding:4px 12px;border-radius:var(--radius-pill);">
-          <span class="status-dot"></span>
-          <span>Encrypted • Expiring • Private</span>
-        </div>
-
-        <!-- Security Feature Chips (4 Cards) -->
-        <div class="hero-chips-grid">
-          <div class="feature-chip-card">
-            <div style="display:flex;align-items:center;gap:6px;">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--cyan);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-              <span class="chip-title">End-to-End Encryption</span>
-            </div>
-            <span class="chip-desc">AES-256-GCM</span>
+        <!-- 4-Pill Feature Row (Screenshot 1) -->
+        <div class="hero-feature-pills-row">
+          <div class="hero-pill-badge">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span>No Account Required</span>
           </div>
-          <div class="feature-chip-card">
-            <div style="display:flex;align-items:center;gap:6px;">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--purple);"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-              <span class="chip-title">Self-Destructing</span>
-            </div>
-            <span class="chip-desc">Automatic wipe</span>
+          <div class="hero-pill-badge">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span>Self-Destructing Secrets</span>
           </div>
-          <div class="feature-chip-card">
-            <div style="display:flex;align-items:center;gap:6px;">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--cyan);"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-              <span class="chip-title">No Account Required</span>
-            </div>
-            <span class="chip-desc">Zero knowledge</span>
+          <div class="hero-pill-badge">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            <span>End-to-End Encryption</span>
           </div>
-          <div class="feature-chip-card">
-            <div style="display:flex;align-items:center;gap:6px;">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="color:#38BDF8;"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-              <span class="chip-title">Multiple Share Options</span>
-            </div>
-            <span class="chip-desc">Link • QR • Email • Apps</span>
+          <div class="hero-pill-badge">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            <span>Share via Any App</span>
           </div>
         </div>
       </section>
 
-      <!-- Center Column: Futuristic 3D Holographic Vault Cube Visual -->
-      <section class="hero-visual-column" aria-label="Futuristic Security Visual">
-        <div class="visual-stage">
-          <!-- Ambient Glow Layer -->
-          <div class="ambient-glow-core"></div>
+      <!-- Center Column: 3D Holographic Metallic Padlock & Orbiting App Badges (Screenshot 1) -->
+      <section class="hero-visual-column" aria-label="Futuristic Security Padlock Hologram">
+        <div class="hero-padlock-stage">
+          <div class="padlock-halo-aura"></div>
+          <div class="padlock-pedestal-rings"></div>
 
-          <!-- Radar Orbital Rings -->
-          <div class="orbital-ring ring-outer"></div>
-          <div class="orbital-ring ring-mid"></div>
-          <div class="orbital-ring ring-inner"></div>
+          <!-- Orbiting App Icons (WhatsApp, Gmail, Slack, Outlook, Discord, Teams) -->
+          <!-- WhatsApp -->
+          <div class="orbit-app-icon app-pos-whatsapp" title="WhatsApp • Link Only">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none">
+              <path d="M12 2C6.48 2 2 6.48 2 12C2 13.85 2.5 15.57 3.37 17.06L2 22L7.1 20.67C8.54 21.51 10.22 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2Z" fill="#25D366"/>
+              <path d="M17.5 14.33C17.2 14.18 15.74 13.46 15.47 13.36C15.2 13.26 15.01 13.21 14.81 13.51C14.62 13.8 14.07 14.45 13.9 14.65C13.73 14.84 13.56 14.87 13.26 14.72C12.97 14.57 12.02 14.26 10.9 13.26C10.02 12.48 9.43 11.52 9.26 11.23C9.09 10.93 9.24 10.78 9.39 10.63C9.52 10.5 9.68 10.29 9.83 10.12C9.97 9.95 10.02 9.83 10.12 9.63C10.22 9.44 10.17 9.27 10.1 9.12C10.02 8.97 9.44 7.54 9.2 6.96C8.97 6.4 8.73 6.47 8.56 6.46H8.02C7.83 6.46 7.51 6.53 7.24 6.82C6.98 7.12 6.22 7.82 6.22 9.26C6.22 10.7 7.27 12.09 7.41 12.28C7.56 12.48 9.48 15.43 12.42 16.7C13.12 17 13.67 17.18 14.1 17.32C14.8 17.54 15.44 17.51 15.95 17.43C16.51 17.35 17.68 16.72 17.92 16.04C18.17 15.37 18.17 14.79 18.09 14.67C18.02 14.54 17.82 14.47 17.5 14.33Z" fill="#FFFFFF"/>
+            </svg>
+            <span class="sr-only">WhatsApp • Link Only</span>
+          </div>
 
-          <!-- 3D Holographic Isometric Vault Cube -->
-          <div class="isometric-vault-cube">
-            <svg class="hologram-cube-svg" viewBox="0 0 260 260" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="cubeTopGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#38BDF8" stop-opacity="0.35"/>
-                  <stop offset="100%" stop-color="#818CF8" stop-opacity="0.15"/>
-                </linearGradient>
-                <linearGradient id="cubeLeftGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#1E40AF" stop-opacity="0.5"/>
-                  <stop offset="100%" stop-color="#0284C7" stop-opacity="0.2"/>
-                </linearGradient>
-                <linearGradient id="cubeRightGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#6D28D9" stop-opacity="0.5"/>
-                  <stop offset="100%" stop-color="#2563EB" stop-opacity="0.25"/>
-                </linearGradient>
-                <filter id="cubeNeonGlow" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="6" result="blur"/>
-                  <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-                </filter>
-              </defs>
+          <!-- Gmail -->
+          <div class="orbit-app-icon app-pos-gmail" title="Gmail • Auto-Expiring">
+            <svg viewBox="0 0 24 24" width="22" height="22">
+              <path d="M20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4Z" fill="#1E293B"/>
+              <path d="M22 6L12 13L2 6" stroke="#EA4335" stroke-width="2.2" stroke-linecap="round"/>
+              <path d="M2 18V6" stroke="#4285F4" stroke-width="2.2" stroke-linecap="round"/>
+              <path d="M22 18V6" stroke="#34A853" stroke-width="2.2" stroke-linecap="round"/>
+            </svg>
+            <span class="sr-only">Gmail • Auto-Expiring</span>
+          </div>
 
-              <!-- Isometric Cube Facets -->
-              <polygon points="130,45 205,88 130,131 55,88" fill="url(#cubeTopGrad)" stroke="#38BDF8" stroke-width="1.75" stroke-linejoin="round" opacity="0.9"/>
-              <polygon points="55,88 130,131 130,217 55,174" fill="url(#cubeLeftGrad)" stroke="#22D3EE" stroke-width="1.75" stroke-linejoin="round" opacity="0.9"/>
-              <polygon points="130,131 205,88 205,174 130,217" fill="url(#cubeRightGrad)" stroke="#818CF8" stroke-width="1.75" stroke-linejoin="round" opacity="0.9"/>
+          <!-- Slack -->
+          <div class="orbit-app-icon app-pos-slack" title="Slack • Instant Burn">
+            <svg viewBox="0 0 24 24" width="20" height="20">
+              <rect x="3" y="10" width="4" height="4" rx="2" fill="#E01E5A"/>
+              <rect x="8" y="10" width="8" height="4" rx="2" fill="#36C5F0"/>
+              <rect x="17" y="10" width="4" height="4" rx="2" fill="#2EB67D"/>
+              <rect x="10" y="3" width="4" height="4" rx="2" fill="#ECB22E"/>
+              <rect x="10" y="8" width="4" height="8" rx="2" fill="#E01E5A"/>
+              <rect x="10" y="17" width="4" height="4" rx="2" fill="#36C5F0"/>
+            </svg>
+            <span class="sr-only">Slack • Instant Burn</span>
+          </div>
 
-              <!-- Internal Holographic Grid Lines -->
-              <line x1="92" y1="66" x2="167" y2="109" stroke="rgba(56,189,248,0.4)" stroke-width="1" stroke-dasharray="3,3"/>
-              <line x1="167" y1="66" x2="92" y2="109" stroke="rgba(56,189,248,0.4)" stroke-width="1" stroke-dasharray="3,3"/>
-              <line x1="130" y1="131" x2="130" y2="217" stroke="#38BDF8" stroke-width="2"/>
-
-              <!-- Glowing Holographic Padlock in Cube Core -->
-              <g class="hologram-lock-group" transform="translate(102, 102)" filter="url(#cubeNeonGlow)">
-                <rect x="10" y="24" width="36" height="28" rx="6" fill="rgba(30, 58, 138, 0.85)" stroke="#38BDF8" stroke-width="2"/>
-                <path d="M18 24V16a10 10 0 0 1 20 0v8" fill="none" stroke="#22D3EE" stroke-width="2.5" stroke-linecap="round"/>
-                <circle cx="28" cy="36" r="3.5" fill="#22D3EE"/>
-                <path d="M28 39v6" stroke="#22D3EE" stroke-width="2" stroke-linecap="round"/>
-              </g>
+          <!-- Outlook -->
+          <div class="orbit-app-icon app-pos-outlook" title="Outlook">
+            <svg viewBox="0 0 24 24" width="20" height="20">
+              <rect x="2" y="4" width="12" height="16" rx="2" fill="#0078D4"/>
+              <path d="M8 8C6.34 8 5 9.34 5 11C5 12.66 6.34 14 8 14C9.66 14 11 12.66 11 11C11 9.34 9.66 8 8 8Z" fill="#FFFFFF"/>
+              <path d="M14 6L21 8.5V17.5L14 20V6Z" fill="#28A8EA" opacity="0.8"/>
             </svg>
           </div>
 
-          <!-- Floating Interactive Node 1: Encrypt Locally -->
-          <div class="floating-badge-node node-top">
-            <span class="node-icon-dot"></span>
-            <div>
-              <span class="node-title">Encrypt</span>
-              <span class="node-sub">Locally in Browser</span>
-            </div>
+          <!-- Discord -->
+          <div class="orbit-app-icon app-pos-discord" title="Discord">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="#5865F2">
+              <path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09-.01-.02-.04-.03-.07-.03-1.5.26-2.93.71-4.27 1.33-.01 0-.02.01-.03.02-2.72 4.07-3.47 8.03-3.1 11.95 0 .02.01.04.03.05 1.8 1.32 3.53 2.12 5.24 2.65.03.01.06 0 .07-.02.4-.55.76-1.13 1.07-1.74.02-.04 0-.08-.04-.09-.57-.22-1.11-.48-1.64-.78-.04-.02-.04-.08-.01-.11.11-.08.22-.17.33-.25.02-.02.05-.02.07-.01 3.44 1.57 7.15 1.57 10.55 0 .02-.01.05-.01.07.01.11.09.22.17.33.26.04.03.04.08-.01.11-.52.31-1.07.56-1.64.78-.04.01-.05.06-.04.09.32.61.68 1.19 1.07 1.74.01.02.05.03.08.02 1.72-.53 3.45-1.33 5.25-2.65.02-.01.03-.03.03-.05.44-4.53-.73-8.46-3.1-11.95-.01-.01-.02-.02-.04-.02zM8.52 14.91c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12 0 1.17-.84 2.12-1.89 2.12zm6.97 0c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12 0 1.17-.83 2.12-1.89 2.12z"/>
+            </svg>
           </div>
 
-          <!-- Floating Interactive Node 2: Share Link -->
-          <div class="floating-badge-node node-right">
-            <span class="node-icon-dot" style="background:#818cf8;box-shadow:0 0 10px #818cf8;"></span>
-            <div>
-              <span class="node-title">Share Link</span>
-              <span class="node-sub">Any Platform</span>
-            </div>
+          <!-- Teams -->
+          <div class="orbit-app-icon app-pos-teams" title="Microsoft Teams">
+            <svg viewBox="0 0 24 24" width="20" height="20">
+              <path d="M19.5 7.5A2.5 2.5 0 1 0 17 5a2.5 2.5 0 0 0 2.5 2.5zM22 14v-3.5a2.5 2.5 0 0 0-5 0V14z" fill="#6264A7"/>
+              <path d="M13 6A3.5 3.5 0 1 0 9.5 2.5 3.5 3.5 0 0 0 13 6zM15 17v-6a3.5 3.5 0 0 0-7 0v6z" fill="#464EB8"/>
+              <rect x="2" y="8" width="8" height="9" rx="2" fill="#505AC9"/>
+              <path d="M4 11h4M6 11v4" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
           </div>
 
-          <!-- Floating Interactive Node 3: Self Destruct -->
-          <div class="floating-badge-node node-bottom">
-            <span class="node-icon-dot" style="background:#f43f5e;box-shadow:0 0 10px #f43f5e;"></span>
-            <div>
-              <span class="node-title">Self Destruct</span>
-              <span class="node-sub">After Expiry</span>
-            </div>
+          <!-- 3D Padlock Hologram SVG -->
+          <svg class="padlock-svg-hologram" viewBox="0 0 240 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="shackleGrad" x1="40" y1="20" x2="200" y2="120" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#38BDF8"/>
+                <stop offset="30%" stop-color="#818CF8"/>
+                <stop offset="70%" stop-color="#C084FC"/>
+                <stop offset="100%" stop-color="#38BDF8"/>
+              </linearGradient>
+              <linearGradient id="bodyBevelGrad" x1="30" y1="90" x2="210" y2="230" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#1E3A8A"/>
+                <stop offset="40%" stop-color="#0F172A"/>
+                <stop offset="80%" stop-color="#1E1B4B"/>
+                <stop offset="100%" stop-color="#312E81"/>
+              </linearGradient>
+              <linearGradient id="bodyRimGrad" x1="30" y1="90" x2="210" y2="230" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#38BDF8"/>
+                <stop offset="50%" stop-color="#A855F7"/>
+                <stop offset="100%" stop-color="#06B6D4"/>
+              </linearGradient>
+              <linearGradient id="keyholeGrad" x1="120" y1="135" x2="120" y2="185" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#FFFFFF"/>
+                <stop offset="40%" stop-color="#F472B6"/>
+                <stop offset="100%" stop-color="#EC4899"/>
+              </linearGradient>
+              <filter id="keyholeGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="8" result="blur"/>
+                <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+              </filter>
+            </defs>
+
+            <!-- Padlock Shackle -->
+            <path d="M68 115V68C68 39.28 91.28 16 120 16C148.72 16 172 39.28 172 68V115" stroke="url(#shackleGrad)" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M72 110V68C72 41.49 93.49 20 120 20C146.51 20 168 41.49 168 68V110" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+
+            <!-- Padlock Main Body -->
+            <rect x="36" y="96" width="168" height="132" rx="28" fill="url(#bodyBevelGrad)" stroke="url(#bodyRimGrad)" stroke-width="4"/>
+            <rect x="46" y="106" width="148" height="112" rx="20" fill="none" stroke="rgba(56,189,248,0.25)" stroke-width="1.5"/>
+
+            <!-- Glowing Keyhole Center -->
+            <g filter="url(#keyholeGlow)">
+              <circle cx="120" cy="148" r="14" fill="url(#keyholeGrad)"/>
+              <path d="M112 154L110 182C110 184 112 186 114 186H126C128 186 130 184 130 182L128 154Z" fill="url(#keyholeGrad)"/>
+            </g>
+          </svg>
+
+          <!-- Pedestal Badge -->
+          <div class="padlock-vault-pill-base">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--cyan);"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <span>Encrypted Vault</span>
           </div>
         </div>
       </section>
 
-      <!-- Right Column: Maximum Privacy Feature Panel -->
+      <!-- Right Column: How It Works Glass Card (Screenshot 1) -->
       <section class="privacy-panel-column">
-        <div class="privacy-panel-card">
-          <div class="privacy-header" style="display:flex;align-items:center;gap:12px;">
-            <div style="width:36px;height:36px;border-radius:8px;background:rgba(34,211,238,0.12);border:1px solid rgba(34,211,238,0.3);display:flex;align-items:center;justify-content:center;color:var(--cyan);box-shadow:0 0 16px rgba(34,211,238,0.25);flex-shrink:0;">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        <div class="how-it-works-glass-card">
+          <div class="hiw-header-row">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--cyan);"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            <span>How It Works</span>
+          </div>
+
+          <div class="hiw-step-item">
+            <div class="hiw-step-circle-icon hiw-circle-blue">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
             </div>
-            <div>
-              <h3 class="privacy-title" style="margin-bottom:0;">Maximum Privacy</h3>
-              <span class="privacy-sub">Your data. Your control.</span>
+            <div class="hiw-step-content">
+              <span class="hiw-step-title">01 Create</span>
+              <span class="hiw-step-desc">Add your message or file</span>
             </div>
           </div>
 
-          <ul class="privacy-list">
-            <li class="privacy-item">
-              <svg class="privacy-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              <span>Client-side encryption</span>
-            </li>
-            <li class="privacy-item">
-              <svg class="privacy-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              <span>Time-limited access</span>
-            </li>
-            <li class="privacy-item">
-              <svg class="privacy-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              <span>One-time or limited views</span>
-            </li>
-            <li class="privacy-item">
-              <svg class="privacy-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              <span>Automatic destruction</span>
-            </li>
-            <li class="privacy-item">
-              <svg class="privacy-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              <span>No data stored on servers</span>
-            </li>
-          </ul>
-
-          <!-- Animated Synthwave Frequency Waveform -->
-          <div class="synthwave-waveform-container" style="margin-top:4px;">
-            <svg class="synthwave-waveform-svg" viewBox="0 0 280 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="waveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stop-color="#06B6D4"/>
-                  <stop offset="35%" stop-color="#3B82F6"/>
-                  <stop offset="70%" stop-color="#8B5CF6"/>
-                  <stop offset="100%" stop-color="#EC4899"/>
-                </linearGradient>
-              </defs>
-              <path class="wave-path wave-path-1" d="M0,20 Q35,5 70,20 T140,20 T210,20 T280,20" stroke="url(#waveGrad)" stroke-width="2" fill="none" opacity="0.85"/>
-              <path class="wave-path wave-path-2" d="M0,20 Q35,32 70,20 T140,20 T210,20 T280,20" stroke="url(#waveGrad)" stroke-width="1.5" fill="none" opacity="0.5"/>
-            </svg>
+          <div class="hiw-step-item">
+            <div class="hiw-step-circle-icon hiw-circle-cyan">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </div>
+            <div class="hiw-step-content">
+              <span class="hiw-step-title">02 Encrypt</span>
+              <span class="hiw-step-desc">Protected with AES-256-GCM</span>
+            </div>
           </div>
 
-          <div class="privacy-footer-strip">
-            <span>Secure • Private • Temporary</span>
+          <div class="hiw-step-item">
+            <div class="hiw-step-circle-icon hiw-circle-green">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+            </div>
+            <div class="hiw-step-content">
+              <span class="hiw-step-title">03 Share Link</span>
+              <span class="hiw-step-desc">Send via any app</span>
+            </div>
+          </div>
+
+          <div class="hiw-step-item">
+            <div class="hiw-step-circle-icon hiw-circle-indigo">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            </div>
+            <div class="hiw-step-content">
+              <span class="hiw-step-title">04 Authorize</span>
+              <span class="hiw-step-desc">Secure two-step access</span>
+            </div>
+          </div>
+
+          <div class="hiw-step-item">
+            <div class="hiw-step-circle-icon hiw-circle-coral">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </div>
+            <div class="hiw-step-content">
+              <span class="hiw-step-title">05 Reveal &amp; Expire</span>
+              <span class="hiw-step-desc">Automatically self-destructs</span>
+            </div>
           </div>
         </div>
       </section>
 
     </div>
 
-    <!-- Section 07: Conceptual Flow Strip -->
-    <div class="conceptual-flow-card">
-      <div class="flow-step">
-        <div class="flow-step-icon">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+    <!-- Bottom 4-Column Trust Strip (Screenshot 1 Exact Match) -->
+    <div class="trust-strip-unified-card">
+      <div class="trust-col-item">
+        <div class="trust-col-icon" style="color:var(--cyan);">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
         </div>
-        <span class="flow-step-title">SECRET</span>
-      </div>
-      <span class="flow-arrow">→</span>
-      <div class="flow-step">
-        <div class="flow-step-icon">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        <div class="trust-col-meta">
+          <span class="trust-col-title">Encrypted at Rest</span>
+          <span class="trust-col-sub">AES-256-GCM encryption</span>
         </div>
-        <span class="flow-step-title">ENCRYPTED VAULT</span>
       </div>
-      <span class="flow-arrow">→</span>
-      <div class="flow-step">
-        <div class="flow-step-icon">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-        </div>
-        <span class="flow-step-title">SECURE LINK</span>
-      </div>
-      <span class="flow-arrow">→</span>
-      <div class="flow-step">
-        <div class="flow-step-icon">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-        </div>
-        <span class="flow-step-title">ANY APP</span>
-      </div>
-      <span class="flow-arrow">→</span>
-      <div class="flow-step">
-        <div class="flow-step-icon">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-        </div>
-        <span class="flow-step-title">AUTHORIZED REVEAL</span>
-      </div>
-    </div>
 
-    <!-- Section 08: 5-Column Trust Strip -->
-    <div class="trust-strip-5col">
-      <div class="trust-strip-item">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-        <span>Encrypted at Rest</span>
+      <div class="trust-col-item">
+        <div class="trust-col-icon" style="color:var(--cyan);">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        </div>
+        <div class="trust-col-meta">
+          <span class="trust-col-title">Secure Transport</span>
+          <span class="trust-col-sub">TLS 1.3 protected</span>
+        </div>
       </div>
-      <div class="trust-strip-item">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-        <span>Secure Transport</span>
+
+      <div class="trust-col-item">
+        <div class="trust-col-icon" style="color:var(--purple);">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        </div>
+        <div class="trust-col-meta">
+          <span class="trust-col-title">Time-Limited Access</span>
+          <span class="trust-col-sub">Automatic expiration</span>
+        </div>
       </div>
-      <div class="trust-strip-item">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-        <span>Time-Limited Access</span>
-      </div>
-      <div class="trust-strip-item">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
-        <span>One-Time Reveal</span>
-      </div>
-      <div class="trust-strip-item">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
-        <span>No Secret in URL</span>
+
+      <div class="trust-col-item">
+        <div class="trust-col-icon" style="color:#F43F5E;">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+        </div>
+        <div class="trust-col-meta">
+          <span class="trust-col-title">No Secret in URLs</span>
+          <span class="trust-col-sub">Zero-knowledge architecture</span>
+        </div>
       </div>
     </div>
 

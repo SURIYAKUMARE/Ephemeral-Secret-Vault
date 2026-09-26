@@ -1,5 +1,7 @@
 (() => {
   'use strict';
+  if (window.__EPHEMERAL_VIEW_INITIALIZED__) return;
+  window.__EPHEMERAL_VIEW_INITIALIZED__ = true;
 
   // SVG Templates
   const SVG = {
@@ -38,6 +40,7 @@
   const gaugeProgress = document.getElementById('gauge-progress');
   const secretMetricsChars = document.getElementById('secret-metrics-chars');
   const memoryWipeNote = document.getElementById('memory-wipe-note');
+  const ramFlushTimer = document.getElementById('ram-flush-timer');
   const viewLiveTime = document.getElementById('view-live-time');
   const recipientTime = document.getElementById('recipient-time');
   const burnTimestampBadge = document.getElementById('burn-timestamp-badge');
@@ -55,10 +58,12 @@
   const passphraseHintBox = document.getElementById('passphrase-hint-box');
   const passphraseHintText = document.getElementById('passphrase-hint-text');
 
-  // Export Format Suite
-  const btnCopyEnv = document.getElementById('btn-copy-env');
+  // Export Format Suite & Inline Actions
+  const btnCopyRaw = document.getElementById('btn-copy-raw');
   const btnCopyBearer = document.getElementById('btn-copy-bearer');
   const btnCopyJson = document.getElementById('btn-copy-json');
+  const btnCopyEnv = document.getElementById('btn-copy-env');
+  const btnInlineCopy = document.getElementById('btn-inline-copy');
 
   // Secret Peek & RAM Wipe Controls
   const btnPeekSecret = document.getElementById('btn-peek-secret');
@@ -596,11 +601,15 @@
 
         // Start 60-second browser RAM auto-wipe countdown
         let memorySeconds = 60;
+        if (ramFlushTimer) ramFlushTimer.textContent = '60s';
         if (memoryWipeNote) {
           memoryWipeInterval = setInterval(() => {
             memorySeconds--;
+            if (ramFlushTimer) {
+              ramFlushTimer.textContent = `${memorySeconds}s`;
+            }
             if (memorySeconds > 0) {
-              memoryWipeNote.textContent = `Browser RAM Security: Decrypted buffer in browser memory will be flushed in ${memorySeconds}s or upon closing this tab.`;
+              memoryWipeNote.innerHTML = `Browser RAM Security: Decrypted buffer in browser memory will be flushed in <strong id="ram-flush-timer" style="color:#22D3EE;">${memorySeconds}s</strong> or upon closing this tab.`;
             } else {
               wipeBrowserRamNow();
             }
@@ -682,9 +691,47 @@
     });
   }
 
-  // Developer Export Suite Handlers (.env, Bearer token, JSON)
+  // Inline Copy Icon Button (Top Right of Decrypted Box)
+  if (btnInlineCopy && secretDisplay) {
+    btnInlineCopy.addEventListener('click', async () => {
+      const val = secretDisplay.textContent;
+      try {
+        await navigator.clipboard.writeText(val);
+        btnInlineCopy.innerHTML = SVG.check;
+        showToast('✓ Copied to clipboard');
+        setTimeout(() => {
+          btnInlineCopy.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+        }, 2000);
+      } catch {
+        showToast('Failed to copy to clipboard');
+      }
+    });
+  }
+
+  // Developer Export Suite Handlers (RAW, Bearer token, JSON, .env)
+  function setActiveFormatBtn(activeBtn) {
+    [btnCopyRaw, btnCopyBearer, btnCopyJson, btnCopyEnv].forEach(b => {
+      if (b) b.classList.remove('active');
+    });
+    if (activeBtn) activeBtn.classList.add('active');
+  }
+
+  if (btnCopyRaw && secretDisplay) {
+    btnCopyRaw.addEventListener('click', async () => {
+      setActiveFormatBtn(btnCopyRaw);
+      const val = secretDisplay.textContent;
+      try {
+        await navigator.clipboard.writeText(val);
+        showToast('✓ Raw secret copied to clipboard');
+      } catch {
+        showToast('Failed to copy to clipboard');
+      }
+    });
+  }
+
   if (btnCopyEnv && secretDisplay) {
     btnCopyEnv.addEventListener('click', async () => {
+      setActiveFormatBtn(btnCopyEnv);
       const val = secretDisplay.textContent;
       const formatted = val.includes('=') ? val : `SECRET_KEY="${val.replace(/"/g, '\\"')}"`;
       try {
@@ -702,15 +749,12 @@
 
   if (btnCopyBearer && secretDisplay) {
     btnCopyBearer.addEventListener('click', async () => {
+      setActiveFormatBtn(btnCopyBearer);
       const val = secretDisplay.textContent.trim();
       const formatted = `Authorization: Bearer ${val}`;
       try {
         await navigator.clipboard.writeText(formatted);
-        btnCopyBearer.innerHTML = `${SVG.check} <span>Copied</span>`;
         showToast('✓ Formatted as Bearer header and copied');
-        setTimeout(() => {
-          btnCopyBearer.innerHTML = '<svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> <span>Copy Bearer Header</span>';
-        }, 2000);
       } catch {
         showToast('Failed to copy to clipboard');
       }
@@ -719,6 +763,7 @@
 
   if (btnCopyJson && secretDisplay) {
     btnCopyJson.addEventListener('click', async () => {
+      setActiveFormatBtn(btnCopyJson);
       const val = secretDisplay.textContent;
       let formatted;
       try {
@@ -729,11 +774,7 @@
       }
       try {
         await navigator.clipboard.writeText(formatted);
-        btnCopyJson.innerHTML = `${SVG.check} <span>Copied</span>`;
         showToast('✓ Formatted as JSON and copied');
-        setTimeout(() => {
-          btnCopyJson.innerHTML = '<svg class="svg-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg> <span>Copy as JSON</span>';
-        }, 2000);
       } catch {
         showToast('Failed to copy to clipboard');
       }
@@ -807,6 +848,7 @@
     if (codeInspectorContainer) codeInspectorContainer.classList.add('hidden');
     if (revealedFileBox) revealedFileBox.classList.add('hidden');
     if (memoryWipeNote) memoryWipeNote.textContent = 'Browser RAM Security: Decrypted buffer permanently wiped from browser memory.';
+    if (ramFlushTimer) ramFlushTimer.textContent = '0s';
     if (btnWipeNow) {
       btnWipeNow.disabled = true;
       btnWipeNow.innerHTML = '<span>✓ Wiped</span>';
