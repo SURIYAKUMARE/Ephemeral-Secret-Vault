@@ -380,6 +380,37 @@
     }
   }
 
+  // Live 3-Step Wizard Stepper Tracker
+  function updateStepperState(step) {
+    const stepContent = document.getElementById('step-content');
+    const stepSettings = document.getElementById('step-settings');
+    const stepGenerate = document.getElementById('step-generate');
+    if (!stepContent || !stepSettings || !stepGenerate) return;
+
+    if (step === 1) {
+      stepContent.className = 'step-item active';
+      stepContent.innerHTML = '<span class="step-num">01</span><span>Content</span>';
+      stepSettings.className = 'step-item';
+      stepSettings.innerHTML = '<span class="step-num">02</span><span>Settings</span>';
+      stepGenerate.className = 'step-item';
+      stepGenerate.innerHTML = '<span class="step-num">03</span><span>Generate</span>';
+    } else if (step === 2) {
+      stepContent.className = 'step-item completed';
+      stepContent.innerHTML = '<span class="step-num" style="color:var(--success);">✓</span><span>Content</span>';
+      stepSettings.className = 'step-item active';
+      stepSettings.innerHTML = '<span class="step-num">02</span><span>Settings</span>';
+      stepGenerate.className = 'step-item';
+      stepGenerate.innerHTML = '<span class="step-num">03</span><span>Generate</span>';
+    } else if (step === 3) {
+      stepContent.className = 'step-item completed';
+      stepContent.innerHTML = '<span class="step-num" style="color:var(--success);">✓</span><span>Content</span>';
+      stepSettings.className = 'step-item completed';
+      stepSettings.innerHTML = '<span class="step-num" style="color:var(--success);">✓</span><span>Settings</span>';
+      stepGenerate.className = 'step-item active';
+      stepGenerate.innerHTML = '<span class="step-num" style="color:var(--cyan);">✓</span><span>Generated</span>';
+    }
+  }
+
   // Byte Counter & Classifier
   if (secretInput && byteCounter) {
     secretInput.addEventListener('input', () => {
@@ -388,6 +419,12 @@
       const chars = text.length;
       byteCounter.textContent = `${bytes.toLocaleString()} / 10,240 bytes • ${chars.toLocaleString()} chars`;
       byteCounter.style.color = bytes > 10240 ? 'var(--danger)' : 'var(--text-muted)';
+
+      if (text.trim().length > 0 || currentFile) {
+        updateStepperState(2);
+      } else {
+        updateStepperState(1);
+      }
 
       const detected = detectSecretType(text);
       if (secretTypeBadge) {
@@ -486,6 +523,7 @@
 
       if (filePreviewCard) filePreviewCard.classList.remove('hidden');
       if (dropzone) dropzone.classList.add('hidden');
+      updateStepperState(2);
     };
 
     reader.onerror = () => {
@@ -540,6 +578,9 @@
       if (fileInput) fileInput.value = '';
       if (filePreviewCard) filePreviewCard.classList.add('hidden');
       if (dropzone) dropzone.classList.remove('hidden');
+      if (!secretInput || secretInput.value.trim().length === 0) {
+        updateStepperState(1);
+      }
     });
   }
 
@@ -1182,6 +1223,7 @@
           resultSection.classList.remove('hidden');
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+        updateStepperState(3);
 
         if (isClientOffline) {
           showToast('✓ Client-Side Vault Generated (Offline Mode)');
@@ -2200,6 +2242,7 @@
       if (heroHeader) heroHeader.classList.remove('hidden');
       if (trustStrip) trustStrip.classList.remove('hidden');
       if (createForm) createForm.classList.remove('hidden');
+      updateStepperState(1);
       hideError();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });

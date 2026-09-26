@@ -73,7 +73,10 @@
         
         <!-- Header Section -->
         <header class="card-header-clean" id="hero-header">
-          <span class="section-label">CONFIDENTIAL FILE SHARING</span>
+          <div class="hero-badge-pill" style="margin-bottom:12px;">
+            <span class="status-dot"></span>
+            <span>CONFIDENTIAL FILE SHARING</span>
+          </div>
           <h1 class="page-title">Universal File Vault</h1>
           <p class="page-subtitle">Upload confidential code scripts, certificates, or documents. Encrypted with AES-256-GCM and destroyed after viewing.</p>
         </header>
@@ -427,6 +430,11 @@
         <section id="result-section" class="hidden" aria-label="Secret generated successfully">
           
           <header class="card-header-clean">
+            <div style="width:52px;height:52px;border-radius:50%;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);box-shadow:0 0 24px rgba(16,185,129,0.25);display:flex;align-items:center;justify-content:center;margin:0 auto 14px auto;color:var(--success);">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
             <span class="status-pill status-active" style="margin-bottom:8px;">
               <span class="status-dot"></span>
               <span>Encrypted &amp; Protected</span>
