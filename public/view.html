@@ -384,28 +384,59 @@
           </div>
         </div>
 
-        <!-- State C: Secret Unavailable / Expired / Burned State -->
-        <div id="destroyed-section" class="hidden" aria-label="Secret unavailable">
-          <header class="card-header-clean">
-            <div class="unavailable-badge-banner">
-              <span class="status-dot" style="background:var(--danger);box-shadow:0 0 8px var(--danger);"></span>
-              <span>SECRET UNAVAILABLE</span>
+        <!-- State C: Secret Unavailable / Expired / Burned State (Exact Match) -->
+        <div id="destroyed-section" class="hidden notfound-main-card" aria-label="Secret unavailable" style="margin: 0 auto; max-width: 100%;">
+          
+          <!-- Top Pill Badge: ! Unavailable -->
+          <div style="display:flex;justify-content:center;">
+            <div class="badge-unavailable-pill">
+              <span class="badge-unavailable-icon-circle">!</span>
+              <span id="destroyed-status-val">Unavailable</span>
             </div>
-            <h2 class="page-title" id="destroyed-title">Access Denied</h2>
-            <p class="page-subtitle" id="destroyed-subtitle">This secret cannot be decrypted from your current access context.</p>
-          </header>
+          </div>
 
-          <p id="destroyed-supporting-text" style="font-size:13.5px;color:var(--text-secondary);line-height:1.6;margin-bottom:24px;">
-            The secret has expired, reached its view limit, or was permanently destroyed. In accordance with zero-retention privacy, recovery is mathematically impossible.
+          <!-- Headline: Secret Not Found -->
+          <h2 class="notfound-headline" id="destroyed-title" style="margin-top:0;">
+            <span class="notfound-headline-white">Secret</span>
+            <span class="notfound-headline-red">Not Found</span>
+          </h2>
+
+          <!-- Subtitle Description -->
+          <p class="notfound-subtext" id="destroyed-subtitle">
+            This secure link does not exist, has expired, or was already removed from storage.
           </p>
 
+          <!-- Inner Zero-Trace Disposal Box -->
+          <div class="zero-trace-inner-box">
+            <div class="zero-trace-icon-wrapper">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <path d="M10 9 L13 13 L9 16 L12 20" stroke="#FF1E56" stroke-width="1.8" stroke-linecap="round"></path>
+              </svg>
+            </div>
+            <div class="zero-trace-text-content">
+              <div class="zero-trace-title">Zero-Trace Disposal</div>
+              <p class="zero-trace-desc" id="destroyed-supporting-text">
+                Secrets in Ephemeral Secret Vault are designed to vanish. Once burned or expired, all traces are physically overwritten in the database and RAM memory is zeroized. Recovery is mathematically impossible.
+              </p>
+            </div>
+          </div>
+
           <div style="display:none;" aria-hidden="true">
-            <span id="destroyed-status-val">Unavailable</span>
             <span id="destroyed-access-val">Closed</span>
           </div>
 
-          <a href="/" class="btn-primary-solid" style="text-decoration:none;">
+          <!-- Action Buttons -->
+          <a href="/create" class="btn-notfound-create">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             <span>Create a New Secret</span>
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+
+          <a href="/" class="btn-notfound-return">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            <span>Return to Home</span>
           </a>
         </div>
 

@@ -11,92 +11,196 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body id="top">
-  <!-- Minimal Monochrome Header -->
-  <header class="navbar">
+  <!-- Master Cybersecurity Navbar (Screenshot Match) -->
+  <header class="navbar" style="border-bottom: 1px solid rgba(255, 255, 255, 0.06); background: rgba(5, 2, 5, 0.85); backdrop-filter: blur(16px);">
     <div class="nav-container">
       <a href="/" class="nav-brand" title="Ephemeral Secret Vault">
-        <svg class="nav-monochrome-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-        </svg>
-        <span class="brand-name">Ephemeral Secret Vault</span>
+        <div style="width:34px;height:34px;border-radius:9px;background:rgba(255,30,86,0.15);border:1px solid rgba(255,30,86,0.4);display:flex;align-items:center;justify-content:center;box-shadow:0 0 14px rgba(255,30,86,0.3);flex-shrink:0;">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#FF1E56" stroke-width="2.2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
+        <span class="brand-name" style="font-weight:700;letter-spacing:-0.01em;">
+          <span style="color:#FFFFFF;">Ephemeral</span>
+          <span style="color:#FF1E56;">Secret Vault</span>
+        </span>
       </a>
 
+      <!-- Desktop Navigation Links -->
       <nav class="nav-links-row" aria-label="Main Navigation">
-        <a href="/">Home</a>
+        <a href="/" class="active" style="position:relative;color:#FFFFFF;font-weight:600;">
+          Home
+          <span style="position:absolute;bottom:-6px;left:0;right:0;height:2px;background:#FF1E56;border-radius:2px;box-shadow:0 0 8px #FF1E56;"></span>
+        </a>
         <a href="/create">Product</a>
         <a href="/security">Security</a>
         <a href="/extension">Extension</a>
+        <a href="/how-it-works">How It Works</a>
         <a href="/dashboard">Dashboard</a>
       </nav>
 
       <div class="nav-actions">
-        <!-- Exactly ONE status indicator in header -->
-        <span class="status-pill status-neutral">
-          <span class="status-dot"></span>
+        <!-- Status Indicator Pill -->
+        <span class="status-pill" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#E4E4E7;padding:5px 12px;border-radius:9999px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px;">
+          <span style="width:6px;height:6px;border-radius:50%;background:#FF1E56;box-shadow:0 0 6px #FF1E56;"></span>
           <span>AES-256-GCM</span>
         </span>
 
-        <!-- Theme toggle as plain icon button -->
+        <!-- Theme Toggle -->
         <button type="button" class="btn-icon-plain" id="theme-toggle" aria-label="Toggle Theme" title="Toggle theme">
           <svg id="theme-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
           </svg>
         </button>
+
+        <!-- Create Vault CTA Button -->
+        <a href="/create" class="btn-nav-create-red">
+          <span>Create Vault</span>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </a>
       </div>
     </div>
   </header>
 
-  <!-- Single Centered Column Layout (Max-Width ~560px, Vertically Centered) -->
-  <main class="viewport-layout">
-    <div class="centered-column">
-      
-      <!-- Consistent Production Security Card -->
-      <div class="vault-card">
-        
-        <header class="card-header-clean">
-          <div style="display:flex;justify-content:center;margin-bottom:12px;">
-            <span class="status-pill status-danger">
-              <span class="status-dot"></span>
-              <span>Unavailable</span>
-            </span>
-          </div>
+  <!-- Single Centered Column Layout with 3D Holographic Shattered Backdrop -->
+  <main class="notfound-viewport">
+    
+    <!-- Cyber Matrix Grid with Red Radial Vignette -->
+    <div class="notfound-cyber-grid"></div>
 
-          <h1 class="page-title">Secret Not Found</h1>
-          <p class="page-subtitle">
-            This secure link does not exist, has expired, or was already removed from storage.
-          </p>
-        </header>
+    <!-- Volcanic Cracked Rock & Glowing Magma Ground -->
+    <div class="notfound-cracked-ground"></div>
 
-        <!-- Information Box -->
-        <div style="background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:var(--radius-sm);padding:16px;margin:20px 0;font-size:13px;color:var(--text-muted);line-height:1.6;">
-          <div style="font-weight:600;color:var(--text-primary);margin-bottom:6px;display:flex;align-items:center;gap:6px;">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-            Zero-Trace Disposal
-          </div>
-          Secrets in Ephemeral Secret Vault are designed to vanish. Once burned or expired, all traces are physically overwritten in the database and RAM memory is zeroized. Recovery is mathematically impossible.
-        </div>
+    <!-- Luminous Concentric Pedestal Rings with 3D Perspective Tilt -->
+    <div class="notfound-pedestal-rings">
+      <div class="notfound-ring-outer"></div>
+      <div class="notfound-ring-inner"></div>
+      <div class="notfound-ring-core"></div>
+    </div>
 
-        <!-- Action Buttons -->
-        <div class="action-btn-group" style="margin-top:24px;">
-          <a href="/create" class="btn-primary-solid" style="text-decoration:none;">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            <span>Create a Secret</span>
-          </a>
-          <a href="/" class="btn-secondary-clean" style="text-decoration:none;">
-            <span>Return Home</span>
-          </a>
-        </div>
+    <!-- Background 3D Shattered Glowing File & Floating Crystal Shards -->
+    <div class="notfound-shattered-backdrop" aria-hidden="true">
+      <!-- Left Floating Glass Shards -->
+      <div class="notfound-floating-shard shard-left-1">
+        <svg viewBox="0 0 100 120" fill="none">
+          <polygon points="10,20 85,5 95,95 25,115" fill="rgba(255,30,86,0.14)" stroke="#FF1E56" stroke-width="1.8" />
+          <path d="M35,30 L70,80" stroke="rgba(255,255,255,0.3)" stroke-width="1" />
+          <path d="M40,55 L20,70" stroke="#FF1E56" stroke-width="1.5" />
+        </svg>
+      </div>
+      <div class="notfound-floating-shard shard-left-2">
+        <svg viewBox="0 0 90 100" fill="none">
+          <polygon points="20,10 80,25 70,90 10,75" fill="rgba(255,30,86,0.16)" stroke="#FF1E56" stroke-width="1.6" />
+          <line x1="30" y1="35" x2="60" y2="65" stroke="#FF1E56" stroke-width="1.2" />
+        </svg>
+      </div>
 
+      <!-- Central Huge Shattered Glowing File Icon -->
+      <div class="notfound-center-shattered-file">
+        <svg viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="fileRedGrad" x1="0" y1="0" x2="160" y2="200" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#FF2A5F" stop-opacity="0.85"/>
+              <stop offset="100%" stop-color="#99002B" stop-opacity="0.95"/>
+            </linearGradient>
+            <filter id="redNeonGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="8" result="blur"/>
+              <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+            </filter>
+          </defs>
+          <!-- Left Shattered Half of Document -->
+          <path d="M 20 20 L 78 20 L 74 65 L 68 110 L 82 155 L 75 185 L 20 185 C 14 185 10 181 10 175 L 10 30 C 10 24 14 20 20 20 Z" 
+                fill="url(#fileRedGrad)" stroke="#FF3366" stroke-width="2" filter="url(#redNeonGlow)"/>
+          <!-- Right Shattered Half of Document with Folded Corner -->
+          <path d="M 88 20 L 115 20 L 150 55 L 150 175 C 150 181 146 185 140 185 L 85 185 L 92 155 L 78 110 L 84 65 L 88 20 Z" 
+                fill="url(#fileRedGrad)" stroke="#FF3366" stroke-width="2" filter="url(#redNeonGlow)"/>
+          <!-- Folded Dog-Ear Corner -->
+          <path d="M 115 20 L 115 55 L 150 55" fill="rgba(255,80,120,0.5)" stroke="#FF5078" stroke-width="2"/>
+          
+          <!-- Jagged Fracture Crack Lines -->
+          <path d="M 78 20 L 88 20 M 74 65 L 84 65 M 68 110 L 78 110 M 82 155 L 92 155 M 75 185 L 85 185" 
+                stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" />
+          
+          <!-- Breaking Glass Shards exploding outward -->
+          <polygon points="65,50 72,42 78,58 68,60" fill="#FF1E56" stroke="#FFFFFF" stroke-width="1"/>
+          <polygon points="90,75 102,68 98,85 86,82" fill="#FF2A5F" stroke="#FFFFFF" stroke-width="1"/>
+          <polygon points="72,125 80,118 78,135 70,130" fill="#FF1E56" stroke="#FFFFFF" stroke-width="1"/>
+          <polygon points="86,140 95,132 94,148 84,144" fill="#FF3366" stroke="#FFFFFF" stroke-width="1"/>
+          <polygon points="50,90 56,84 60,95 53,96" fill="#FF1E56" stroke="rgba(255,255,255,0.7)" stroke-width="0.8"/>
+          <polygon points="105,110 114,105 110,120 102,118" fill="#FF1E56" stroke="rgba(255,255,255,0.7)" stroke-width="0.8"/>
+        </svg>
+      </div>
+
+      <!-- Right Floating Glass Shards -->
+      <div class="notfound-floating-shard shard-right-1">
+        <svg viewBox="0 0 100 120" fill="none">
+          <polygon points="15,10 90,25 75,105 10,90" fill="rgba(255,30,86,0.14)" stroke="#FF1E56" stroke-width="1.8" />
+          <line x1="25" y1="30" x2="65" y2="75" stroke="#FF1E56" stroke-width="1.2" />
+          <line x1="50" y1="50" x2="80" y2="40" stroke="rgba(255,255,255,0.3)" stroke-width="1" />
+        </svg>
+      </div>
+      <div class="notfound-floating-shard shard-right-2">
+        <svg viewBox="0 0 90 100" fill="none">
+          <polygon points="25,15 85,10 70,85 15,95" fill="rgba(255,30,86,0.16)" stroke="#FF1E56" stroke-width="1.6" />
+          <line x1="30" y1="40" x2="60" y2="70" stroke="#FF1E56" stroke-width="1.5" />
+        </svg>
       </div>
     </div>
-  </main>
 
-  <footer class="footer-enterprise">
-    <div class="footer-meta-text">
-      Ephemeral Secret Vault • AES-256-GCM Zero-Trace Cryptographic Service
+    <!-- Foreground Glassmorphic Card (Screenshot Center) -->
+    <div class="notfound-main-card">
+      
+      <!-- Top Pill Badge: ! Unavailable -->
+      <div style="display:flex;justify-content:center;">
+        <div class="badge-unavailable-pill">
+          <span class="badge-unavailable-icon-circle">!</span>
+          <span>Unavailable</span>
+        </div>
+      </div>
+
+      <!-- Headline: Secret Not Found -->
+      <h1 class="notfound-headline">
+        <span class="notfound-headline-white">Secret</span>
+        <span class="notfound-headline-red">Not Found</span>
+      </h1>
+
+      <!-- Subtitle Description -->
+      <p class="notfound-subtext">
+        This secure link does not exist, has expired, or was already removed from storage.
+      </p>
+
+      <!-- Inner Zero-Trace Disposal Box -->
+      <div class="zero-trace-inner-box">
+        <div class="zero-trace-icon-wrapper">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <path d="M10 9 L13 13 L9 16 L12 20" stroke="#FF1E56" stroke-width="1.8" stroke-linecap="round"></path>
+          </svg>
+        </div>
+        <div class="zero-trace-text-content">
+          <div class="zero-trace-title">Zero-Trace Disposal</div>
+          <p class="zero-trace-desc">
+            Secrets in Ephemeral Secret Vault are designed to vanish. Once burned or expired, all traces are physically overwritten in the database and RAM memory is zeroized. Recovery is mathematically impossible.
+          </p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <a href="/create" class="btn-notfound-create">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        <span>Create a New Secret</span>
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+      </a>
+
+      <a href="/" class="btn-notfound-return">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        <span>Return to Home</span>
+      </a>
+
     </div>
-  </footer>
+  </main>
 
   <script>
     const themeBtn = document.getElementById('theme-toggle');
