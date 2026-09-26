@@ -103,40 +103,96 @@
           </a>
         </div>
 
-        <!-- Security Feature Chips -->
+        <!-- Security Feature Chips (4 Cards) -->
         <div class="hero-chips-grid">
           <div class="feature-chip-card">
-            <span class="chip-title">End-to-End Encryption</span>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--cyan);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              <span class="chip-title">End-to-End Encryption</span>
+            </div>
             <span class="chip-desc">AES-256-GCM</span>
           </div>
           <div class="feature-chip-card">
-            <span class="chip-title">Self-Destructing</span>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--purple);"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <span class="chip-title">Self-Destructing</span>
+            </div>
             <span class="chip-desc">Automatic wipe</span>
           </div>
           <div class="feature-chip-card">
-            <span class="chip-title">No Account Required</span>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--cyan);"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              <span class="chip-title">No Account Required</span>
+            </div>
             <span class="chip-desc">Zero knowledge</span>
+          </div>
+          <div class="feature-chip-card">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="color:#38BDF8;"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+              <span class="chip-title">Multiple Share Options</span>
+            </div>
+            <span class="chip-desc">Link • QR • Email • Apps</span>
           </div>
         </div>
       </section>
 
-      <!-- Center Column: Hero Security Visual -->
+      <!-- Center Column: Futuristic 3D Holographic Vault Cube Visual -->
       <section class="hero-visual-column" aria-label="Futuristic Security Visual">
         <div class="visual-stage">
-          <!-- Orbital rings -->
+          <!-- Ambient Glow Layer -->
+          <div class="ambient-glow-core"></div>
+
+          <!-- Radar Orbital Rings -->
           <div class="orbital-ring ring-outer"></div>
+          <div class="orbital-ring ring-mid"></div>
           <div class="orbital-ring ring-inner"></div>
 
-          <!-- Central Translucent 3D Vault Lock -->
-          <div class="central-vault-symbol">
-            <svg class="lock-svg-main" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
-              <rect x="3" y="11" width="18" height="11" rx="3" ry="3"></rect>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-              <circle cx="12" cy="16" r="1.5" fill="currentColor"></circle>
+          <!-- 3D Holographic Isometric Vault Cube -->
+          <div class="isometric-vault-cube">
+            <svg class="hologram-cube-svg" viewBox="0 0 260 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="cubeTopGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#38BDF8" stop-opacity="0.35"/>
+                  <stop offset="100%" stop-color="#818CF8" stop-opacity="0.15"/>
+                </linearGradient>
+                <linearGradient id="cubeLeftGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#1E40AF" stop-opacity="0.5"/>
+                  <stop offset="100%" stop-color="#0284C7" stop-opacity="0.2"/>
+                </linearGradient>
+                <linearGradient id="cubeRightGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#6D28D9" stop-opacity="0.5"/>
+                  <stop offset="100%" stop-color="#2563EB" stop-opacity="0.25"/>
+                </linearGradient>
+                <filter id="cubeNeonGlow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="6" result="blur"/>
+                  <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                </filter>
+              </defs>
+
+              <!-- Isometric Cube Facets -->
+              <!-- Top Facet -->
+              <polygon points="130,45 205,88 130,131 55,88" fill="url(#cubeTopGrad)" stroke="#38BDF8" stroke-width="1.75" stroke-linejoin="round" opacity="0.9"/>
+              <!-- Left Facet -->
+              <polygon points="55,88 130,131 130,217 55,174" fill="url(#cubeLeftGrad)" stroke="#22D3EE" stroke-width="1.75" stroke-linejoin="round" opacity="0.9"/>
+              <!-- Right Facet -->
+              <polygon points="130,131 205,88 205,174 130,217" fill="url(#cubeRightGrad)" stroke="#818CF8" stroke-width="1.75" stroke-linejoin="round" opacity="0.9"/>
+
+              <!-- Internal Holographic Grid Lines -->
+              <line x1="92" y1="66" x2="167" y2="109" stroke="rgba(56,189,248,0.4)" stroke-width="1" stroke-dasharray="3,3"/>
+              <line x1="167" y1="66" x2="92" y2="109" stroke="rgba(56,189,248,0.4)" stroke-width="1" stroke-dasharray="3,3"/>
+              <line x1="130" y1="131" x2="130" y2="217" stroke="#38BDF8" stroke-width="2"/>
+
+              <!-- Glowing Holographic Padlock in Cube Core -->
+              <g class="hologram-lock-group" transform="translate(102, 102)" filter="url(#cubeNeonGlow)">
+                <rect x="10" y="24" width="36" height="28" rx="6" fill="rgba(30, 58, 138, 0.85)" stroke="#38BDF8" stroke-width="2"/>
+                <path d="M18 24V16a10 10 0 0 1 20 0v8" fill="none" stroke="#22D3EE" stroke-width="2.5" stroke-linecap="round"/>
+                <circle cx="28" cy="36" r="3.5" fill="#22D3EE"/>
+                <path d="M28 39v6" stroke="#22D3EE" stroke-width="2" stroke-linecap="round"/>
+              </g>
             </svg>
           </div>
 
-          <!-- Floating Node 1: Encrypt -->
+          <!-- Floating Interactive Node 1: Encrypt Locally -->
           <div class="floating-badge-node node-top">
             <span class="node-icon-dot"></span>
             <div>
@@ -145,18 +201,18 @@
             </div>
           </div>
 
-          <!-- Floating Node 2: Share Link -->
+          <!-- Floating Interactive Node 2: Share Link -->
           <div class="floating-badge-node node-right">
-            <span class="node-icon-dot" style="background:#818cf8;box-shadow:0 0 8px #818cf8;"></span>
+            <span class="node-icon-dot" style="background:#818cf8;box-shadow:0 0 10px #818cf8;"></span>
             <div>
               <span class="node-title">Share Link</span>
               <span class="node-sub">Any Platform</span>
             </div>
           </div>
 
-          <!-- Floating Node 3: Self Destruct -->
+          <!-- Floating Interactive Node 3: Self Destruct -->
           <div class="floating-badge-node node-bottom">
-            <span class="node-icon-dot" style="background:#f43f5e;box-shadow:0 0 8px #f43f5e;"></span>
+            <span class="node-icon-dot" style="background:#f43f5e;box-shadow:0 0 10px #f43f5e;"></span>
             <div>
               <span class="node-title">Self Destruct</span>
               <span class="node-sub">After Expiry</span>
@@ -168,9 +224,14 @@
       <!-- Right Column: Maximum Privacy Feature Panel -->
       <section class="privacy-panel-column">
         <div class="privacy-panel-card">
-          <div class="privacy-header">
-            <h3 class="privacy-title">Maximum Privacy</h3>
-            <span class="privacy-sub">Your data. Your control.</span>
+          <div class="privacy-header" style="display:flex;align-items:center;gap:12px;">
+            <div style="width:36px;height:36px;border-radius:8px;background:rgba(34,211,238,0.12);border:1px solid rgba(34,211,238,0.3);display:flex;align-items:center;justify-content:center;color:var(--cyan);box-shadow:0 0 16px rgba(34,211,238,0.25);flex-shrink:0;">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            </div>
+            <div>
+              <h3 class="privacy-title" style="margin-bottom:0;">Maximum Privacy</h3>
+              <span class="privacy-sub">Your data. Your control.</span>
+            </div>
           </div>
 
           <ul class="privacy-list">
@@ -196,10 +257,25 @@
             </li>
           </ul>
 
+          <!-- Animated Synthwave Frequency Waveform -->
+          <div class="synthwave-waveform-container" style="margin-top:4px;">
+            <svg class="synthwave-waveform-svg" viewBox="0 0 280 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="waveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#06B6D4"/>
+                  <stop offset="35%" stop-color="#3B82F6"/>
+                  <stop offset="70%" stop-color="#8B5CF6"/>
+                  <stop offset="100%" stop-color="#EC4899"/>
+                </linearGradient>
+              </defs>
+              <path class="wave-path wave-path-1" d="M0,20 Q35,5 70,20 T140,20 T210,20 T280,20" stroke="url(#waveGrad)" stroke-width="2" fill="none" opacity="0.85"/>
+              <path class="wave-path wave-path-2" d="M0,20 Q35,32 70,20 T140,20 T210,20 T280,20" stroke="url(#waveGrad)" stroke-width="1.5" fill="none" opacity="0.5"/>
+            </svg>
+          </div>
+
           <div class="privacy-footer-strip">
             <span>Secure • Private • Temporary</span>
           </div>
-          <div class="waveform-line"></div>
         </div>
       </section>
 

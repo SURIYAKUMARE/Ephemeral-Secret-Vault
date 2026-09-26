@@ -2063,3 +2063,229 @@ button, input, select, textarea {
   box-shadow: 0 0 12px rgba(239, 68, 68, 0.3);
 }
 
+/* ==========================================================================
+   3D Holographic Vault Cube & Radar Animation
+   ========================================================================== */
+.ambient-glow-core {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(34, 211, 238, 0.25) 0%, rgba(40, 117, 255, 0.15) 50%, transparent 70%);
+  filter: blur(20px);
+  pointer-events: none;
+  animation: pulseGlow 4s ease-in-out infinite alternate;
+}
+@keyframes pulseGlow {
+  0% { transform: scale(0.9); opacity: 0.6; }
+  100% { transform: scale(1.15); opacity: 1; }
+}
+.ring-mid {
+  width: 260px;
+  height: 260px;
+  border: 1px dashed rgba(40, 117, 255, 0.35);
+  animation: rotateRing 30s linear infinite;
+}
+.isometric-vault-cube {
+  position: relative;
+  z-index: 5;
+  width: 220px;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: floatLock 6s ease-in-out infinite;
+}
+.hologram-cube-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.45));
+}
+.hologram-lock-group {
+  animation: pulseLock 3s ease-in-out infinite alternate;
+}
+@keyframes pulseLock {
+  0% { filter: drop-shadow(0 0 6px #22D3EE); }
+  100% { filter: drop-shadow(0 0 16px #38BDF8) drop-shadow(0 0 24px #818CF8); }
+}
+
+/* ==========================================================================
+   Synthwave Frequency Waveform Animation
+   ========================================================================== */
+.synthwave-waveform-container {
+  width: 100%;
+  overflow: hidden;
+  padding: 4px 0;
+}
+.synthwave-waveform-svg {
+  width: 100%;
+  height: 36px;
+}
+.wave-path {
+  animation: waveOscillate 4s ease-in-out infinite alternate;
+}
+.wave-path-2 {
+  animation-delay: -2s;
+}
+@keyframes waveOscillate {
+  0% { transform: scaleY(0.7) translateY(2px); }
+  50% { transform: scaleY(1.2) translateY(-2px); }
+  100% { transform: scaleY(0.85) translateY(1px); }
+}
+
+/* ==========================================================================
+   Shattered Hologram & Rising Embers Animation (Burned / Expired Pages)
+   ========================================================================== */
+.shattered-hologram-stage {
+  position: relative;
+}
+.shattered-glow-aura {
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.25) 0%, transparent 70%);
+  filter: blur(24px);
+  pointer-events: none;
+  animation: pulseGlow 3s ease-in-out infinite alternate;
+}
+.shattered-hologram-svg {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 2;
+}
+.floating-shard {
+  animation: shardDrift 4s ease-in-out infinite alternate;
+}
+.shard-1 { animation-delay: 0s; }
+.shard-2 { animation-delay: 0.8s; }
+.shard-3 { animation-delay: 1.6s; }
+.shard-4 { animation-delay: 2.4s; }
+@keyframes shardDrift {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  100% { transform: translate(2px, -4px) rotate(2deg); }
+}
+.hologram-flame-core {
+  animation: flameFlicker 1.8s ease-in-out infinite alternate;
+  transform-origin: 120px 140px;
+}
+@keyframes flameFlicker {
+  0% { transform: scaleY(1) scaleX(1); }
+  50% { transform: scaleY(1.08) scaleX(0.96) skewX(-1deg); }
+  100% { transform: scaleY(0.95) scaleX(1.04) skewX(1deg); }
+}
+.rising-ember {
+  animation: emberFloat 3s linear infinite;
+  opacity: 0.8;
+}
+.ember-1 { animation-delay: 0.2s; animation-duration: 2.8s; }
+.ember-2 { animation-delay: 0.7s; animation-duration: 3.2s; }
+.ember-3 { animation-delay: 1.1s; animation-duration: 2.5s; }
+.ember-4 { animation-delay: 1.6s; animation-duration: 3.5s; }
+.ember-5 { animation-delay: 2.0s; animation-duration: 2.9s; }
+.ember-6 { animation-delay: 2.4s; animation-duration: 3.1s; }
+@keyframes emberFloat {
+  0% { transform: translateY(0); opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 0.8; }
+  100% { transform: translateY(-30px); opacity: 0; }
+}
+
+/* ==========================================================================
+   Branded Sharing Cards Ambient Glows
+   ========================================================================== */
+.channel-card-btn {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+.channel-card-btn#btn-share-whatsapp:hover {
+  border-color: rgba(37, 211, 102, 0.5);
+  background: rgba(37, 211, 102, 0.08);
+  box-shadow: 0 0 18px rgba(37, 211, 102, 0.3);
+  transform: translateY(-2px);
+}
+.channel-card-btn#btn-share-whatsapp:hover .channel-icon {
+  color: #25D366;
+  filter: drop-shadow(0 0 8px #25D366);
+}
+.channel-card-btn#btn-share-slack:hover {
+  border-color: rgba(224, 30, 90, 0.5);
+  background: rgba(224, 30, 90, 0.08);
+  box-shadow: 0 0 18px rgba(224, 30, 90, 0.3);
+  transform: translateY(-2px);
+}
+.channel-card-btn#btn-share-slack:hover .channel-icon {
+  color: #E01E5A;
+  filter: drop-shadow(0 0 8px #E01E5A);
+}
+.channel-card-btn#btn-share-teams:hover {
+  border-color: rgba(98, 100, 167, 0.5);
+  background: rgba(98, 100, 167, 0.08);
+  box-shadow: 0 0 18px rgba(98, 100, 167, 0.3);
+  transform: translateY(-2px);
+}
+.channel-card-btn#btn-share-teams:hover .channel-icon {
+  color: #7B83EB;
+  filter: drop-shadow(0 0 8px #7B83EB);
+}
+.channel-card-btn#btn-share-discord:hover {
+  border-color: rgba(88, 101, 242, 0.5);
+  background: rgba(88, 101, 242, 0.08);
+  box-shadow: 0 0 18px rgba(88, 101, 242, 0.3);
+  transform: translateY(-2px);
+}
+.channel-card-btn#btn-share-discord:hover .channel-icon {
+  color: #5865F2;
+  filter: drop-shadow(0 0 8px #5865F2);
+}
+.channel-card-btn#btn-share-email:hover {
+  border-color: rgba(239, 68, 68, 0.5);
+  background: rgba(239, 68, 68, 0.08);
+  box-shadow: 0 0 18px rgba(239, 68, 68, 0.3);
+  transform: translateY(-2px);
+}
+.channel-card-btn#btn-share-email:hover .channel-icon {
+  color: #EF4444;
+  filter: drop-shadow(0 0 8px #EF4444);
+}
+.channel-card-btn#btn-toggle-qr:hover {
+  border-color: rgba(34, 211, 238, 0.5);
+  background: rgba(34, 211, 238, 0.08);
+  box-shadow: 0 0 18px rgba(34, 211, 238, 0.3);
+  transform: translateY(-2px);
+}
+.channel-card-btn#btn-toggle-qr:hover .channel-icon {
+  color: var(--cyan);
+  filter: drop-shadow(0 0 8px var(--cyan));
+}
+.channel-card-btn#btn-download-html-vault:hover {
+  border-color: rgba(59, 130, 246, 0.5);
+  background: rgba(59, 130, 246, 0.08);
+  box-shadow: 0 0 18px rgba(59, 130, 246, 0.3);
+  transform: translateY(-2px);
+}
+.channel-card-btn#btn-download-html-vault:hover .channel-icon {
+  color: var(--primary-bright);
+  filter: drop-shadow(0 0 8px var(--primary-bright));
+}
+
+/* ==========================================================================
+   Vault Stepper Indicator Upgrade
+   ========================================================================== */
+.vault-stepper {
+  background: rgba(8, 14, 28, 0.85);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+.step-item.active {
+  background: rgba(40, 117, 255, 0.2);
+  border: 1px solid rgba(40, 117, 255, 0.4);
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  color: #FFFFFF;
+  box-shadow: 0 0 12px rgba(40, 117, 255, 0.3);
+}
+
+
