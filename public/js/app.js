@@ -2014,7 +2014,7 @@
   if (btnShareWhatsapp) {
     btnShareWhatsapp.addEventListener('click', () => {
       if (!activeSecretUrl) { showError('No active secret link.'); return; }
-      const text = `🔐 Confidential Ephemeral Secret Vault:\n${activeSecretUrl}\n\n⚠️ Encrypted with AES-256-GCM. Will permanently self-destruct once viewed.`;
+      const text = `🔐 I shared something with you securely.\n\nOpen your protected vault:\n${activeSecretUrl}`;
       window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
       showToast('✓ WhatsApp opened with encrypted secret link');
     });
@@ -2024,7 +2024,7 @@
   if (btnShareSlack) {
     btnShareSlack.addEventListener('click', async () => {
       if (!activeSecretUrl) { showError('No active secret link.'); return; }
-      const slackMsg = `🔐 *Confidential Ephemeral Secret*: <${activeSecretUrl}>\n_Encrypted with AES-256-GCM • Permanently self-destructs after viewing_`;
+      const slackMsg = `🔐 *Protected Vault Link*: <${activeSecretUrl}>\n_Open your secure vault. This link may automatically expire._`;
       try {
         await navigator.clipboard.writeText(slackMsg);
       } catch {
@@ -2039,7 +2039,7 @@
   if (btnShareTeams) {
     btnShareTeams.addEventListener('click', () => {
       if (!activeSecretUrl) { showError('No active secret link.'); return; }
-      const teamsUrl = `https://teams.microsoft.com/share?href=${encodeURIComponent(activeSecretUrl)}&msgText=${encodeURIComponent('🔐 Confidential Ephemeral Secret (AES-256-GCM One-Time Vault)')}`;
+      const teamsUrl = `https://teams.microsoft.com/share?href=${encodeURIComponent(activeSecretUrl)}&msgText=${encodeURIComponent('🔐 I shared something with you securely. Open your protected vault: ' + activeSecretUrl)}`;
       window.open(teamsUrl, '_blank', 'noopener,noreferrer');
       showToast('✓ Microsoft Teams share window opened');
     });
@@ -2049,7 +2049,7 @@
   if (btnShareDiscord) {
     btnShareDiscord.addEventListener('click', async () => {
       if (!activeSecretUrl) { showError('No active secret link.'); return; }
-      const discordMsg = `🔐 **Confidential Ephemeral Secret**: || ${activeSecretUrl} ||\n*Encrypted with AES-256-GCM • Permanently self-destructs after viewing*`;
+      const discordMsg = `🔐 **Protected Vault**: || ${activeSecretUrl} || (Requires authorization to reveal)`;
       try {
         await navigator.clipboard.writeText(discordMsg);
       } catch {
@@ -2064,8 +2064,8 @@
   if (btnShareEmail) {
     btnShareEmail.addEventListener('click', () => {
       if (!activeSecretUrl) { showError('No active secret link.'); return; }
-      const subject = 'Confidential Ephemeral Secret [Zero-Trace]';
-      const body = `Hello,\n\nA confidential secret has been shared with you via Ephemeral Secret Vault:\n\n${activeSecretUrl}\n\nSecurity Notice:\n- Encrypted with AES-256-GCM\n- Zero plaintext stored on disk\n- Permanently destroyed immediately after viewing or expiration\n\nDo not forward this email if you want the link to remain unviewed.\n\nEphemeral Secret Vault`;
+      const subject = '🔐 Secure Message';
+      const body = `You've received a protected message.\n\nOpen your secure vault:\n\n${activeSecretUrl}\n\nThis link may automatically expire.`;
       window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
       showToast('✓ Email draft opened with secret link');
     });

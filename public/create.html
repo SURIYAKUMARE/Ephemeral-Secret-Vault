@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body id="top">
-  <!-- Master Futuristic Cybersecurity Navbar -->
+  <!-- Master Futuristic Cybersecurity Navbar (Section 05 & 06) -->
   <header class="navbar">
     <div class="nav-container">
       <a href="/" class="nav-brand" title="Ephemeral Secret Vault">
@@ -21,20 +21,34 @@
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
           <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
         </svg>
-        <span class="brand-name">Ephemeral Secret Vault</span>
+        <span class="brand-name">
+          <span class="brand-ephemeral">Ephemeral</span>
+          <span class="brand-vault">Secret Vault</span>
+        </span>
       </a>
 
+      <!-- Desktop Minimal Navigation -->
       <nav class="nav-links-row" aria-label="Main Navigation">
-        <a href="/">Home</a>
         <a href="/create" class="active">Product</a>
         <a href="/security">Security</a>
         <a href="/extension">Extension</a>
-        <a href="/how-it-works">How It Works</a>
-        <a href="/dashboard">Dashboard</a>
+        <div class="nav-dropdown-wrapper">
+          <button type="button" class="nav-dropdown-trigger" aria-haspopup="true" aria-expanded="false">
+            <span>Resources</span>
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <div class="nav-dropdown-menu">
+            <a href="/how-it-works">How It Works</a>
+            <a href="/dashboard">Creator Dashboard</a>
+            <a href="/security#threat-model">Threat Model</a>
+            <a href="/download">Download Extension</a>
+            <a href="/benchmark">Performance Benchmarks</a>
+          </div>
+        </div>
       </nav>
 
       <div class="nav-actions">
-        <span class="status-pill status-neutral">
+        <span class="status-pill status-neutral" title="Zero-Knowledge Authenticated Encryption">
           <span class="status-dot"></span>
           <span>AES-256-GCM</span>
         </span>
@@ -45,6 +59,10 @@
           </svg>
         </button>
 
+        <a href="/" class="btn-signin-nav" style="text-decoration:none;">
+          <span>Sign In</span>
+        </a>
+
         <button type="button" class="mobile-nav-toggle" id="mobile-toggle" aria-label="Open Navigation Menu">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
         </button>
@@ -54,7 +72,6 @@
 
   <!-- Mobile Drawer -->
   <div class="mobile-menu-drawer" id="mobile-drawer">
-    <a href="/">Home</a>
     <a href="/create" class="active">Product</a>
     <a href="/security">Security</a>
     <a href="/extension">Extension</a>
@@ -69,14 +86,15 @@
       <!-- Vault Creation Card -->
       <div class="vault-card">
         
-        <!-- Header Section -->
+        <!-- Header Section (Section 09) -->
         <header class="card-header-clean" id="hero-header">
           <div class="hero-badge-pill" style="margin-bottom:12px;">
             <span class="status-dot"></span>
             <span>CONFIDENTIAL SHARING</span>
           </div>
-          <h1 class="page-title">Create a Secret Vault</h1>
-          <p class="page-subtitle">Encrypt your sensitive information and share it securely. The secret is encrypted in your browser and automatically destroyed after viewing or expiry.</p>
+          <h1 class="page-title">Create Secure Vault</h1>
+          <span class="sr-only">Create a Secret Vault</span>
+          <p class="page-subtitle">Create an encrypted, time-limited vault for sharing sensitive information without exposing the original secret through messaging apps, email, URLs, or browser history.</p>
         </header>
 
         <!-- 3-Step Progress Indicator -->
@@ -130,7 +148,7 @@
                 id="secret-input"
                 name="secret"
                 class="secret-textarea"
-                placeholder="Paste sensitive credentials, API keys, passwords, certificates, or notes here..."
+                placeholder="Enter your confidential message..."
                 rows="5"
                 spellcheck="false"
                 maxlength="10240"
@@ -145,7 +163,7 @@
             </div>
           </div>
 
-          <!-- Section 2: Universal File Upload Dropzone -->
+          <!-- Section 2: Universal File Upload Dropzone (Section 09) -->
           <div id="file-dropzone-group" class="form-group hidden">
             <input type="file" id="file-input" class="hidden" aria-label="Upload file">
             
@@ -154,7 +172,7 @@
                 <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
               </div>
               <div style="font-size:13.5px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">
-                Click to browse or drag &amp; drop a file
+                Drop a confidential file here
               </div>
               <div style="font-size:12px;color:var(--text-muted);">
                 Supports code, documents, certificates, PDFs, or images up to 15 MB
@@ -400,11 +418,11 @@
             </div>
           </div>
 
-          <!-- Combined Security Policy Summary -->
+          <!-- Combined Security Policy Summary & Controls (Section 10) -->
           <div class="security-policy-summary" id="security-policy-summary">
             <div class="policy-header">
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--cyan);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-              <span>SECURITY POLICY</span>
+              <span>ACCESS POLICY CONTROLS</span>
             </div>
             <div class="policy-grid">
               <div class="policy-item">
@@ -424,6 +442,54 @@
                 <span class="policy-value policy-accent">Automatic destruction</span>
               </div>
             </div>
+
+            <!-- Section 10: 5 Security Options with Tooltips -->
+            <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border-subtle); display: flex; flex-direction: column; gap: 8px;">
+              <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-primary); cursor: pointer;">
+                <input type="checkbox" id="policy-burn-reveal" checked style="accent-color: var(--primary);">
+                <span>Burn after first successful reveal</span>
+                <span class="policy-tooltip-wrap">
+                  <span class="policy-tooltip-trigger">ⓘ</span>
+                  <span class="policy-tooltip-bubble">Physically shreds ciphertext from the server immediately upon authorized reveal.</span>
+                </span>
+              </label>
+
+              <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-primary); cursor: pointer;">
+                <input type="checkbox" id="policy-require-passcode" style="accent-color: var(--primary);">
+                <span>Require passcode</span>
+                <span class="policy-tooltip-wrap">
+                  <span class="policy-tooltip-trigger">ⓘ</span>
+                  <span class="policy-tooltip-bubble">Demands an additional secret passphrase before recipient can decrypt the vault.</span>
+                </span>
+              </label>
+
+              <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-primary); cursor: pointer;">
+                <input type="checkbox" id="policy-disable-download" style="accent-color: var(--primary);">
+                <span>Disable download</span>
+                <span class="policy-tooltip-wrap">
+                  <span class="policy-tooltip-trigger">ⓘ</span>
+                  <span class="policy-tooltip-bubble">Hides file download button, allowing only in-browser inspection.</span>
+                </span>
+              </label>
+
+              <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-primary); cursor: pointer;">
+                <input type="checkbox" id="policy-disable-copy" style="accent-color: var(--primary);">
+                <span>Disable copy</span>
+                <span class="policy-tooltip-wrap">
+                  <span class="policy-tooltip-trigger">ⓘ</span>
+                  <span class="policy-tooltip-bubble">Disables 1-click clipboard copy on revealed screen to prevent accidental propagation.</span>
+                </span>
+              </label>
+
+              <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-primary); cursor: pointer;">
+                <input type="checkbox" id="policy-notify-creator" checked style="accent-color: var(--primary);">
+                <span>Notify creator when revealed</span>
+                <span class="policy-tooltip-wrap">
+                  <span class="policy-tooltip-trigger">ⓘ</span>
+                  <span class="policy-tooltip-bubble">Records reveal status locally in your Creator Dashboard when the link is opened.</span>
+                </span>
+              </label>
+            </div>
           </div>
 
           <!-- Error Feedback Banner -->
@@ -432,14 +498,14 @@
             <span id="submit-error-message"></span>
           </div>
 
-          <!-- Primary Submit CTA -->
+          <!-- Primary Submit CTA (Section 11) -->
           <button type="submit" id="submit-btn" class="btn-primary-solid" style="margin-top: 8px;">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            <span id="submit-btn-text">🔒 Encrypt &amp; Generate Secure Link →</span>
+            <span id="submit-btn-text">Create Secure Vault</span>
           </button>
         </form>
 
-        <!-- Result Screen (Revealed upon successful secret generation) -->
+        <!-- Result Screen (Revealed upon successful secret generation - Section 12) -->
         <section id="result-section" class="hidden" aria-label="Secret generated successfully">
           
           <header class="card-header-clean" style="display:flex;align-items:center;gap:14px;margin-bottom:18px;">
@@ -449,10 +515,11 @@
             <div>
               <div class="success-badge-card" style="margin-bottom:2px;">
                 <span class="status-dot" style="background:var(--success);box-shadow:0 0 8px var(--success);"></span>
-                <span>● ENCRYPTED &amp; PROTECTED</span>
+                <span>● ACTIVE</span>
               </div>
-              <h2 class="page-title" style="margin-bottom:2px;font-size:22px;">Vault Created</h2>
-              <p class="page-subtitle" style="font-size:12.5px;color:var(--text-secondary);">Your secret is encrypted with AES-256-GCM. Share the access link below.</p>
+              <h2 class="page-title" style="margin-bottom:2px;font-size:22px;">Your secure vault is ready.</h2>
+              <span class="sr-only">Vault Created</span>
+              <p class="page-subtitle" style="font-size:12.5px;color:var(--text-secondary);">Only the protected vault link will be shared.</p>
             </div>
           </header>
 
@@ -475,14 +542,14 @@
             <input type="text" id="link-output" class="link-input" readonly spellcheck="false" aria-label="Generated secret view URL">
             <button type="button" id="copy-btn" class="btn-copy-gradient">
               <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-              <span>Copy Link</span>
+              <span>Copy Secure Link</span>
             </button>
             <a id="open-link-btn" href="#" target="_blank" class="btn-open-outline" title="Open secret in new tab">
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-              <span>Open</span>
+              <span>Open Vault</span>
             </a>
             <a id="open-share-center-btn" href="#" class="btn-open-outline" title="Open Share Center">
-              <span>Share Center</span>
+              <span>Share Securely</span>
             </a>
           </div>
 

@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body id="top">
-  <!-- Master Futuristic Cybersecurity Navbar -->
+  <!-- Master Futuristic Cybersecurity Navbar (Section 05 & 06) -->
   <header class="navbar">
     <div class="nav-container">
       <a href="/" class="nav-brand" title="Ephemeral Secret Vault">
@@ -21,20 +21,34 @@
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
           <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
         </svg>
-        <span class="brand-name">Ephemeral Secret Vault</span>
+        <span class="brand-name">
+          <span class="brand-ephemeral">Ephemeral</span>
+          <span class="brand-vault">Secret Vault</span>
+        </span>
       </a>
 
+      <!-- Desktop Minimal Navigation -->
       <nav class="nav-links-row" aria-label="Main Navigation">
-        <a href="/">Home</a>
         <a href="/create">Product</a>
         <a href="/security">Security</a>
         <a href="/extension">Extension</a>
-        <a href="/how-it-works">How It Works</a>
-        <a href="/dashboard">Dashboard</a>
+        <div class="nav-dropdown-wrapper">
+          <button type="button" class="nav-dropdown-trigger" aria-haspopup="true" aria-expanded="false">
+            <span>Resources</span>
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <div class="nav-dropdown-menu">
+            <a href="/how-it-works">How It Works</a>
+            <a href="/dashboard">Creator Dashboard</a>
+            <a href="/security#threat-model">Threat Model</a>
+            <a href="/download">Download Extension</a>
+            <a href="/benchmark">Performance Benchmarks</a>
+          </div>
+        </div>
       </nav>
 
       <div class="nav-actions">
-        <span class="status-pill status-neutral">
+        <span class="status-pill status-neutral" title="Zero-Knowledge Authenticated Encryption">
           <span class="status-dot"></span>
           <span>AES-256-GCM</span>
         </span>
@@ -44,6 +58,10 @@
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
           </svg>
         </button>
+
+        <a href="/" class="btn-signin-nav" style="text-decoration:none;">
+          <span>Sign In</span>
+        </a>
 
         <button type="button" class="mobile-nav-toggle" id="mobile-toggle" aria-label="Open Navigation Menu">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
@@ -89,10 +107,11 @@
           <header class="card-header-clean">
             <div class="hero-badge-pill" style="margin-bottom:12px;">
               <span class="status-dot"></span>
-              <span>CONFIDENTIAL ACCESS PORTAL</span>
+              <span>PROTECTED VAULT</span>
               <span class="sr-only">SECURE SECRET</span>
             </div>
-            <h1 class="page-title">Secret Vault</h1>
+            <h1 class="page-title">Ephemeral Secret Vault</h1>
+            <p style="font-size:15.5px;font-weight:600;color:var(--text-primary);margin-bottom:6px;">Someone shared a protected secret with you.</p>
             <p class="page-subtitle">This secret is protected. Encrypted with AES-256-GCM.</p>
           </header>
 
@@ -189,17 +208,23 @@
         <!-- State B: Post-Reveal Section -->
         <div id="revealed-section" class="hidden" aria-label="Revealed secret">
           
-          <!-- Clean Burned Status Header -->
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border-subtle);flex-wrap:wrap;gap:8px;">
+          <!-- Clean Burned Status Header (Section 19) -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border-subtle);flex-wrap:wrap;gap:8px;">
             <div>
               <div class="burned-badge-banner">
                 <span class="status-dot" style="background:var(--danger);box-shadow:0 0 8px var(--danger);"></span>
-                <span id="burn-status-title">SECRET DECRYPTED &amp; PERMANENTLY BURNED</span>
+                <span id="burn-status-title">SECRET REVEALED</span>
               </div>
             </div>
             <div id="burn-timestamp-badge" class="hidden" style="font-size:11.5px;color:var(--text-muted);font-family:var(--font-mono);">
               Burned at: <strong id="burn-executed-time" style="color:var(--danger);">--:--:--</strong>
             </div>
+          </div>
+
+          <!-- Section 19 Warning -->
+          <div style="background:rgba(239,68,68,0.08);border:1px solid var(--danger-border);border-radius:var(--radius-md);padding:10px 14px;margin-bottom:16px;font-size:12.5px;color:var(--danger-text);display:flex;align-items:center;gap:8px;">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <span>This secret may disappear after this view.</span>
           </div>
 
           <div style="display:none;" id="burn-status-alert">
