@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body id="top">
-  <!-- Minimal Monochrome Header -->
+  <!-- Master Futuristic Cybersecurity Navbar -->
   <header class="navbar">
     <div class="nav-container">
       <a href="/" class="nav-brand" title="Ephemeral Secret Vault">
@@ -25,139 +25,135 @@
       <nav class="nav-links-row" aria-label="Main Navigation">
         <a href="/">Home</a>
         <a href="/create">Product</a>
+        <a href="/file">File Vault</a>
         <a href="/security">Security</a>
         <a href="/extension">Extension</a>
+        <a href="/how-it-works">How It Works</a>
         <a href="/dashboard">Dashboard</a>
       </nav>
 
       <div class="nav-actions">
-        <!-- Exactly ONE status indicator in header -->
         <span class="status-pill status-neutral">
           <span class="status-dot"></span>
           <span>AES-256-GCM</span>
         </span>
 
-        <!-- Theme toggle as plain icon button -->
         <button type="button" class="btn-icon-plain" id="theme-toggle" aria-label="Toggle Theme" title="Toggle theme">
           <svg id="theme-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
           </svg>
         </button>
+
+        <button type="button" class="mobile-nav-toggle" id="mobile-toggle" aria-label="Open Navigation Menu">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
       </div>
     </div>
   </header>
 
+  <!-- Mobile Navigation Drawer -->
+  <div class="mobile-menu-drawer" id="mobile-drawer">
+    <a href="/">Home</a>
+    <a href="/create">Product</a>
+    <a href="/file">File Vault</a>
+    <a href="/security">Security</a>
+    <a href="/extension">Extension</a>
+    <a href="/how-it-works">How It Works</a>
+    <a href="/dashboard">Dashboard</a>
+  </div>
+
   <!-- Download Container -->
   <main class="viewport-layout" style="padding-top:40px;padding-bottom:60px;">
-    <div style="max-width:800px;width:100%;margin:0 auto;padding:0 16px;">
+    <div style="max-width:880px;width:100%;margin:0 auto;padding:0 20px;">
       
-      <header class="card-header-clean" style="text-align:left;margin-bottom:32px;">
-        <span class="section-label">Setup &amp; Installation</span>
-        <h1 class="page-title" style="font-size:28px;margin-bottom:8px;">Install the Browser Extension</h1>
-        <p class="page-subtitle" style="font-size:14px;margin:0;">Get the complete Manifest V3 companion extension loaded in Chromium browsers in less than 30 seconds.</p>
+      <header class="card-header-clean" style="text-align:left;margin-bottom:36px;">
+        <span class="section-label">SETUP &amp; INSTALLATION</span>
+        <h1 class="page-title" style="font-size:32px;letter-spacing:-0.03em;margin-bottom:10px;">Install the Browser Extension</h1>
+        <p class="page-subtitle" style="font-size:15px;margin:0;max-width:680px;">Get the complete Manifest V3 companion extension loaded in Chromium browsers in less than 30 seconds.</p>
       </header>
 
       <!-- Direct Download Card -->
-      <section class="vault-card" style="margin-bottom:24px;text-align:center;">
-        <h2 style="font-size:16px;font-weight:600;color:var(--text-primary);margin-bottom:6px;">
+      <section class="vault-card" style="margin-bottom:28px;text-align:center;">
+        <div style="width:52px;height:52px;border-radius:50%;background:rgba(40,117,255,0.1);border:1px solid rgba(40,117,255,0.25);display:flex;align-items:center;justify-content:center;margin:0 auto 16px auto;color:var(--primary);box-shadow:0 0 20px rgba(40,117,255,0.15);">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        </div>
+
+        <h2 style="font-size:18px;font-weight:700;color:var(--text-primary);letter-spacing:-0.01em;margin-bottom:8px;">
           Ephemeral Secret Vault — Extension Package (.ZIP)
         </h2>
-        <p style="color:var(--text-secondary);font-size:13px;margin-bottom:20px;max-width:500px;margin-left:auto;margin-right:auto;">
+        <p style="color:var(--text-secondary);font-size:13.5px;margin-bottom:24px;max-width:540px;margin-left:auto;margin-right:auto;line-height:1.5;">
           Pre-packaged Manifest V3 extension ready for Developer Mode installation in Chrome, Edge, Brave, and Opera.
         </p>
 
-        <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
-          <a href="/api/extension/download" class="btn-primary-solid" style="height:42px;padding:0 24px;text-decoration:none;display:inline-flex;">
-            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;">
+          <a href="/api/extension/download" class="btn-primary-solid" style="height:44px;padding:0 26px;text-decoration:none;display:inline-flex;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
             <span>Download Extension (.ZIP)</span>
           </a>
-          <a href="/create" class="btn-secondary-neutral" style="height:42px;padding:0 18px;text-decoration:none;display:inline-flex;">
+          <a href="/create" class="btn-secondary-clean" style="height:44px;padding:0 20px;text-decoration:none;display:inline-flex;">
             <span>Use Web App Instead</span>
           </a>
         </div>
       </section>
 
       <!-- 4-Step Installation Guide -->
-      <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="display:flex;flex-direction:column;gap:14px;">
         
         <!-- Step 1 -->
-        <div class="vault-card" style="padding:16px;">
-          <div style="display:flex;align-items:flex-start;gap:12px;">
-            <div style="width:26px;height:26px;border-radius:6px;background:var(--bg-subtle);border:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--primary);flex-shrink:0;">1</div>
+        <div class="vault-card" style="padding:18px 22px;">
+          <div style="display:flex;align-items:flex-start;gap:14px;">
+            <div style="width:30px;height:30px;border-radius:6px;background:rgba(40,117,255,0.12);border:1px solid rgba(40,117,255,0.3);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--primary);flex-shrink:0;">1</div>
             <div>
-              <h3 style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:4px;">
+              <h3 style="font-size:15px;font-weight:700;color:var(--text-primary);margin-bottom:6px;letter-spacing:-0.01em;">
                 Download and Extract Archive
               </h3>
-              <p style="font-size:13px;color:var(--text-secondary);line-height:1.5;margin:0;">
-                Download the ZIP package above and extract it into a folder on your computer. If you cloned the repository, the extension files are already in the <code style="background:var(--bg-subtle);padding:2px 6px;border-radius:4px;font-family:var(--font-mono);font-size:12px;">extension/</code> directory.
+              <p style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin:0;">
+                Download the ZIP package above and extract it into a folder on your computer. If you cloned the repository, the extension files are already in the <code style="background:var(--surface);border:1px solid var(--border-subtle);padding:2px 6px;border-radius:4px;font-family:var(--font-mono);font-size:12px;color:var(--primary);">extension/</code> directory.
               </p>
             </div>
           </div>
         </div>
 
         <!-- Step 2 -->
-        <div class="vault-card" style="padding:16px;">
-          <div style="display:flex;align-items:flex-start;gap:12px;">
-            <div style="width:26px;height:26px;border-radius:6px;background:var(--bg-subtle);border:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--primary);flex-shrink:0;">2</div>
+        <div class="vault-card" style="padding:18px 22px;">
+          <div style="display:flex;align-items:flex-start;gap:14px;">
+            <div style="width:30px;height:30px;border-radius:6px;background:rgba(40,117,255,0.12);border:1px solid rgba(40,117,255,0.3);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--primary);flex-shrink:0;">2</div>
             <div>
-              <h3 style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:4px;">
-                Open Browser Extensions Page
+              <h3 style="font-size:15px;font-weight:700;color:var(--text-primary);margin-bottom:6px;letter-spacing:-0.01em;">
+                Open Browser Extensions Manager
               </h3>
-              <p style="font-size:13px;color:var(--text-secondary);line-height:1.5;margin-bottom:8px;">
-                Paste the appropriate management URL into your browser address bar:
+              <p style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin:0;">
+                In Chrome, navigate to <code style="background:var(--surface);border:1px solid var(--border-subtle);padding:2px 6px;border-radius:4px;font-family:var(--font-mono);font-size:12px;color:var(--primary);">chrome://extensions</code> (or <code style="background:var(--surface);border:1px solid var(--border-subtle);padding:2px 6px;border-radius:4px;font-family:var(--font-mono);font-size:12px;color:var(--primary);">edge://extensions</code> in Edge, <code style="background:var(--surface);border:1px solid var(--border-subtle);padding:2px 6px;border-radius:4px;font-family:var(--font-mono);font-size:12px;color:var(--primary);">brave://extensions</code> in Brave).
               </p>
-              <div style="display:flex;flex-direction:column;gap:6px;font-family:var(--font-mono);font-size:12px;">
-                <div style="background:var(--bg-subtle);padding:6px 10px;border-radius:6px;border:1px solid var(--border-subtle);color:var(--primary);">
-                  chrome://extensions <span style="color:var(--text-muted);">(Google Chrome &amp; Brave)</span>
-                </div>
-                <div style="background:var(--bg-subtle);padding:6px 10px;border-radius:6px;border:1px solid var(--border-subtle);color:var(--primary);">
-                  edge://extensions <span style="color:var(--text-muted);">(Microsoft Edge)</span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
 
         <!-- Step 3 -->
-        <div class="vault-card" style="padding:16px;">
-          <div style="display:flex;align-items:flex-start;gap:12px;">
-            <div style="width:26px;height:26px;border-radius:6px;background:var(--bg-subtle);border:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--primary);flex-shrink:0;">3</div>
+        <div class="vault-card" style="padding:18px 22px;">
+          <div style="display:flex;align-items:flex-start;gap:14px;">
+            <div style="width:30px;height:30px;border-radius:6px;background:rgba(34,211,238,0.12);border:1px solid rgba(34,211,238,0.3);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--cyan);flex-shrink:0;">3</div>
             <div>
-              <h3 style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:4px;">
-                Enable "Developer mode"
+              <h3 style="font-size:15px;font-weight:700;color:var(--text-primary);margin-bottom:6px;letter-spacing:-0.01em;">
+                Enable Developer Mode
               </h3>
-              <p style="font-size:13px;color:var(--text-secondary);line-height:1.5;margin:0;">
-                In the top-right corner of the Extensions page, toggle the switch labeled <strong>Developer mode</strong> to the ON position.
+              <p style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin:0;">
+                Toggle the <strong>Developer mode</strong> switch in the upper right-hand corner of the Extensions management screen.
               </p>
             </div>
           </div>
         </div>
 
         <!-- Step 4 -->
-        <div class="vault-card" style="padding:16px;">
-          <div style="display:flex;align-items:flex-start;gap:12px;">
-            <div style="width:26px;height:26px;border-radius:6px;background:var(--bg-subtle);border:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--primary);flex-shrink:0;">4</div>
+        <div class="vault-card" style="padding:18px 22px;">
+          <div style="display:flex;align-items:flex-start;gap:14px;">
+            <div style="width:30px;height:30px;border-radius:6px;background:rgba(34,211,238,0.12);border:1px solid rgba(34,211,238,0.3);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--cyan);flex-shrink:0;">4</div>
             <div>
-              <h3 style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:4px;">
-                Click "Load unpacked" and Select Folder
+              <h3 style="font-size:15px;font-weight:700;color:var(--text-primary);margin-bottom:6px;letter-spacing:-0.01em;">
+                Load Unpacked
               </h3>
-              <p style="font-size:13px;color:var(--text-secondary);line-height:1.5;margin:0;">
-                Click the button labeled <strong>Load unpacked</strong> in the top-left toolbar, browse to the folder where you extracted the extension, and click <strong>Select Folder</strong>.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Step 5 -->
-        <div class="vault-card" style="padding:16px;border-color:var(--status-active-border);">
-          <div style="display:flex;align-items:flex-start;gap:12px;">
-            <div style="width:26px;height:26px;border-radius:6px;background:var(--bg-subtle);border:1px solid var(--status-active-border);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--status-active-text);flex-shrink:0;">✓</div>
-            <div>
-              <h3 style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:4px;">
-                You're Ready to Share!
-              </h3>
-              <p style="font-size:13px;color:var(--text-secondary);line-height:1.5;margin:0;">
-                The <strong>Ephemeral Secret Vault</strong> lock icon will now appear in your browser toolbar. Pin it for quick access, or simply visit WhatsApp Web, Gmail, or Slack and press <code style="background:var(--bg-subtle);padding:2px 6px;border-radius:4px;font-family:var(--font-mono);font-size:12px;">Ctrl+Shift+V</code> to vault credentials in real time.
+              <p style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin:0;">
+                Click <strong>Load unpacked</strong> and select the unzipped <code style="background:var(--surface);border:1px solid var(--border-subtle);padding:2px 6px;border-radius:4px;font-family:var(--font-mono);font-size:12px;color:var(--primary);">extension/</code> directory. The Ephemeral Secret Vault icon will appear in your browser toolbar ready for action.
               </p>
             </div>
           </div>
@@ -186,6 +182,13 @@
       if (savedTheme) {
         document.documentElement.setAttribute('data-theme', savedTheme);
       }
+    }
+    const mobileToggle = document.getElementById('mobile-toggle');
+    const mobileDrawer = document.getElementById('mobile-drawer');
+    if (mobileToggle && mobileDrawer) {
+      mobileToggle.addEventListener('click', () => {
+        mobileDrawer.classList.toggle('open');
+      });
     }
   </script>
 </body>

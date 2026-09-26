@@ -58,11 +58,16 @@ function createSecret(req, res, next) {
       requestBaseUrl = `${proto}://${host}`;
     }
 
+    const effectiveViews = req.body.effectiveMaxViews !== undefined
+      ? req.body.effectiveMaxViews
+      : (req.body.maxViews !== undefined ? req.body.maxViews : (max_views || 1));
+
     const result = secretService.createSecret({
       secret,
       file,
-      ttlSeconds: ttl_seconds,
-      maxViews: max_views,
+      ttlSeconds: req.body.ttl_seconds || ttl_seconds || 3600,
+      customExpiresAt: req.body.computedExpiresAt || null,
+      maxViews: effectiveViews,
       passphrase,
       customBaseUrl: requestBaseUrl,
       client_encrypted,
@@ -614,6 +619,25 @@ function createCanaryTrap(req, res, next) {
   }
 }
 
+/**
+ * Emergency destroy vault endpoint.
+ */
+function emergencyDestroySecret(req, res, next) {
+  try {
+    const { id } = req.params;
+    const deletedCount = secretService.deleteSecret(id);
+    if (!deletedCount) {
+      return res.status(404).json({ error: 'Vault not found, already destroyed, or expired.' });
+    }
+    return res.status(200).json({
+      status: 'destroyed',
+      message: 'Vault permanently destroyed. All records purged.'
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   health,
   createSecret,
@@ -631,5 +655,7 @@ module.exports = {
   revealSecret,
   denyDirectSecretAccess,
   getShareView,
-  getVaultMetadata
+  getVaultMetadata,
+  emergencyDestroySecret
 };
+

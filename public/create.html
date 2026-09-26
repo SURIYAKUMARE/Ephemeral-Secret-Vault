@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body id="top">
-  <!-- Minimal Monochrome Header -->
+  <!-- Master Futuristic Cybersecurity Navbar -->
   <header class="navbar">
     <div class="nav-container">
       <a href="/" class="nav-brand" title="Ephemeral Secret Vault">
@@ -34,35 +34,65 @@
       </nav>
 
       <div class="nav-actions">
-        <!-- Exactly ONE status indicator in header -->
         <span class="status-pill status-neutral">
           <span class="status-dot"></span>
           <span>AES-256-GCM</span>
         </span>
 
-        <!-- Theme toggle as plain icon button, no circular outline -->
         <button type="button" class="btn-icon-plain" id="theme-toggle" aria-label="Toggle Theme" title="Toggle theme">
           <svg id="theme-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
           </svg>
         </button>
+
+        <button type="button" class="mobile-nav-toggle" id="mobile-toggle" aria-label="Open Navigation Menu">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
       </div>
     </div>
   </header>
 
-  <!-- Single Centered Column Layout (Max-Width ~560px, Vertically Centered) -->
+  <!-- Mobile Drawer -->
+  <div class="mobile-menu-drawer" id="mobile-drawer">
+    <a href="/">Home</a>
+    <a href="/create" class="active">Product</a>
+    <a href="/security">Security</a>
+    <a href="/extension">Extension</a>
+    <a href="/how-it-works">How It Works</a>
+    <a href="/dashboard">Dashboard</a>
+  </div>
+
+  <!-- Main Creation Workspace -->
   <main class="viewport-layout">
     <div class="centered-column">
       
-      <!-- Consistent Production Security Card -->
+      <!-- Vault Creation Card -->
       <div class="vault-card">
         
         <!-- Header Section -->
         <header class="card-header-clean" id="hero-header">
-          <span class="section-label">Confidential Sharing</span>
+          <span class="section-label">CONFIDENTIAL SHARING</span>
           <h1 class="page-title">Create a Secret Vault</h1>
-          <p class="page-subtitle">Encrypted server-side with AES-256-GCM and destroyed automatically after viewing or expiration.</p>
+          <p class="page-subtitle">Encrypt your sensitive information and share it securely.</p>
         </header>
+
+        <!-- 3-Step Progress Indicator -->
+        <div class="vault-stepper" id="create-stepper">
+          <div class="step-item active" id="step-content">
+            <span class="step-num">01</span>
+            <span>Content</span>
+          </div>
+          <span class="step-divider-arrow">›</span>
+          <div class="step-item" id="step-settings">
+            <span class="step-num">02</span>
+            <span>Settings</span>
+          </div>
+          <span class="step-divider-arrow">›</span>
+          <div class="step-item" id="step-generate">
+            <span class="step-num">03</span>
+            <span>Generate</span>
+          </div>
+        </div>
 
         <!-- Creation Form -->
         <form id="create-form" aria-label="Create a secure secret or share a confidential file">
@@ -81,46 +111,62 @@
 
           <!-- Section 1: Secret Text Input -->
           <div id="text-section" class="form-group">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-              <label class="section-label" for="secret-input" style="margin-bottom:0;">Secret Content</label>
-              <span id="byte-counter" style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">0 / 10,240 bytes</span>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:6px;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <label class="form-group-label" for="secret-input" style="margin-bottom:0;">Secret Content</label>
+                <span id="secret-type-badge" class="secret-type-pill hidden">GENERIC SECRET</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span id="byte-counter" style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">0 / 10,240 bytes</span>
+                <button type="button" id="btn-clear-secret" class="btn-input-action" title="Clear secret input">✕ Clear</button>
+                <button type="button" id="btn-fullscreen-editor" class="btn-input-action" title="Toggle Fullscreen Editor">⛶ Fullscreen</button>
+              </div>
             </div>
-            <textarea
-              id="secret-input"
-              name="secret"
-              class="secret-textarea"
-              placeholder="Paste sensitive credentials, API keys, passwords, certificates, or notes here..."
-              rows="5"
-              spellcheck="false"
-              maxlength="10240"
-            ></textarea>
+            <div style="position:relative;">
+              <textarea
+                id="secret-input"
+                name="secret"
+                class="secret-textarea"
+                placeholder="Paste sensitive credentials, API keys, passwords, certificates, or notes here..."
+                rows="5"
+                spellcheck="false"
+                maxlength="10240"
+              ></textarea>
+              <div id="paste-indicator" class="paste-indicator hidden" style="position:absolute;bottom:10px;right:12px;">
+                📋 Pasted from clipboard
+              </div>
+            </div>
+            <div class="secret-status-bar">
+              <span class="status-dot" id="secret-status-dot"></span>
+              <span id="secret-status-text">Awaiting input...</span>
+            </div>
           </div>
 
           <!-- Section 2: Universal File Upload Dropzone -->
           <div id="file-dropzone-group" class="form-group hidden">
             <input type="file" id="file-input" class="hidden" aria-label="Upload file">
             
-            <div id="dropzone" class="file-dropzone" tabindex="0" role="button" aria-label="Drop confidential file here or click to select">
-              <div class="file-dropzone-icon">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            <div id="dropzone" class="dropzone-container" tabindex="0" role="button" aria-label="Drop confidential file here or click to select">
+              <div class="dropzone-icon" style="margin:0 auto 10px auto;">
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
               </div>
-              <div style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:4px;">
+              <div style="font-size:13.5px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">
                 Click to browse or drag &amp; drop a file
               </div>
               <div style="font-size:12px;color:var(--text-muted);">
-                Supports code (Python, Shell, JSON), documents, certificates, or images up to 10 MB
+                Supports code, documents, certificates, PDFs, or images up to 15 MB
               </div>
             </div>
 
             <!-- File Selected Preview Card -->
-            <div id="file-preview-card" class="file-preview-card hidden">
+            <div id="file-preview-card" class="file-preview-card hidden" style="background:#040714;border:1px solid var(--border-luminous);border-radius:var(--radius-md);padding:12px;display:flex;align-items:center;justify-content:space-between;margin-top:10px;">
               <div style="display:flex;align-items:center;gap:10px;">
-                <div id="file-icon" style="color:var(--text-muted);">
-                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                <div id="file-icon" style="color:var(--cyan);">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
                 </div>
-                <img id="file-thumb" class="hidden" alt="File preview" style="width:32px;height:32px;border-radius:4px;object-fit:cover;">
+                <img id="file-thumb" class="hidden" alt="File preview" style="width:36px;height:36px;border-radius:4px;object-fit:cover;">
                 <div>
-                  <div id="file-name" style="font-size:13px;font-weight:600;color:var(--text-primary);">filename.ext</div>
+                  <div id="file-name" style="font-size:13px;font-weight:700;color:var(--text-primary);">filename.ext</div>
                   <div style="font-size:11px;color:var(--text-muted);display:flex;gap:6px;">
                     <span id="file-size">0 KB</span>
                     <span>•</span>
@@ -135,54 +181,245 @@
           </div>
 
           <!-- Section Divider -->
-          <hr class="fields-divider">
+          <div style="height: 1px; background: var(--border-subtle); margin: 20px 0;"></div>
 
-          <!-- 3-Column Configuration Row (Expires After / Views / Passphrase) -->
-          <div class="config-grid">
+          <!-- Secret Settings Grid (3 Columns on Desktop: Expires After / Max Views / Passphrase) -->
+          <div class="settings-grid-3col">
             
             <!-- Col 1: Expires After -->
             <div class="config-field">
-              <label for="ttl-select" class="section-label">Expires After</label>
-              <select id="ttl-select" name="ttl_seconds" class="form-control">
-                <option value="3600" selected>1 hour</option>
-                <option value="300">5 minutes</option>
-                <option value="86400">24 hours</option>
-                <option value="604800">7 days</option>
-              </select>
-              <span class="config-sub">Purged after expiry</span>
+              <label for="ttl-select" class="form-group-label">Expires After</label>
+              <div class="select-wrapper">
+                <select id="ttl-select" name="ttl_seconds" class="custom-select-input" aria-label="Select expiration duration">
+                  <option value="300">5 minutes</option>
+                  <option value="3600" selected>1 hour</option>
+                  <option value="86400">24 hours</option>
+                  <option value="604800">7 days</option>
+                  <option value="custom">Custom Date &amp; Time</option>
+                </select>
+                <div class="select-arrow-icon">▾</div>
+              </div>
+              <div class="config-helper-text" id="ttl-helper-text">Expires in 1 hour</div>
             </div>
 
             <!-- Col 2: Maximum Views -->
             <div class="config-field">
-              <label for="views-select" class="section-label">Max Views</label>
-              <select id="views-select" name="max_views" class="form-control">
-                <option value="1" selected>1 view</option>
-                <option value="2">2 views</option>
-                <option value="3">3 views</option>
-                <option value="5">5 views</option>
-              </select>
-              <span class="config-sub">Instant shredding</span>
+              <label for="views-select" class="form-group-label">Max Views</label>
+              <div class="select-wrapper">
+                <select id="views-select" name="max_views" class="custom-select-input" aria-label="Select maximum views">
+                  <option value="1" selected>1 view</option>
+                  <option value="2">2 views</option>
+                  <option value="3">3 views</option>
+                  <option value="5">5 views</option>
+                  <option value="10">10 views</option>
+                  <option value="25">25 views</option>
+                  <option value="50">50 views</option>
+                  <option value="100">100 views</option>
+                  <option value="custom">Custom</option>
+                </select>
+                <div class="select-arrow-icon">▾</div>
+              </div>
+              <div class="config-helper-text" id="views-helper-text">Single-view secret</div>
             </div>
 
-            <!-- Col 3: Passphrase (Optional) -->
+            <!-- Col 3: Passphrase (Optional Decryption Gate) -->
             <div class="config-field">
-              <label for="passphrase-input" class="section-label">Passphrase</label>
-              <div class="input-with-action">
+              <label for="passphrase-input" class="form-group-label">Passphrase <span style="font-weight:normal;color:var(--text-muted);">(Optional)</span></label>
+              <div class="passphrase-input-wrap">
                 <input
                   type="password"
                   id="passphrase-input"
                   name="passphrase"
-                  class="form-control"
-                  placeholder="Optional"
+                  class="text-input-field"
+                  placeholder="Optional (min 8 chars)"
                   autocomplete="new-password"
                   minlength="8"
                 >
-                <button type="button" id="btn-toggle-eye" class="config-input-eye" title="Toggle passphrase visibility">
-                  <svg id="eye-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                <button type="button" id="btn-toggle-eye" class="btn-eye-toggle" title="Toggle passphrase visibility">
+                  <svg id="eye-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                 </button>
               </div>
-              <span class="config-sub">Extra layer (min 8 chars)</span>
-              <div id="passphrase-validation-feedback" class="hidden" style="font-size:11px;color:var(--status-danger-text);margin-top:2px;"></div>
+              
+              <!-- Real-time Password Strength Meter -->
+              <div class="strength-indicator-bar" id="passphrase-strength-container">
+                <div class="strength-track-wrap">
+                  <div id="passphrase-strength-bar" class="strength-progress-fill"></div>
+                </div>
+                <span id="passphrase-strength-text" class="strength-status-text">Optional</span>
+              </div>
+
+              <!-- Confirm Passphrase Field -->
+              <div id="confirm-passphrase-group" class="hidden" style="margin-top:8px;">
+                <input
+                  type="password"
+                  id="confirm-passphrase-input"
+                  class="text-input-field"
+                  placeholder="Confirm passphrase"
+                  autocomplete="new-password"
+                >
+                <div id="passphrase-mismatch-feedback" class="hidden" style="font-size:11px;color:var(--danger);margin-top:3px;">Passphrases do not match</div>
+              </div>
+
+              <div id="passphrase-validation-feedback" class="hidden" style="font-size:11px;color:var(--danger);margin-top:4px;"></div>
+
+              <!-- Auto-destruct Failed Attempts Selector -->
+              <div id="auto-destruct-group" class="hidden" style="margin-top:10px;">
+                <span class="sub-field-label" style="font-size:10.5px;">AUTO-DESTRUCT ATTEMPTS</span>
+                <div style="display:flex;gap:6px;margin-top:4px;">
+                  <button type="button" class="attempt-chip active" data-attempts="3">3 Attempts</button>
+                  <button type="button" class="attempt-chip" data-attempts="5">5 Attempts</button>
+                  <button type="button" class="attempt-chip" data-attempts="10">10 Attempts</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Expandable Custom Expiration Date & Time Panel -->
+          <div id="custom-datetime-panel" class="custom-expand-panel hidden">
+            <div class="custom-panel-inner">
+              <div class="custom-picker-title">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <span>CUSTOM EXPIRATION DATE &amp; TIME</span>
+              </div>
+              <div class="datetime-inputs-row">
+                <div class="datetime-col">
+                  <label for="custom-date-input" class="sub-field-label">DATE</label>
+                  <input type="date" id="custom-date-input" class="cyber-datetime-input" aria-label="Expiration Date">
+                </div>
+                <div class="datetime-col">
+                  <label for="custom-time-input" class="sub-field-label">TIME</label>
+                  <div class="time-picker-row">
+                    <input type="time" id="custom-time-input" class="cyber-datetime-input" aria-label="Expiration Time">
+                    <div class="ampm-toggle-group">
+                      <button type="button" class="ampm-btn" id="btn-ampm-am">AM</button>
+                      <button type="button" class="ampm-btn active" id="btn-ampm-pm">PM</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="datetime-col">
+                  <label for="custom-timezone-select" class="sub-field-label">TIMEZONE</label>
+                  <select id="custom-timezone-select" class="cyber-datetime-input" aria-label="Expiration Timezone">
+                    <option value="Local" selected>Local Time</option>
+                    <option value="UTC">UTC (Coordinated Universal)</option>
+                    <option value="Asia/Kolkata">Asia/Kolkata (IST +5:30)</option>
+                    <option value="America/New_York">America/New_York (EST/EDT)</option>
+                    <option value="Europe/London">Europe/London (GMT/BST)</option>
+                    <option value="Asia/Tokyo">Asia/Tokyo (JST +9:00)</option>
+                  </select>
+                </div>
+              </div>
+              <label class="custom-checkbox-row" style="margin-top:12px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-secondary);cursor:pointer;">
+                <input type="checkbox" id="expire-after-view-toggle" checked>
+                <span>Destroy immediately after first successful reveal</span>
+              </label>
+              <div class="custom-datetime-preview" id="custom-datetime-preview">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <span id="custom-datetime-preview-text">Expires on 26 Sep 2026 at 11:45 PM</span>
+              </div>
+              <div id="custom-datetime-error" class="custom-inline-error hidden"></div>
+            </div>
+          </div>
+
+          <!-- Expandable Custom View Limit Panel -->
+          <div id="custom-views-panel" class="custom-expand-panel hidden">
+            <div class="custom-panel-inner">
+              <div class="custom-picker-title">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <span>CUSTOM VIEW LIMIT</span>
+              </div>
+              <div class="custom-views-input-row">
+                <div class="custom-num-input-wrap">
+                  <label for="custom-views-input" class="sub-field-label">MAX VIEWS</label>
+                  <input type="number" id="custom-views-input" min="1" max="1000" step="1" value="25" class="cyber-num-input" aria-label="Custom View Limit">
+                </div>
+                <div class="view-limit-chips-wrap">
+                  <span class="sub-field-label">QUICK SELECT</span>
+                  <div class="view-limit-chips">
+                    <button type="button" class="view-chip" data-views="1">1</button>
+                    <button type="button" class="view-chip" data-views="5">5</button>
+                    <button type="button" class="view-chip" data-views="10">10</button>
+                    <button type="button" class="view-chip active" data-views="25">25</button>
+                    <button type="button" class="view-chip" data-views="50">50</button>
+                    <button type="button" class="view-chip" data-views="100">100</button>
+                    <button type="button" class="view-chip" data-views="500">500</button>
+                    <button type="button" class="view-chip" data-views="1000">1000</button>
+                  </div>
+                </div>
+              </div>
+              <div class="custom-views-preview" id="custom-views-preview">
+                Secret can be revealed up to 25 times.
+              </div>
+              <div id="custom-views-error" class="custom-inline-error hidden"></div>
+            </div>
+          </div>
+
+          <!-- Client-Side Zero-Knowledge Encryption Mode -->
+          <div class="zk-mode-card" style="margin-top:16px;background:rgba(40,117,255,0.06);border:1px solid rgba(40,117,255,0.25);border-radius:var(--radius-md);padding:14px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div style="color:var(--cyan);flex-shrink:0;">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                </div>
+                <div>
+                  <div style="font-size:13px;font-weight:700;color:var(--text-primary);display:flex;align-items:center;gap:8px;">
+                    <span>Zero-Knowledge Client Encryption</span>
+                    <span class="secret-type-pill" style="font-size:9px;">WEB CRYPTO</span>
+                  </div>
+                  <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">
+                    Encrypt in browser Web Crypto before sending. Decryption key lives ONLY in URL hash fragment (#zk=...). Server never sees your plaintext or key.
+                  </div>
+                </div>
+              </div>
+              <label class="cyber-switch" title="Toggle Zero-Knowledge mode">
+                <input type="checkbox" id="zk-toggle" name="client_encrypted">
+                <span class="cyber-slider"></span>
+              </label>
+            </div>
+            <div id="zk-active-notice" class="hidden" style="margin-top:10px;padding:8px 12px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:6px;font-size:11.5px;color:var(--success);display:flex;align-items:center;gap:8px;">
+              <span>🔐 Zero-Knowledge Active: 256-bit AES-GCM key will be created locally. Server receives only ciphertext.</span>
+            </div>
+          </div>
+
+          <!-- Dynamic Security Policy & Score Builder -->
+          <div class="security-score-widget">
+            <div class="score-header-row">
+              <span style="color:var(--text-muted);">Security Configuration Score</span>
+              <span id="security-score-val" style="color:var(--cyan);font-family:var(--font-mono);font-size:13px;">75% • Strong</span>
+            </div>
+            <div class="score-track">
+              <div id="security-score-fill" class="score-fill" style="width: 75%;"></div>
+            </div>
+            <div style="display:flex;gap:14px;margin-top:10px;font-size:11px;color:var(--text-muted);flex-wrap:wrap;">
+              <span>✓ Scraper Shield (BotGate)</span>
+              <span>✓ Anti-Indexing Active</span>
+              <span id="score-item-zk">○ Zero-Knowledge (+15%)</span>
+              <span id="score-item-pass">○ Passphrase (+10%)</span>
+            </div>
+          </div>
+
+          <!-- Combined Security Policy Summary -->
+          <div class="security-policy-summary" id="security-policy-summary">
+            <div class="policy-header">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--cyan);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              <span>SECURITY POLICY</span>
+            </div>
+            <div class="policy-grid">
+              <div class="policy-item">
+                <span class="policy-label">Expiration</span>
+                <span class="policy-value" id="summary-expiration">In 1 hour</span>
+              </div>
+              <div class="policy-item">
+                <span class="policy-label">Maximum Views</span>
+                <span class="policy-value" id="summary-views">Single-view secret</span>
+              </div>
+              <div class="policy-item">
+                <span class="policy-label">After Expiration</span>
+                <span class="policy-value policy-accent">Permanent destruction</span>
+              </div>
+              <div class="policy-item">
+                <span class="policy-label">After View Limit</span>
+                <span class="policy-value policy-accent">Automatic destruction</span>
+              </div>
             </div>
           </div>
 
@@ -192,10 +429,10 @@
             <span id="submit-error-message"></span>
           </div>
 
-          <!-- Primary Submit CTA (Solid single-color, 46px height) -->
-          <button type="submit" id="submit-btn" class="btn-primary-solid">
+          <!-- Primary Submit CTA -->
+          <button type="submit" id="submit-btn" class="btn-primary-solid" style="margin-top: 8px;">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            <span id="submit-btn-text">Encrypt &amp; Generate Secure Link →</span>
+            <span id="submit-btn-text">🔒 Encrypt &amp; Generate Secure Link →</span>
           </button>
         </form>
 
@@ -203,18 +440,31 @@
         <section id="result-section" class="hidden" aria-label="Secret generated successfully">
           
           <header class="card-header-clean">
-            <span class="status-pill status-active" style="margin-bottom:8px;">
-              <span class="status-dot"></span>
-              <span>Encrypted &amp; Protected</span>
-            </span>
+            <div class="success-badge-card">
+              <span class="status-dot" style="background:var(--success);box-shadow:0 0 8px var(--success);"></span>
+              <span>● ENCRYPTED &amp; PROTECTED</span>
+            </div>
             <h2 class="page-title">Vault Created</h2>
             <p class="page-subtitle">Your secret is encrypted with AES-256-GCM. Share the access link below.</p>
           </header>
 
+          <!-- Vault Identifier & Integrity Fingerprint -->
+          <div style="background:#040714;border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:10px 14px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:11px;color:var(--text-muted);text-transform:uppercase;font-weight:700;">Vault ID</span>
+              <span id="result-vault-id" style="font-family:var(--font-mono);font-size:12.5px;color:var(--cyan);font-weight:700;">••••••••••••</span>
+              <button type="button" id="btn-unmask-vault-id" class="btn-input-action" style="padding:1px 6px;font-size:10px;">Show</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span id="result-zk-badge" class="secret-type-pill hidden" style="background:rgba(16,185,129,0.15);color:var(--success);border-color:rgba(16,185,129,0.3);">ZERO-KNOWLEDGE</span>
+              <span id="result-integrity-fingerprint" style="font-size:10.5px;color:var(--text-muted);font-family:var(--font-mono);">SHA-256: e3b0c44...</span>
+            </div>
+          </div>
+
           <!-- Secret Access Link Box -->
           <span class="section-label">Secret Access Link</span>
           <div class="secret-link-card">
-            <input type="text" id="link-output" class="link-input" readonly aria-label="Generated secret view URL">
+            <input type="text" id="link-output" class="link-input" readonly spellcheck="false" aria-label="Generated secret view URL">
             <button type="button" id="copy-btn" class="btn-copy-gradient">
               <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
               <span>Copy Link</span>
@@ -228,78 +478,90 @@
             </a>
           </div>
 
-          <!-- Share via Apps (Clean Equal-Spaced Neutral Tiles) -->
-          <div style="margin-top:20px;">
-            <span class="section-label">Share via Channels</span>
-            <div class="share-apps-row">
+          <!-- Sharing Channels (Cards with icons & hover effects) -->
+          <div style="margin-top:22px;">
+            <span class="section-label">Sharing Channels</span>
+            <div class="share-channels-grid">
               <!-- WhatsApp -->
-              <button type="button" class="app-tile" id="btn-share-whatsapp" title="Send link via WhatsApp">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-                <span class="app-tile-name">WhatsApp</span>
+              <button type="button" class="channel-card-btn" id="btn-share-whatsapp" title="Send link via WhatsApp">
+                <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                <span class="channel-label">WhatsApp</span>
               </button>
 
               <!-- Slack -->
-              <button type="button" class="app-tile" id="btn-share-slack" title="Copy Slack markdown &amp; open Slack">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                <span class="app-tile-name">Slack</span>
+              <button type="button" class="channel-card-btn" id="btn-share-slack" title="Copy Slack markdown &amp; open Slack">
+                <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                <span class="channel-label">Slack</span>
               </button>
 
               <!-- Teams -->
-              <button type="button" class="app-tile" id="btn-share-teams" title="Send link via Microsoft Teams">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                <span class="app-tile-name">Teams</span>
+              <button type="button" class="channel-card-btn" id="btn-share-teams" title="Send link via Microsoft Teams">
+                <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                <span class="channel-label">Teams</span>
               </button>
 
               <!-- Discord -->
-              <button type="button" class="app-tile" id="btn-share-discord" title="Copy spoiler-protected link">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="12" x2="8" y2="12.01"></line><line x1="16" y1="12" x2="16" y2="12.01"></line></svg>
-                <span class="app-tile-name">Discord</span>
+              <button type="button" class="channel-card-btn" id="btn-share-discord" title="Copy spoiler-protected link">
+                <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="12" x2="8" y2="12.01"></line><line x1="16" y1="12" x2="16" y2="12.01"></line></svg>
+                <span class="channel-label">Discord</span>
               </button>
 
               <!-- Email -->
-              <button type="button" class="app-tile" id="btn-share-email" title="Draft secure email with secret link">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                <span class="app-tile-name">Email</span>
+              <button type="button" class="channel-card-btn" id="btn-share-email" title="Draft secure email with secret link">
+                <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                <span class="channel-label">Email</span>
+              </button>
+
+              <!-- QR Code Toggle -->
+              <button type="button" class="channel-card-btn" id="btn-toggle-qr" title="Show QR Code">
+                <svg class="channel-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                <span class="channel-label">QR Code</span>
+              </button>
+
+              <!-- Portable HTML -->
+              <button type="button" class="channel-card-btn" id="btn-download-html-vault" title="Download portable decryptor capsule">
+                <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                <span class="channel-label">Portable HTML</span>
               </button>
             </div>
           </div>
 
-          <!-- Secondary Actions -->
-          <div style="display:flex;gap:8px;margin-top:16px;">
-            <button type="button" id="btn-toggle-qr" class="btn-action-pill" style="flex:1;">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-              <span>QR Code</span>
+          <!-- Collapsible QR Code Frame -->
+          <div id="qr-container" class="hidden" style="margin-top:16px;text-align:center;padding:16px;background:rgba(5,9,20,0.8);border:1px solid var(--border-subtle);border-radius:var(--radius-md);">
+            <div class="qr-frame" style="display:inline-block;padding:10px;background:#fff;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.5);"></div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:8px;">Scan with mobile camera or messaging app to open secret</div>
+            <div style="margin-top:10px;display:flex;gap:8px;justify-content:center;">
+              <button type="button" id="btn-download-qr-png" class="btn-input-action">Download PNG</button>
+              <button type="button" id="btn-download-qr-svg" class="btn-input-action">Download SVG</button>
+            </div>
+          </div>
+
+          <!-- 3 Vault Information Cards -->
+          <div class="info-cards-grid" style="margin-top: 20px;">
+            <div class="info-summary-card">
+              <span class="info-card-label">Expires</span>
+              <span id="expires-display" class="info-card-val">-</span>
+            </div>
+            <div class="info-summary-card">
+              <span class="info-card-label">Allowance</span>
+              <span id="views-display" class="info-card-val">1 view</span>
+            </div>
+            <div class="info-summary-card">
+              <span class="info-card-label">Security</span>
+              <span class="info-card-val">AES-256-GCM</span>
+            </div>
+          </div>
+
+          <!-- Emergency Direct Revocation / Destruction -->
+          <div style="margin-top:16px;">
+            <button type="button" id="btn-emergency-destroy" class="btn-emergency-destroy" title="Permanently shred this vault immediately">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              <span>💣 Emergency Destroy Vault Now</span>
             </button>
-            <button type="button" id="btn-download-html-vault" class="btn-action-pill" style="flex:1;">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-              <span>Portable HTML</span>
-            </button>
           </div>
 
-          <!-- Collapsible QR Code -->
-          <div id="qr-container" class="hidden" style="margin-top:16px;text-align:center;padding:16px;background:var(--bg-subtle);border-radius:var(--radius-md);">
-            <div class="qr-frame" style="display:inline-block;padding:8px;background:#fff;border-radius:6px;"></div>
-            <div style="font-size:12px;color:var(--text-muted);margin-top:8px;">Scan with camera to view secret</div>
-          </div>
-
-          <!-- Metadata Strip -->
-          <div class="metadata-strip">
-            <div class="meta-item">
-              <span class="meta-title">Expires</span>
-              <span id="expires-display" class="meta-val">-</span>
-            </div>
-            <div class="meta-item">
-              <span class="meta-title">Allowance</span>
-              <span id="views-display" class="meta-val">1 view</span>
-            </div>
-            <div class="meta-item">
-              <span class="meta-title">Security</span>
-              <span class="meta-val">AES-256-GCM</span>
-            </div>
-          </div>
-
-          <!-- Bottom Full-Width Secondary Action: + Create Another Secret -->
-          <button type="button" id="reset-btn" class="btn-secondary-neutral" style="width:100%;height:44px;margin-top:20px;">
+          <!-- Bottom Secondary Action: + Create Another Secret -->
+          <button type="button" id="reset-btn" class="btn-secondary-neutral" style="width:100%;margin-top:14px;height:44px;">
             <span>+ Create Another Secret</span>
           </button>
         </section>
@@ -307,7 +569,7 @@
       </div>
 
       <!-- Trust Strip -->
-      <div id="trust-strip" style="display:flex;align-items:center;justify-content:center;gap:16px;margin-top:20px;font-size:12px;color:var(--text-muted);">
+      <div id="trust-strip" style="display:flex;align-items:center;justify-content:center;gap:16px;margin-top:24px;font-size:12px;color:var(--text-muted);flex-wrap:wrap;">
         <span>Zero Plaintext Storage</span>
         <span>•</span>
         <span>Time-Limited Secrets</span>
@@ -323,9 +585,7 @@
     <div class="modal-dialog">
       <div class="modal-header">
         <h3 id="modal-hiw-title" class="modal-title">How It Works</h3>
-        <button type="button" class="btn-modal-close" data-modal="modal-how-it-works" aria-label="Close modal">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </button>
+        <button type="button" class="btn-modal-close" data-modal="modal-how-it-works" aria-label="Close modal">✕</button>
       </div>
       <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">
         <p style="margin-bottom:12px;"><strong>1. Create:</strong> Input confidential credentials. Encrypted in memory with AES-256-GCM.</p>
@@ -339,9 +599,7 @@
     <div class="modal-dialog">
       <div class="modal-header">
         <h3 id="modal-sec-title" class="modal-title">Security Architecture</h3>
-        <button type="button" class="btn-modal-close" data-modal="modal-security" aria-label="Close modal">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </button>
+        <button type="button" class="btn-modal-close" data-modal="modal-security" aria-label="Close modal">✕</button>
       </div>
       <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">
         <p style="margin-bottom:12px;"><strong>Authenticated Encryption:</strong> Protected with 256-bit AES-GCM and 128-bit authentication tags.</p>
@@ -354,9 +612,7 @@
     <div class="modal-dialog">
       <div class="modal-header">
         <h3 id="modal-faq-title" class="modal-title">Frequently Asked Questions</h3>
-        <button type="button" class="btn-modal-close" data-modal="modal-faq" aria-label="Close modal">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </button>
+        <button type="button" class="btn-modal-close" data-modal="modal-faq" aria-label="Close modal">✕</button>
       </div>
       <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">
         <p style="margin-bottom:12px;"><strong>Can a burned secret be recovered?</strong> No. Once burned, storage is physically wiped. Recovery is mathematically impossible.</p>
@@ -365,17 +621,23 @@
     </div>
   </div>
 
-  <!-- Minimal Enterprise Footer -->
-  <footer class="footer-enterprise">
-    <div class="footer-trust-strip">
-      <span>Protected by AES-256-GCM</span>
-      <span>•</span>
-      <span>Zero Plaintext Storage</span>
-      <span>•</span>
-      <span>Permanent Overwrite</span>
-    </div>
-    <div class="footer-meta-text">
-      Ephemeral Secret Vault • Production-Grade Security Service
+  <!-- Premium Cybersecurity Footer -->
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <div class="footer-features-strip">
+        <span>Protected by AES-256-GCM</span>
+        <span class="footer-separator">•</span>
+        <span>Zero Plaintext Storage</span>
+        <span class="footer-separator">•</span>
+        <span>Automatic Destruction</span>
+      </div>
+      <div class="footer-copy" style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;">
+        <span>Ephemeral Secret Vault • Production-Grade Security Service</span>
+        <span>•</span>
+        <a href="/test-center" style="color:var(--text-muted);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--cyan)'" onmouseout="this.style.color='var(--text-muted)'">Test Center</a>
+        <span>•</span>
+        <a href="/benchmark" style="color:var(--text-muted);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--cyan)'" onmouseout="this.style.color='var(--text-muted)'">Benchmark</a>
+      </div>
     </div>
   </footer>
 

@@ -113,6 +113,20 @@ router.get('/dashboard', (req, res) => {
   res.sendFile(path.join(publicDir, 'dashboard.html'));
 });
 
+// Development Security Test Center page
+router.get('/test-center', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+  res.sendFile(path.join(publicDir, 'test-center.html'));
+});
+
+// Development Benchmark page
+router.get('/benchmark', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+  res.sendFile(path.join(publicDir, 'benchmark.html'));
+});
+
 // Public Safe Metadata API
 router.get(['/api/vault/:id/metadata', '/api/secret/:id/metadata'], validateSecretId, secretController.getVaultMetadata);
 
@@ -126,6 +140,9 @@ router.get('/view/threshold/:id', validateSecretId, (req, res) => {
 
 // Create secret API
 router.post('/api/secret', apiCreateLimiter, validateCreateSecret, secretController.createSecret);
+
+// Emergency vault destruction API
+router.post(['/api/vault/:id/destroy', '/api/secret/:id/destroy'], validateSecretId, secretController.emergencyDestroySecret);
 
 // Reveal Authorization Token Flow (Two-Step Backend Enforced)
 router.post(['/api/vault/:id/reveal/request', '/api/secret/:id/reveal/request'], apiBurnLimiter, validateSecretId, secretController.requestRevealToken);

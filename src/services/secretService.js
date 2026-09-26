@@ -27,6 +27,7 @@ function createSecret({
   secret,
   file = null,
   ttlSeconds = 3600,
+  customExpiresAt = null,
   maxViews = 1,
   passphrase = null,
   customBaseUrl = null,
@@ -46,7 +47,9 @@ function createSecret({
   const db = getDb();
   const id = generateId();
   const now = Date.now();
-  const expiresAt = now + ttlSeconds * 1000;
+  const expiresAt = (customExpiresAt && !isNaN(Number(customExpiresAt)))
+    ? Number(customExpiresAt)
+    : (now + ttlSeconds * 1000);
 
   let cipherBuf;
   let ivBuf;

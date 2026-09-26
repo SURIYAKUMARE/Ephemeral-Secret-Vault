@@ -10,19 +10,54 @@
   <!-- Header Bar -->
   <header class="popup-header">
     <div class="header-left">
-      <img src="../icons/icon32.png" alt="Ephemeral Vault Logo" class="header-logo">
+      <div class="logo-wrapper">
+        <img src="../icons/icon32.png" alt="Ephemeral Vault Logo" class="header-logo">
+        <span class="logo-glow"></span>
+      </div>
       <div class="header-text">
         <h1 class="brand-title">Ephemeral <span class="gradient-text">Secret Vault</span></h1>
-        <div class="status-indicator" id="vault-status">
+        <div class="status-indicator-pill offline" id="vault-status" title="Click to check connection or change server">
           <span class="status-dot"></span>
           <span class="status-label" id="status-text">Checking...</span>
+          <span class="status-latency hidden" id="status-latency"></span>
         </div>
       </div>
     </div>
-    <button type="button" id="btn-open-settings" class="btn-icon" title="Open Settings" aria-label="Extension Settings">
-      <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-    </button>
+    <div class="header-actions">
+      <button type="button" id="btn-toggle-server" class="btn-icon" title="Quick Server & Connection Settings" aria-label="Server Connection Settings">
+        <svg class="svg-icon" viewBox="0 0 24 24"><path d="M4 14h6m-6-4h6m4 10h6m-6-4h6m-6-8h6M4 6h6"></path><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect><circle cx="6" cy="6" r="1"></circle><circle cx="6" cy="18" r="1"></circle></svg>
+      </button>
+      <button type="button" id="btn-open-settings" class="btn-icon" title="Extension Options" aria-label="Extension Settings">
+        <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </button>
+    </div>
   </header>
+
+  <!-- Collapsible Quick Server Switcher & Diagnostics Drawer -->
+  <div id="server-drawer" class="server-drawer hidden">
+    <div class="drawer-header">
+      <span class="drawer-title">VAULT ENDPOINT & STATUS</span>
+      <button type="button" id="btn-close-drawer" class="btn-micro" title="Close drawer">✕</button>
+    </div>
+    <div class="drawer-body">
+      <div class="server-input-row">
+        <input type="text" id="quick-server-input" class="text-input-single" placeholder="http://localhost:3000" spellcheck="false">
+        <button type="button" id="btn-quick-ping" class="btn-drawer-action" title="Test & Save Connection">
+          <span id="quick-ping-icon">⚡</span>
+          <span>Test & Save</span>
+        </button>
+      </div>
+      <div class="server-presets-row">
+        <span class="preset-label">Presets:</span>
+        <button type="button" class="preset-chip" data-url="http://localhost:3000">localhost:3000</button>
+        <button type="button" class="preset-chip" data-url="http://127.0.0.1:3000">127.0.0.1:3000</button>
+      </div>
+      <div id="quick-ping-status" class="ping-status-msg"></div>
+      <div class="drawer-hint">
+        💡 If Vault is offline: start your server with <code>npm start</code> in the project folder.
+      </div>
+    </div>
+  </div>
 
   <!-- Tagline Banner -->
   <div class="tagline-strip">
@@ -35,7 +70,7 @@
       <span>🔐 Protect</span>
     </button>
     <button type="button" class="tab-btn" id="tab-history" role="tab" aria-selected="false">
-      <span>📋 Recent</span>
+      <span>📋 Recent <span id="history-badge" class="count-badge hidden">0</span></span>
     </button>
     <button type="button" class="tab-btn" id="tab-about" role="tab" aria-selected="false">
       <span>🛡️ Security</span>
@@ -49,20 +84,32 @@
     <section id="panel-protect" class="tab-panel active">
       <div id="create-view">
         <div class="field-header">
-          <div style="display:flex;align-items:center;gap:6px;">
+          <div class="field-title-group">
             <label for="popup-secret" class="field-label">SECRET CONTENT</label>
             <span id="detection-badge" class="badge-sensitive hidden">⚠ Sensitive</span>
+            <span id="char-counter" class="char-count">0 chars</span>
           </div>
-          <div style="display:flex;gap:6px;">
-            <button type="button" id="btn-paste-secret" class="btn-micro" title="Paste from clipboard">Paste</button>
-            <button type="button" id="btn-mask-secret" class="btn-micro">Hide</button>
+          <div class="field-actions">
+            <button type="button" id="btn-gen-secret" class="btn-micro-action" title="Generate strong random secret/password">🎲 Generate</button>
+            <button type="button" id="btn-paste-secret" class="btn-micro" title="Paste from clipboard">📋 Paste</button>
+            <button type="button" id="btn-mask-secret" class="btn-micro" title="Mask/unmask content">Hide</button>
+            <button type="button" id="btn-clear-secret" class="btn-micro-danger" title="Clear text">Clear</button>
           </div>
+        </div>
+
+        <!-- Template Presets Bar -->
+        <div class="template-toolbar">
+          <span class="template-label">Presets:</span>
+          <button type="button" class="btn-template" data-template="api">🔑 API Key</button>
+          <button type="button" class="btn-template" data-template="credentials">👤 Credentials</button>
+          <button type="button" class="btn-template" data-template="key">📜 Private Key</button>
+          <button type="button" class="btn-template" data-template="note">📝 Secure Note</button>
         </div>
 
         <textarea
           id="popup-secret"
           class="text-input"
-          placeholder="Type or paste sensitive credentials, API keys, passwords..."
+          placeholder="Type or paste sensitive credentials, API keys, passwords, recovery tokens..."
           rows="4"
           spellcheck="false"
         ></textarea>
@@ -71,6 +118,7 @@
           <div class="config-group">
             <label for="popup-ttl" class="config-label">EXPIRES AFTER</label>
             <select id="popup-ttl" class="select-input">
+              <option value="300">5 minutes</option>
               <option value="600" selected>10 minutes</option>
               <option value="3600">1 hour</option>
               <option value="21600">6 hours</option>
@@ -84,20 +132,45 @@
             <select id="popup-views" class="select-input">
               <option value="1" selected>1 view (Instant Burn)</option>
               <option value="2">2 views</option>
+              <option value="3">3 views</option>
               <option value="5">5 views</option>
+              <option value="10">10 views</option>
             </select>
           </div>
         </div>
 
         <div class="config-group" style="margin-top: 10px;">
-          <label for="popup-passphrase" class="config-label">PASSPHRASE <span style="font-weight:normal;opacity:0.6;">(Optional)</span></label>
+          <div class="passphrase-header-row">
+            <label for="popup-passphrase" class="config-label">PASSPHRASE <span style="font-weight:normal;opacity:0.6;">(Optional Decryption Key)</span></label>
+            <button type="button" id="btn-gen-passphrase" class="btn-micro-action" title="Generate strong random passphrase">🎲 Random Key</button>
+          </div>
           <div class="passphrase-row">
-            <input type="password" id="popup-passphrase" class="text-input-single" placeholder="Sender passphrase">
+            <input type="password" id="popup-passphrase" class="text-input-single" placeholder="Enter passphrase or leave blank for one-click link">
             <button type="button" id="btn-toggle-eye" class="btn-icon-eye" aria-label="Toggle password visibility">👁</button>
+          </div>
+          <div id="pass-strength-container" class="pass-strength-container hidden">
+            <div class="strength-track">
+              <div id="pass-strength-bar" class="strength-bar"></div>
+            </div>
+            <span id="pass-strength-text" class="strength-label">Passphrase strength</span>
           </div>
         </div>
 
-        <div id="popup-error" class="alert-box alert-danger hidden"></div>
+        <!-- Rich Diagnostic Error Banner -->
+        <div id="popup-error" class="alert-box alert-danger hidden">
+          <div class="alert-content">
+            <div class="alert-title-row">
+              <span class="alert-icon">⚠️</span>
+              <strong id="error-title">Vault Connection Issue</strong>
+            </div>
+            <p id="error-message" class="alert-message"></p>
+            <div class="alert-actions-row">
+              <button type="button" id="btn-error-retry" class="btn-alert-action">🔄 Retry Connection</button>
+              <button type="button" id="btn-error-switch" class="btn-alert-action">⚙️ Change Server</button>
+              <button type="button" id="btn-error-offline" class="btn-alert-action-primary" title="Encrypt directly in browser via Web Crypto">🔐 Encrypt Offline</button>
+            </div>
+          </div>
+        </div>
 
         <button type="button" id="btn-create-vault" class="btn-primary-action">
           <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
@@ -107,22 +180,53 @@
 
       <!-- Result View -->
       <div id="result-view" class="result-card hidden">
-        <div class="result-success-badge">
-          <span>✓</span>
-          <span>Secret Protected</span>
+        <div class="result-header">
+          <div class="result-success-badge">
+            <span class="check-circle">✓</span>
+            <div>
+              <span class="success-heading">Secret Protected</span>
+              <span id="result-mode-tag" class="success-subheading">AES-256-GCM Zero-Trace Vault</span>
+            </div>
+          </div>
         </div>
 
         <div class="link-output-box">
-          <input type="text" id="popup-link-output" class="link-input-display" readonly>
+          <input type="text" id="popup-link-output" class="link-input-display" readonly spellcheck="false">
         </div>
 
         <div class="result-actions-grid">
           <button type="button" id="btn-copy-popup-link" class="btn-primary-action" style="margin-top:0;">
-            <span>📋 Copy Link</span>
+            <svg class="svg-icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <span id="copy-btn-label">Copy Vault Link</span>
           </button>
           <a id="btn-open-popup-link" href="#" target="_blank" class="btn-secondary-action">
-            <span>🌐 Open</span>
+            <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10z"></path></svg>
+            <span>Open</span>
           </a>
+        </div>
+
+        <!-- Quick Social & Messaging Share Options -->
+        <div class="share-options-row">
+          <button type="button" id="btn-share-whatsapp" class="btn-share-pill" title="Share via WhatsApp Web">
+            <span class="share-icon">💬</span>
+            <span>WhatsApp</span>
+          </button>
+          <button type="button" id="btn-toggle-qr" class="btn-share-pill" title="Show QR Code for mobile scanning">
+            <span class="share-icon">📱</span>
+            <span>QR Code</span>
+          </button>
+          <button type="button" id="btn-copy-formatted" class="btn-share-pill" title="Copy full message template">
+            <span class="share-icon">✉️</span>
+            <span>Copy Message</span>
+          </button>
+        </div>
+
+        <!-- Collapsible QR Code Frame -->
+        <div id="qr-container" class="qr-container hidden">
+          <div class="qr-card">
+            <div id="qr-frame" class="qr-frame"></div>
+            <p class="qr-desc">Scan with mobile camera or messaging app to open secret</p>
+          </div>
         </div>
 
         <div class="security-compact-box">
@@ -131,13 +235,17 @@
             <span class="sec-v sec-v-active">Active</span>
           </div>
           <div class="sec-row">
-            <span class="sec-k">Status</span>
-            <span class="sec-v sec-v-ready">Access available</span>
+            <span class="sec-k">Self-Destruction</span>
+            <span class="sec-v sec-v-ready" id="result-burn-tag">Burn upon viewing</span>
+          </div>
+          <div class="sec-row">
+            <span class="sec-k">Zero-Knowledge</span>
+            <span class="sec-v sec-v-active">No plaintext saved</span>
           </div>
         </div>
 
         <div class="destruction-hint">
-          🛡️ Your secret was designed to disappear. Once expired or destroyed, access is permanently closed.
+          🛡️ Designed to disappear. Once expired or viewed, this secret is permanently purged from storage.
         </div>
 
         <button type="button" id="btn-reset-popup" class="btn-secondary-action" style="margin-top:4px;">
@@ -150,7 +258,10 @@
     <section id="panel-history" class="tab-panel">
       <div class="panel-header-row">
         <span class="panel-title">RECENT VAULTS (METADATA ONLY)</span>
-        <button type="button" id="btn-clear-history" class="btn-micro-danger">Clear</button>
+        <button type="button" id="btn-clear-history" class="btn-micro-danger">Clear All</button>
+      </div>
+      <div class="history-search-row">
+        <input type="text" id="history-search-input" class="text-input-single" placeholder="🔍 Search recent vaults by ID or platform...">
       </div>
       <div id="history-list" class="history-list-container">
         <!-- Injected via popup.js -->
@@ -160,14 +271,15 @@
     <!-- Tab 3: Security & Architecture -->
     <section id="panel-about" class="tab-panel">
       <div class="security-sheet">
-        <h3 class="sheet-title">🔐 Zero-Trace Architecture</h3>
+        <h3 class="sheet-title">🔐 Zero-Trace Vault Architecture</h3>
         <p class="sheet-desc">Ephemeral Secret Vault never stores plaintext secrets, encryption keys, or authentication tokens in extension storage or browser history.</p>
 
         <ul class="features-list">
-          <li><strong>Zero Plaintext Storage:</strong> Secrets are encrypted at rest via AES-256-GCM.</li>
+          <li><strong>Zero Plaintext Storage:</strong> Secrets are encrypted at rest with authenticated AES-256-GCM.</li>
           <li><strong>Atomic Self-Destruction:</strong> The secret is purged from the database immediately upon view or expiry.</li>
-          <li><strong>Anti-Leak Headers:</strong> Response headers prevent browser and proxy caching.</li>
-          <li><strong>Bot Guard:</strong> Link preview crawlers (WhatsApp, Slack, Discord) never trigger premature burns.</li>
+          <li><strong>Bot & Crawler Defense:</strong> Link preview crawlers (WhatsApp, Slack, Discord) never trigger premature burns.</li>
+          <li><strong>Passphrase Protection:</strong> Optional PBKDF2/Argon2 passphrase-gated decryption with brute-force defense.</li>
+          <li><strong>Offline Zero-Knowledge Fallback:</strong> End-to-end Web Crypto mode works even without a live backend.</li>
         </ul>
 
         <div class="sheet-footer">
@@ -180,6 +292,7 @@
 
   </main>
 
+  <script src="../shared/qrcode.min.js"></script>
   <script src="../shared/api-client.js"></script>
   <script src="../shared/storage-manager.js"></script>
   <script src="../shared/sensitive-detector.js"></script>

@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body id="top">
-  <!-- Minimal Monochrome Header -->
+  <!-- Master Futuristic Cybersecurity Navbar -->
   <header class="navbar">
     <div class="nav-container">
       <a href="/" class="nav-brand" title="Ephemeral Secret Vault">
@@ -25,6 +25,7 @@
       <nav class="nav-links-row" aria-label="Main Navigation">
         <a href="/">Home</a>
         <a href="/create">Product</a>
+        <a href="/file">File Vault</a>
         <a href="/security">Security</a>
         <a href="/extension">Extension</a>
         <a href="/how-it-works">How It Works</a>
@@ -32,84 +33,99 @@
       </nav>
 
       <div class="nav-actions">
-        <!-- Exactly ONE status indicator in header -->
         <span class="status-pill status-neutral">
           <span class="status-dot"></span>
           <span>AES-256-GCM</span>
         </span>
 
-        <!-- Theme toggle as plain icon button -->
         <button type="button" class="btn-icon-plain" id="theme-toggle" aria-label="Toggle Theme" title="Toggle theme">
           <svg id="theme-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
           </svg>
         </button>
+
+        <button type="button" class="mobile-nav-toggle" id="mobile-toggle" aria-label="Open Navigation Menu">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
       </div>
     </div>
   </header>
 
+  <!-- Mobile Navigation Drawer -->
+  <div class="mobile-menu-drawer" id="mobile-drawer">
+    <a href="/">Home</a>
+    <a href="/create">Product</a>
+    <a href="/file">File Vault</a>
+    <a href="/security">Security</a>
+    <a href="/extension">Extension</a>
+    <a href="/how-it-works">How It Works</a>
+    <a href="/dashboard" class="active">Dashboard</a>
+  </div>
+
   <!-- Dashboard Container -->
   <main class="viewport-layout" style="padding-top:40px;padding-bottom:60px;">
-    <div style="max-width:800px;width:100%;margin:0 auto;padding:0 16px;">
+    <div style="max-width:880px;width:100%;margin:0 auto;padding:0 20px;">
       
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:28px;">
         <div>
-          <span class="section-label">Local Management</span>
-          <h1 class="page-title" style="font-size:24px;margin-bottom:4px;">
+          <span class="section-label">LOCAL MANAGEMENT</span>
+          <h1 class="page-title" style="font-size:28px;letter-spacing:-0.03em;margin-bottom:4px;">
             Your Vault Activity
           </h1>
-          <p class="page-subtitle" style="font-size:13px;margin:0;">
+          <p class="page-subtitle" style="font-size:14px;margin:0;">
             Manage links created from this browser. Plaintext secrets are strictly never stored in browser storage.
           </p>
         </div>
 
-        <div style="display:flex;gap:8px;">
-          <button type="button" id="btn-clear-history" class="btn-secondary-neutral" style="height:36px;padding:0 14px;font-size:12px;">
+        <div style="display:flex;gap:10px;">
+          <button type="button" id="btn-clear-history" class="btn-secondary-clean" style="height:38px;padding:0 14px;font-size:12px;">
             Clear History
           </button>
-          <a href="/create" class="btn-primary-solid" style="height:36px;padding:0 16px;font-size:12px;text-decoration:none;">
+          <a href="/create" class="btn-primary-solid" style="height:38px;padding:0 18px;font-size:13px;text-decoration:none;display:inline-flex;">
             + New Secret
           </a>
         </div>
       </div>
 
       <!-- Quick Stats Grid (3-Column Clean Bordered Container) -->
-      <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:12px;margin-bottom:24px;">
-        <div style="background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-card);padding:16px;">
-          <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;">Tracked Vaults</div>
-          <div id="stat-total" style="font-size:24px;font-weight:700;color:var(--text-primary);margin-top:4px;">0</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:14px;margin-bottom:24px;">
+        <div class="vault-card" style="padding:18px;">
+          <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;">Tracked Vaults</div>
+          <div id="stat-total" style="font-size:28px;font-weight:800;color:var(--text-primary);margin-top:6px;font-family:var(--font-mono);">0</div>
         </div>
-        <div style="background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-card);padding:16px;">
-          <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;">Active Status</div>
-          <div id="stat-active" style="font-size:24px;font-weight:700;color:var(--status-active-text);margin-top:4px;">0</div>
+        <div class="vault-card" style="padding:18px;">
+          <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;">Active Status</div>
+          <div id="stat-active" style="font-size:28px;font-weight:800;color:var(--status-active-text);margin-top:6px;font-family:var(--font-mono);">0</div>
         </div>
-        <div style="background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-card);padding:16px;">
-          <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;">Privacy Mode</div>
-          <div style="font-size:14px;font-weight:600;color:var(--text-primary);margin-top:8px;">Zero-Plaintext</div>
+        <div class="vault-card" style="padding:18px;">
+          <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;">Privacy Mode</div>
+          <div style="font-size:16px;font-weight:700;color:var(--primary);margin-top:10px;">Zero-Plaintext</div>
         </div>
       </div>
 
       <!-- Vaults List Table / Cards -->
       <div class="vault-card" style="padding:0;overflow:hidden;">
-        <div style="padding:14px 18px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between;">
-          <span style="font-size:13px;font-weight:600;color:var(--text-primary);">Recent Vault Links</span>
-          <button type="button" id="btn-refresh-status" style="background:none;border:none;color:var(--primary);font-size:12px;cursor:pointer;font-weight:500;">
-            ↻ Refresh Status
+        <div style="padding:16px 20px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.02);">
+          <span style="font-size:14px;font-weight:700;color:var(--text-primary);letter-spacing:-0.01em;">Recent Vault Links</span>
+          <button type="button" id="btn-refresh-status" style="background:none;border:none;color:var(--primary);font-size:13px;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:6px;">
+            <span>↻ Refresh Status</span>
           </button>
         </div>
 
-        <div id="vaults-container" style="padding:16px;">
+        <div id="vaults-container" style="padding:20px;">
           <!-- Dynamically populated or empty state -->
           <div id="empty-state" style="padding:48px 16px;text-align:center;color:var(--text-muted);">
-            <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:12px;opacity:0.4;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            <div style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:4px;">No Vaults Created Yet</div>
-            <p style="font-size:13px;max-width:360px;margin:0 auto 16px auto;line-height:1.4;">When you create secrets on this device, anonymous metadata references will appear here for easy management.</p>
-            <a href="/create" class="btn-primary-solid" style="height:38px;padding:0 18px;font-size:13px;text-decoration:none;display:inline-flex;">
+            <div style="width:52px;height:52px;border-radius:50%;background:rgba(40,117,255,0.08);border:1px solid rgba(40,117,255,0.2);display:flex;align-items:center;justify-content:center;margin:0 auto 16px auto;color:var(--primary);">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </div>
+            <div style="font-size:15px;font-weight:700;color:var(--text-primary);margin-bottom:6px;">No Vaults Created Yet</div>
+            <p style="font-size:13px;max-width:380px;margin:0 auto 20px auto;line-height:1.5;">When you create secrets on this device, anonymous metadata references will appear here for easy management.</p>
+            <a href="/create" class="btn-primary-solid" style="height:40px;padding:0 20px;font-size:13px;text-decoration:none;display:inline-flex;">
               Create Your First Secret
             </a>
           </div>
 
-          <div id="vaults-list" style="display:flex;flex-direction:column;gap:10px;" class="hidden"></div>
+          <div id="vaults-list" style="display:flex;flex-direction:column;gap:12px;" class="hidden"></div>
         </div>
       </div>
 
@@ -118,7 +134,7 @@
 
   <!-- Toast -->
   <div id="toast" class="toast" role="status" aria-live="polite">
-    <span id="toast-message">Copied</span>
+    <span id="toast-message">Copied securely</span>
   </div>
 
   <footer class="footer-enterprise">
@@ -171,7 +187,7 @@
           return;
         }
 
-        emptyState.classList.add('hidden');
+        emptyState.classList.remove('hidden');
         vaultsList.classList.remove('hidden');
         vaultsList.innerHTML = '';
 
@@ -179,7 +195,7 @@
 
         for (const item of history) {
           const itemEl = document.createElement('div');
-          itemEl.style.cssText = 'background:var(--bg-subtle);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;';
+          itemEl.style.cssText = 'background:var(--bg-subtle);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;';
 
           const createdFormatted = item.createdAt ? new Date(item.createdAt).toLocaleString() : 'Recent';
           const expiresFormatted = item.expiresAt ? new Date(item.expiresAt).toLocaleString() : '1 hour';
@@ -193,23 +209,22 @@
           itemEl.innerHTML = `
             <div style="flex-grow:1;min-width:220px;">
               <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-                <span style="font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--text-primary);">${item.id || 'Secret Vault'}</span>
-                <span class="status-pill ${statusPillClass}" style="padding:2px 8px;font-size:11px;">${statusText}</span>
+                <span style="font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--text-primary);letter-spacing:0.02em;">${item.id || 'Secret Vault'}</span>
+                <span class="status-pill ${statusPillClass}" style="padding:2px 8px;font-size:11px;">● ${statusText}</span>
               </div>
               <div style="font-size:12px;color:var(--text-muted);">
                 Created: ${createdFormatted} • Expires: ${expiresFormatted}
               </div>
             </div>
-
-            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-              <a href="/share/${item.id}" class="btn-secondary-neutral" style="padding:0 10px;height:32px;font-size:12px;text-decoration:none;display:inline-flex;align-items:center;">
+            <div style="display:flex;gap:8px;align-items:center;">
+              <button type="button" class="btn-copy-history btn-secondary-clean" data-url="${item.url || ''}" style="height:32px;padding:0 12px;font-size:12px;">
+                Copy
+              </button>
+              <a href="/share/${item.id}" class="btn-secondary-clean" style="height:32px;padding:0 12px;font-size:12px;text-decoration:none;display:inline-flex;align-items:center;">
                 Share Center
               </a>
-              <button type="button" class="btn-secondary-neutral btn-copy-item" data-url="${item.url || window.location.origin + '/vault/' + item.id}" style="padding:0 10px;height:32px;font-size:12px;">
-                Copy Link
-              </button>
-              <button type="button" class="btn-danger-outline btn-burn-item" data-id="${item.id}" style="padding:0 10px;height:32px;font-size:12px;">
-                Destroy
+              <button type="button" class="btn-delete-item btn-icon-plain" data-id="${item.id}" title="Remove from local history">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
               </button>
             </div>
           `;
@@ -219,32 +234,27 @@
 
         statActive.textContent = String(activeCount);
 
-        // Wire copy buttons
-        document.querySelectorAll('.btn-copy-item').forEach(btn => {
-          btn.addEventListener('click', async () => {
-            const url = btn.getAttribute('data-url');
-            if (url) {
-              await navigator.clipboard.writeText(url);
-              showToast('Link copied to clipboard');
-            }
+        // Bind delete item buttons
+        vaultsList.querySelectorAll('.btn-delete-item').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const id = e.currentTarget.getAttribute('data-id');
+            const updated = getHistory().filter(h => h.id !== id);
+            saveHistory(updated);
+            renderDashboard();
+            showToast('Entry removed from device history');
           });
         });
 
-        // Wire burn buttons
-        document.querySelectorAll('.btn-burn-item').forEach(btn => {
-          btn.addEventListener('click', async () => {
-            const id = btn.getAttribute('data-id');
-            if (!confirm('Are you sure you want to permanently destroy this vault?')) return;
+        // Bind copy buttons
+        vaultsList.querySelectorAll('.btn-copy-history').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const url = e.currentTarget.getAttribute('data-url');
+            if (!url) return;
             try {
-              btn.textContent = 'Shredding...';
-              btn.disabled = true;
-              await fetch('/api/secret/' + id + '/burn', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
-              const hist = getHistory().map(h => h.id === id ? { ...h, burned: true } : h);
-              saveHistory(hist);
-              renderDashboard();
-              showToast('Vault burned and purged');
+              await navigator.clipboard.writeText(url);
+              showToast('Link copied securely');
             } catch {
-              showToast('Vault already burned or expired');
+              showToast('Failed to copy');
             }
           });
         });
@@ -252,22 +262,60 @@
 
       if (btnClearHistory) {
         btnClearHistory.addEventListener('click', () => {
-          if (confirm('Clear local history list? (This does not affect active secrets on the server).')) {
-            localStorage.removeItem(STORAGE_KEY);
+          if (confirm('Clear all local vault history from this device? (Does not destroy secrets on server)')) {
+            saveHistory([]);
             renderDashboard();
-            showToast('Local history cleared');
+            showToast('History cleared');
           }
         });
       }
 
       if (btnRefresh) {
-        btnRefresh.addEventListener('click', () => {
+        btnRefresh.addEventListener('click', async () => {
+          btnRefresh.disabled = true;
+          btnRefresh.textContent = 'Checking...';
+          const history = getHistory();
+          for (const item of history) {
+            if (item.id && !item.burned) {
+              try {
+                const res = await fetch(`/api/vault/${item.id}/metadata`);
+                if (res.status === 404) {
+                  item.burned = true;
+                }
+              } catch {}
+            }
+          }
+          saveHistory(history);
           renderDashboard();
-          showToast('Status refreshed');
+          btnRefresh.disabled = false;
+          btnRefresh.textContent = '↻ Refresh Status';
+          showToast('Status synchronized');
         });
       }
 
+      // Initialize
       renderDashboard();
+
+      // Theme toggle & mobile menu handlers
+      const themeBtn = document.getElementById('theme-toggle');
+      if (themeBtn) {
+        themeBtn.addEventListener('click', () => {
+          const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+          document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+          localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        });
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+          document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+      }
+      const mobileToggle = document.getElementById('mobile-toggle');
+      const mobileDrawer = document.getElementById('mobile-drawer');
+      if (mobileToggle && mobileDrawer) {
+        mobileToggle.addEventListener('click', () => {
+          mobileDrawer.classList.toggle('open');
+        });
+      }
     })();
   </script>
 </body>

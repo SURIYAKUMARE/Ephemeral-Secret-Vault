@@ -94,6 +94,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       .catch((err) => sendResponse({ error: err.message, online: false }));
     return true;
   }
+
+  if (message.type === 'CREATE_OFFLINE_SECRET') {
+    handleCreateOfflineSecret(message.payload)
+      .then(sendResponse)
+      .catch((err) => sendResponse({ error: err.message }));
+    return true;
+  }
 });
 
 async function handleCreateSecret(payload) {
@@ -115,6 +122,27 @@ async function handleCreateSecret(payload) {
     expires_at: result.expires_at,
     views_remaining: result.views_remaining,
     platform: payload.platform || 'Extension'
+  });
+
+  return result;
+}
+
+async function handleCreateOfflineSecret(payload) {
+  const settings = await globalThis.StorageManager.getSettings();
+  const serverUrl = payload.serverUrl || settings.serverUrl || 'http://localhost:3000';
+
+  const result = await globalThis.VaultApiClient.createOfflineSecret({
+    secret: payload.secret,
+    passphrase: payload.passphrase || '',
+    serverUrl
+  });
+
+  await globalThis.StorageManager.addHistoryEntry({
+    id: result.id,
+    url: result.url,
+    expires_at: result.expires_at,
+    views_remaining: result.views_remaining,
+    platform: 'Offline ZK Vault'
   });
 
   return result;

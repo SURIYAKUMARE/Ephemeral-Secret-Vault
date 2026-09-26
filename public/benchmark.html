@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <title>Performance Benchmark — Ephemeral Secret Vault</title>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .bench-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      margin-top: 20px;
+    }
+    .metric-card {
+      background: #040714;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .metric-label {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 700;
+    }
+    .metric-val {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--cyan);
+      font-family: var(--font-mono);
+    }
+    .metric-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .benchmark-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .benchmark-table th {
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 11px;
+    }
+    .benchmark-table tr:hover {
+      background: rgba(40, 117, 255, 0.03);
+    }
+  </style>
+</head>
+<body id="top">
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="/" class="nav-brand" title="Ephemeral Secret Vault">
+        <svg class="nav-monochrome-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <span class="brand-name">Ephemeral Secret Vault</span>
+      </a>
+      <nav class="nav-links-row">
+        <a href="/">Home</a>
+        <a href="/create">Product</a>
+        <a href="/security">Security</a>
+        <a href="/test-center">Test Center</a>
+        <a href="/benchmark" style="color:var(--cyan);">Benchmark</a>
+      </nav>
+      <div class="nav-actions">
+        <span class="status-pill status-neutral">
+          <span class="status-dot"></span>
+          <span>PERFORMANCE</span>
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <main class="viewport-layout">
+    <div class="centered-column" style="max-width: 860px;">
+      
+      <section class="vault-card">
+        <header class="card-header-clean">
+          <div class="success-badge-card">
+            <span class="status-dot" style="background:var(--primary);box-shadow:0 0 8px var(--primary);"></span>
+            <span>● HARDWARE-ACCELERATED TELEMETRY</span>
+          </div>
+          <h1 class="page-title">Cryptographic Benchmark</h1>
+          <p class="page-subtitle">Real-time Web Crypto API AES-256-GCM throughput, keygen speeds, and HTTP roundtrip latency.</p>
+        </header>
+
+        <div style="margin-top:16px;">
+          <button type="button" id="btn-run-bench" class="btn-primary-solid" style="height:40px;padding:0 24px;">
+            <span>⚡ Run Cryptographic Benchmark</span>
+          </button>
+        </div>
+
+        <!-- Metric KPI Cards -->
+        <div class="bench-grid">
+          <div class="metric-card">
+            <span class="metric-label">Key Generation</span>
+            <span id="metric-keygen" class="metric-val">--</span>
+            <span class="metric-sub">CSPRNG 256-bit AES Key</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Encryption Speed</span>
+            <span id="metric-enc-speed" class="metric-val">--</span>
+            <span class="metric-sub">AES-GCM Authenticated (10 KB)</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Decryption Speed</span>
+            <span id="metric-dec-speed" class="metric-val">--</span>
+            <span class="metric-sub">AES-GCM Authentication Verify</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">API Roundtrip</span>
+            <span id="metric-rtt" class="metric-val">--</span>
+            <span class="metric-sub">Server Health Ping RTT</span>
+          </div>
+        </div>
+
+        <!-- Detailed Breakdown Table -->
+        <table class="benchmark-table">
+          <thead>
+            <tr>
+              <th>Operation</th>
+              <th>Payload Size</th>
+              <th>Iterations</th>
+              <th>Avg Latency</th>
+              <th>Throughput</th>
+            </tr>
+          </thead>
+          <tbody id="bench-tbody">
+            <tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Click "Run Cryptographic Benchmark" to start live measurements.</td></tr>
+          </tbody>
+        </table>
+
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <div class="footer-copy">
+        Ephemeral Secret Vault • Hardware Cryptographic Profiler
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const btnRun = document.getElementById('btn-run-bench');
+    const tbody = document.getElementById('bench-tbody');
+    const mKeygen = document.getElementById('metric-keygen');
+    const mEnc = document.getElementById('metric-enc-speed');
+    const mDec = document.getElementById('metric-dec-speed');
+    const mRtt = document.getElementById('metric-rtt');
+
+    btnRun.addEventListener('click', async () => {
+      btnRun.disabled = true;
+      btnRun.textContent = 'Measuring Performance...';
+      tbody.innerHTML = '';
+
+      // 1. Key Generation Benchmark (100 iterations)
+      const keyGenStart = performance.now();
+      const numKeys = 100;
+      let lastKey = null;
+      for (let i = 0; i < numKeys; i++) {
+        lastKey = await window.crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
+      }
+      const keyGenTotal = performance.now() - keyGenStart;
+      const keyGenAvg = (keyGenTotal / numKeys).toFixed(3);
+      mKeygen.textContent = `${keyGenAvg} ms`;
+
+      // 2. Encryption Benchmark with sizes (1KB, 10KB, 100KB, 1MB)
+      const sizes = [
+        { name: '1 KB', bytes: 1024, iters: 50 },
+        { name: '10 KB', bytes: 10240, iters: 50 },
+        { name: '100 KB', bytes: 102400, iters: 30 },
+        { name: '1 MB', bytes: 1048576, iters: 10 }
+      ];
+
+      const results = [];
+
+      for (const s of sizes) {
+        const payload = new Uint8Array(s.bytes);
+        window.crypto.getRandomValues(payload.subarray(0, Math.min(64, s.bytes)));
+        const iv = window.crypto.getRandomValues(new Uint8Array(12));
+
+        // Encrypt test
+        const encStart = performance.now();
+        let encBuf = null;
+        for (let i = 0; i < s.iters; i++) {
+          encBuf = await window.crypto.subtle.encrypt({ name: 'AES-GCM', iv }, lastKey, payload);
+        }
+        const encElapsed = performance.now() - encStart;
+        const encAvg = (encElapsed / s.iters).toFixed(3);
+        const encThroughput = ((s.bytes * s.iters / (encElapsed / 1000)) / (1024 * 1024)).toFixed(1);
+
+        // Decrypt test
+        const decStart = performance.now();
+        for (let i = 0; i < s.iters; i++) {
+          await window.crypto.subtle.decrypt({ name: 'AES-GCM', iv }, lastKey, encBuf);
+        }
+        const decElapsed = performance.now() - decStart;
+        const decAvg = (decElapsed / s.iters).toFixed(3);
+        const decThroughput = ((s.bytes * s.iters / (decElapsed / 1000)) / (1024 * 1024)).toFixed(1);
+
+        if (s.name === '10 KB') {
+          mEnc.textContent = `${encAvg} ms`;
+          mDec.textContent = `${decAvg} ms`;
+        }
+
+        results.push({ op: 'AES-256-GCM Encrypt', size: s.name, iters: s.iters, avg: `${encAvg} ms`, rate: `${encThroughput} MB/s` });
+        results.push({ op: 'AES-256-GCM Decrypt', size: s.name, iters: s.iters, avg: `${decAvg} ms`, rate: `${decThroughput} MB/s` });
+      }
+
+      // 3. API Ping RTT
+      const rttStart = performance.now();
+      const rttIters = 5;
+      for (let i = 0; i < rttIters; i++) {
+        await fetch('/health');
+      }
+      const rttElapsed = performance.now() - rttStart;
+      const rttAvg = (rttElapsed / rttIters).toFixed(1);
+      mRtt.textContent = `${rttAvg} ms`;
+
+      // Render table
+      results.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="color:var(--text-primary);font-weight:600;">${r.op}</td>
+          <td>${r.size}</td>
+          <td>${r.iters}</td>
+          <td style="color:var(--cyan);">${r.avg}</td>
+          <td style="color:var(--success);font-weight:700;">${r.rate}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const pingTr = document.createElement('tr');
+      pingTr.innerHTML = `
+        <td style="color:var(--text-primary);font-weight:600;">API /health Roundtrip</td>
+        <td>HTTP</td>
+        <td>${rttIters}</td>
+        <td style="color:var(--cyan);">${rttAvg} ms</td>
+        <td style="color:var(--text-muted);">-</td>
+      `;
+      tbody.appendChild(pingTr);
+
+      btnRun.disabled = false;
+      btnRun.textContent = '⚡ Re-run Cryptographic Benchmark';
+    });
+  </script>
+</body>
+</html>

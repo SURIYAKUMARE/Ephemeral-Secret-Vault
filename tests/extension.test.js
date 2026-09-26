@@ -4,7 +4,7 @@
  * API Client communication, and Zero-Plaintext Storage guarantees.
  */
 
-const { describe, it } = require('node:test');
+const { describe, it, before, after } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
@@ -201,11 +201,61 @@ describe('Storage Manager & Zero-Plaintext Security Tests', () => {
 });
 
 describe('API Client Communication Tests', () => {
+  let server;
+  let testServerUrl = 'http://localhost:3000';
+  let testDbPath;
+
+  before(async () => {
+    // If localhost:3000 is not running, spin up a test express instance dynamically
+    const probe = await VaultApiClient.checkHealth('http://localhost:3000');
+    if (!probe.online) {
+      testDbPath = path.join(rootDir, 'tests', 'test-ext-api.db');
+      try { fs.unlinkSync(testDbPath); } catch {}
+      try { fs.unlinkSync(`${testDbPath}-wal`); } catch {}
+      try { fs.unlinkSync(`${testDbPath}-shm`); } catch {}
+
+      process.env.VAULT_MASTER_KEY = process.env.VAULT_MASTER_KEY || '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
+      process.env.DATABASE_PATH = testDbPath;
+      process.env.DB_PATH = testDbPath;
+
+      const { initDb } = require('../src/database/db');
+      const app = require('../src/app');
+
+      initDb(testDbPath);
+      await new Promise((resolve) => {
+        server = app.listen(0, '127.0.0.1', () => {
+          const addr = server.address();
+          testServerUrl = `http://127.0.0.1:${addr.port}`;
+          resolve();
+        });
+      });
+    }
+  });
+
+  after(async () => {
+    if (server) {
+      await new Promise((resolve) => server.close(resolve));
+      const { closeDb } = require('../src/database/db');
+      closeDb();
+      if (testDbPath) {
+        try { fs.unlinkSync(testDbPath); } catch {}
+        try { fs.unlinkSync(`${testDbPath}-wal`); } catch {}
+        try { fs.unlinkSync(`${testDbPath}-shm`); } catch {}
+      }
+    }
+  });
+
   it('checkHealth connects to running vault server', async () => {
-    const health = await VaultApiClient.checkHealth('http://localhost:3000');
+    const health = await VaultApiClient.checkHealth(testServerUrl);
     assert.equal(health.online, true);
     assert.equal(health.status, 'ok');
     assert.ok(typeof health.latencyMs === 'number');
+  });
+
+  it('checkHealth reports offline safely on unreachable port', async () => {
+    const offlineHealth = await VaultApiClient.checkHealth('http://127.0.0.1:59998');
+    assert.equal(offlineHealth.online, false);
+    assert.ok(typeof offlineHealth.latencyMs === 'number');
   });
 
   it('createSecret generates secure vault link from backend', async () => {
@@ -213,7 +263,7 @@ describe('API Client Communication Tests', () => {
       secret: 'ConfidentialExtensionToken12345!',
       ttlSeconds: 600,
       maxViews: 1,
-      serverUrl: 'http://localhost:3000'
+      serverUrl: testServerUrl
     });
 
     assert.ok(result.id, 'Must return vault ID');

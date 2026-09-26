@@ -76,7 +76,8 @@
     {
       "resources": [
         "icons/*",
-        "content/content.css"
+        "content/content.css",
+        "shared/qrcode.min.js"
       ],
       "matches": ["<all_urls>"]
     }

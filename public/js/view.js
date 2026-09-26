@@ -456,9 +456,9 @@
         // Client-Side Zero-Knowledge Decryption via WebCrypto
         if (data.client_encrypted) {
           const hash = window.location.hash || '';
-          const match = hash.match(/key=([0-9a-fA-F]+)/);
+          const match = hash.match(/(?:key|zk)=([0-9a-fA-F]+)/);
           if (!match || !match[1]) {
-            showError('Client-Side Zero-Knowledge secret: Decryption key is missing from URL fragment (#key=...). Without the key, decryption is mathematically impossible.');
+            showError('Client-Side Zero-Knowledge secret: Decryption key is missing from URL fragment (#zk=... or #key=...). Without the key, decryption is mathematically impossible.');
             burnBtn.disabled = false;
             burnBtn.innerHTML = `${SVG.flame} <span>Retry Reveal</span>`;
             resetSlideThumb();

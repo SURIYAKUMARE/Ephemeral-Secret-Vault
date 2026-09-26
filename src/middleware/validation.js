@@ -82,12 +82,52 @@ function validateCreateSecret(req, res, next) {
   }
 
   const minTtl = process.env.ALLOW_SHORT_TTL === 'true' ? 1 : 10;
-  if (typeof ttl_seconds !== 'number' || !Number.isInteger(ttl_seconds) || ttl_seconds < minTtl || ttl_seconds > 604800) {
-    return res.status(400).json({ error: `ttl_seconds must be an integer between ${minTtl} and 604800.` });
+
+  if (req.body.expiresAt !== undefined && req.body.expiresAt !== null) {
+    const rawExp = req.body.expiresAt;
+    if (typeof rawExp !== 'string' && typeof rawExp !== 'number') {
+      return res.status(400).json({ error: 'expiresAt must be a valid ISO-8601 date string or timestamp.' });
+    }
+    const expDate = new Date(rawExp);
+    const expTime = expDate.getTime();
+    if (isNaN(expTime)) {
+      return res.status(400).json({ error: 'expiresAt must be a valid ISO-8601 date string or timestamp.' });
+    }
+    const now = Date.now();
+    if (expTime <= now) {
+      return res.status(400).json({ error: 'Custom expiration cannot be in the past.' });
+    }
+    const minLeadMs = process.env.ALLOW_SHORT_TTL === 'true' ? 1000 : 60000;
+    if (expTime < now + minLeadMs) {
+      return res.status(400).json({ error: 'Custom expiration must be at least 1 minute from the current time.' });
+    }
+    if (expTime > now + 365 * 86400 * 1000) {
+      return res.status(400).json({ error: 'Custom expiration cannot exceed 1 year.' });
+    }
+    req.body.computedExpiresAt = expTime;
+    req.body.ttl_seconds = Math.round((expTime - now) / 1000);
+  } else {
+    const effectiveTtl = ttl_seconds !== undefined && ttl_seconds !== null ? ttl_seconds : 3600;
+    if (typeof effectiveTtl !== 'number' || !Number.isInteger(effectiveTtl) || effectiveTtl < minTtl || effectiveTtl > 604800) {
+      return res.status(400).json({ error: `ttl_seconds must be an integer between ${minTtl} and 604800.` });
+    }
+    req.body.ttl_seconds = effectiveTtl;
   }
 
-  if (typeof max_views !== 'number' || !Number.isInteger(max_views) || max_views < 1 || max_views > 10) {
-    return res.status(400).json({ error: 'max_views must be an integer between 1 and 10.' });
+  const MAX_SYSTEM_VIEWS = parseInt(process.env.MAX_SYSTEM_VIEWS, 10) || 1000;
+  if (req.body.maxViews !== undefined && req.body.maxViews !== null) {
+    const mv = req.body.maxViews;
+    if (typeof mv !== 'number' || !Number.isInteger(mv) || mv < 1 || mv > MAX_SYSTEM_VIEWS) {
+      return res.status(400).json({ error: `maxViews must be a positive integer between 1 and ${MAX_SYSTEM_VIEWS}.` });
+    }
+    req.body.effectiveMaxViews = mv;
+  } else if (max_views !== undefined && max_views !== null) {
+    if (typeof max_views !== 'number' || !Number.isInteger(max_views) || max_views < 1 || max_views > 10) {
+      return res.status(400).json({ error: 'max_views must be an integer between 1 and 10.' });
+    }
+    req.body.effectiveMaxViews = max_views;
+  } else {
+    req.body.effectiveMaxViews = 1;
   }
 
   if (passphrase !== undefined && passphrase !== null) {

@@ -554,8 +554,11 @@
         }
       } catch (err) {
         btnCreate.disabled = false;
-        btnCreate.innerHTML = '<span>🔐 Create Secure Link</span>';
-        errorBanner.textContent = err.message || 'Unable to protect this content.';
+        let displayMsg = err.message || 'Unable to protect this content.';
+        if (displayMsg.includes('Failed to fetch') || displayMsg.includes('network')) {
+          displayMsg = 'Vault server unreachable. Please ensure server is running (npm start) or check settings.';
+        }
+        errorBanner.textContent = displayMsg;
         errorBanner.classList.remove('hidden');
       }
     });

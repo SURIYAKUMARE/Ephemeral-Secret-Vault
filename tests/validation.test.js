@@ -152,4 +152,60 @@ describe('Input Validation & Error Handling Tests', () => {
       console.error = originalError;
     }
   });
+
+  test('TEST 15: Custom expiresAt validation (past dates, <1m lead time, and valid ISO timestamps)', async () => {
+    // 1. Past date
+    const pastRes = await fetch(`${baseUrl}/api/secret`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret: 'PastSecret', expiresAt: new Date(Date.now() - 3600000).toISOString() })
+    });
+    assert.equal(pastRes.status, 400);
+    const pastData = await pastRes.json();
+    assert.match(pastData.error, /past/i);
+
+    // 2. Invalid date string
+    const malformedRes = await fetch(`${baseUrl}/api/secret`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret: 'MalformedSecret', expiresAt: 'not-a-date' })
+    });
+    assert.equal(malformedRes.status, 400);
+
+    // 3. Valid future ISO timestamp
+    const futureDate = new Date(Date.now() + 2 * 3600 * 1000); // 2 hours in future
+    const validRes = await fetch(`${baseUrl}/api/secret`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret: 'FutureSecret', expiresAt: futureDate.toISOString(), maxViews: 25 })
+    });
+    assert.equal(validRes.status, 201);
+    const validData = await validRes.json();
+    assert.ok(validData.id);
+    assert.equal(validData.views_remaining, 25);
+  });
+
+  test('TEST 16: Custom maxViews validation (supports 25, 50, 100, 1000 and rejects invalid inputs)', async () => {
+    // Valid custom views
+    for (const views of [5, 10, 25, 50, 100, 500, 1000]) {
+      const res = await fetch(`${baseUrl}/api/secret`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ secret: 'ValidCustomViewsSecret', maxViews: views })
+      });
+      assert.equal(res.status, 201, `Failed to allow valid custom view count: ${views}`);
+      const data = await res.json();
+      assert.equal(data.views_remaining, views);
+    }
+
+    // Invalid custom views
+    for (const views of [0, -1, 1001, '25', 4.5]) {
+      const res = await fetch(`${baseUrl}/api/secret`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ secret: 'InvalidCustomViewsSecret', maxViews: views })
+      });
+      assert.equal(res.status, 400, `Expected 400 for maxViews: ${views}`);
+    }
+  });
 });

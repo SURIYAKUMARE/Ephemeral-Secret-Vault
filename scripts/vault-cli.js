@@ -25,12 +25,14 @@ async function main() {
       ttl = parseInt(args[++i], 10);
     } else if (arg === '--views' && i + 1 < args.length) {
       views = parseInt(args[++i], 10);
+    } else if (arg === '--expires-at' && i + 1 < args.length) {
+      expiresAt = args[++i];
     } else if (arg === '--passphrase' && i + 1 < args.length) {
       passphrase = args[++i];
     } else if (arg === '--url' && i + 1 < args.length) {
       vaultUrl = args[++i];
     } else if (arg === '--help' || arg === '-h') {
-      process.stderr.write(`Ephemeral Secret Vault CLI\n\nUsage: echo "secret" | node scripts/vault-cli.js [options]\n\nOptions:\n  --ttl <seconds>       Expiration in seconds (default: 3600)\n  --views <number>      Maximum views allowed (default: 1)\n  --passphrase <string> Optional decryption passphrase\n  --url <vault-url>     Vault server URL (default: http://localhost:3000)\n  -h, --help            Show this help message\n`);
+      process.stderr.write(`Ephemeral Secret Vault CLI\n\nUsage: echo "secret" | node scripts/vault-cli.js [options]\n\nOptions:\n  --ttl <seconds>       Expiration in seconds (default: 3600)\n  --expires-at <iso>    Custom ISO-8601 expiration timestamp\n  --views <number>      Maximum views allowed (default: 1)\n  --passphrase <string> Optional decryption passphrase\n  --url <vault-url>     Vault server URL (default: http://localhost:3000)\n  -h, --help            Show this help message\n`);
       process.exitCode = 0;
       return;
     }
@@ -64,6 +66,9 @@ async function main() {
     ttl_seconds: ttl,
     max_views: views
   };
+  if (expiresAt) {
+    payload.expiresAt = expiresAt;
+  }
   if (passphrase) {
     payload.passphrase = passphrase;
   }

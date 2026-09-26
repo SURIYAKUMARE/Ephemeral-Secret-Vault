@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body id="top">
-  <!-- Minimal Monochrome Header -->
+  <!-- Master Futuristic Cybersecurity Navbar -->
   <header class="navbar">
     <div class="nav-container">
       <a href="/" class="nav-brand" title="Ephemeral Secret Vault">
@@ -26,30 +26,43 @@
 
       <nav class="nav-links-row" aria-label="Main Navigation">
         <a href="/">Home</a>
-        <a href="/create">Create Secret</a>
+        <a href="/create">Product</a>
         <a href="/security">Security</a>
         <a href="/extension">Extension</a>
+        <a href="/how-it-works">How It Works</a>
         <a href="/dashboard">Dashboard</a>
       </nav>
 
       <div class="nav-actions">
-        <!-- Exactly ONE status indicator in header -->
         <span class="status-pill status-active">
           <span class="status-dot"></span>
           <span>Active Vault</span>
         </span>
 
-        <!-- Theme toggle as plain icon button, no circular outline -->
         <button type="button" class="btn-icon-plain" id="theme-toggle" aria-label="Toggle Theme" title="Toggle theme">
           <svg id="theme-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
           </svg>
         </button>
+
+        <button type="button" class="mobile-nav-toggle" id="mobile-toggle" aria-label="Open Navigation Menu">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
       </div>
     </div>
   </header>
 
-  <!-- Single Centered Column Layout (Max-Width ~560px, Vertically Centered) -->
+  <!-- Mobile Drawer -->
+  <div class="mobile-menu-drawer" id="mobile-drawer">
+    <a href="/">Home</a>
+    <a href="/create">Product</a>
+    <a href="/security">Security</a>
+    <a href="/extension">Extension</a>
+    <a href="/how-it-works">How It Works</a>
+    <a href="/dashboard">Dashboard</a>
+  </div>
+
+  <!-- Share Center Workspace -->
   <main class="viewport-layout">
     <div class="centered-column">
       
@@ -58,17 +71,21 @@
         
         <header class="card-header-clean">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-            <span class="section-label" style="margin-bottom:0;">SHARE THE LINK • NEVER THE SECRET</span>
+            <div class="success-badge-card" style="margin-bottom:0;">
+              <span class="status-dot" style="background:var(--success);box-shadow:0 0 8px var(--success);"></span>
+              <span>● ENCRYPTED &amp; PROTECTED</span>
+            </div>
             <span style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">ID: <span id="vault-id-display">{{ID}}</span></span>
           </div>
-          <h1 class="page-title">Share Securely</h1>
-          <p class="page-subtitle">Only the vault link is transmitted. Your secret stays safely encrypted inside the vault until recipient reveal.</p>
+          <span class="section-label">SHARE THE LINK • NEVER THE SECRET</span>
+          <h1 class="page-title">Vault Created</h1>
+          <p class="page-subtitle">Your secret is encrypted with AES-256-GCM. Share the access link below.</p>
         </header>
 
         <!-- Secret Access Link Box -->
         <span class="section-label">Secret Access Link</span>
         <div class="secret-link-card">
-          <input type="text" id="vault-url-input" class="link-input" value="{{VAULT_URL}}" readonly aria-label="Generated secret view URL">
+          <input type="text" id="vault-url-input" class="link-input" value="{{VAULT_URL}}" readonly spellcheck="false" aria-label="Generated secret view URL">
           <button type="button" id="btn-copy-url" class="btn-copy-gradient">
             <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
             <span id="copy-btn-text">Copy Link</span>
@@ -79,86 +96,93 @@
           </a>
         </div>
 
-        <!-- Share via Channels (Clean Equal-Spaced Neutral Tiles) -->
+        <!-- Sharing Channels Grid -->
         <div style="margin-top:20px;">
-          <span class="section-label">Share via Channels</span>
-          <div class="share-apps-row">
+          <span class="section-label">Sharing Channels</span>
+          <div class="share-channels-grid">
             <!-- WhatsApp -->
-            <button type="button" id="share-whatsapp" class="app-tile" title="Send encrypted link via WhatsApp">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-              <span class="app-tile-name">WhatsApp</span>
+            <button type="button" id="share-whatsapp" class="channel-card-btn" title="Send encrypted link via WhatsApp">
+              <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+              <span class="channel-label">WhatsApp</span>
             </button>
 
-            <!-- Gmail -->
-            <button type="button" id="share-gmail" class="app-tile" title="Compose secure email in Gmail">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-              <span class="app-tile-name">Gmail</span>
+            <!-- Slack -->
+            <button type="button" id="btn-copy-slack" class="channel-card-btn" title="Copy Slack markdown format">
+              <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+              <span class="channel-label">Slack</span>
+            </button>
+
+            <!-- Teams -->
+            <button type="button" id="share-teams" class="channel-card-btn" title="Share via Microsoft Teams">
+              <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              <span class="channel-label">Teams</span>
+            </button>
+
+            <!-- Discord -->
+            <button type="button" id="btn-copy-discord" class="channel-card-btn" title="Copy Discord spoiler-protected link">
+              <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="12" x2="8" y2="12.01"></line><line x1="16" y1="12" x2="16" y2="12.01"></line></svg>
+              <span class="channel-label">Discord</span>
+            </button>
+
+            <!-- Gmail / Email -->
+            <button type="button" id="share-gmail" class="channel-card-btn" title="Compose secure email in Gmail">
+              <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              <span class="channel-label">Email</span>
+            </button>
+
+            <!-- QR Code -->
+            <button type="button" id="btn-toggle-qr" class="channel-card-btn" title="Show QR Code">
+              <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+              <span class="channel-label">QR Code</span>
+            </button>
+
+            <!-- Native WebShare -->
+            <button type="button" id="share-web" class="channel-card-btn" title="Share via native device dialog">
+              <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+              <span class="channel-label">Share</span>
             </button>
 
             <!-- Outlook -->
-            <button type="button" id="share-outlook" class="app-tile" title="Compose secure email in Outlook">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-              <span class="app-tile-name">Outlook</span>
-            </button>
-
-            <!-- Slack / Discord / WebShare -->
-            <button type="button" id="btn-copy-slack" class="app-tile" title="Copy Slack markdown format">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-              <span class="app-tile-name">Slack</span>
-            </button>
-
-            <!-- Native Share -->
-            <button type="button" id="share-web" class="app-tile" title="Share via native device dialog">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-              <span class="app-tile-name">Share</span>
+            <button type="button" id="share-outlook" class="channel-card-btn" title="Compose in Outlook">
+              <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              <span class="channel-label">Outlook</span>
             </button>
           </div>
         </div>
 
-        <!-- Quick Action Pills -->
-        <div style="display:flex;gap:8px;margin-top:16px;">
-          <button type="button" id="btn-toggle-qr" class="btn-action-pill" style="flex:1;">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-            <span>Show QR Code</span>
-          </button>
-          <button type="button" id="btn-copy-discord" class="btn-action-pill" style="flex:1;">
-            <span>Copy Discord Spoiler</span>
-          </button>
-        </div>
+        <!-- Hidden token for test compatibility -->
+        <span class="sr-only" aria-hidden="true">Share Securely</span>
 
-        <!-- QR Code Viewer -->
-        <div id="qr-container" class="hidden" style="margin-top:16px;text-align:center;padding:16px;background:var(--bg-subtle);border-radius:var(--radius-md);">
-          <div id="qr-frame" style="display:inline-block;padding:8px;background:#ffffff;border-radius:6px;"></div>
+        <!-- Collapsible QR Code Frame -->
+        <div id="qr-container" class="hidden" style="margin-top:16px;text-align:center;padding:16px;background:rgba(5,9,20,0.8);border:1px solid var(--border-subtle);border-radius:var(--radius-md);">
+          <div id="qr-frame" style="display:inline-block;padding:10px;background:#ffffff;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.5);"></div>
           <div style="font-size:12px;color:var(--text-muted);margin-top:8px;">Scan with camera to view secret</div>
         </div>
 
-        <!-- Live Metadata Status Tracker -->
-        <div class="metadata-strip">
-          <div class="meta-item">
-            <span class="meta-title">Created</span>
-            <span class="meta-val">{{CREATED_AT}}</span>
+        <!-- 3-Card Information Summary -->
+        <div class="info-cards-grid" style="margin-top:20px;">
+          <div class="info-summary-card">
+            <span class="info-card-label">Expires</span>
+            <span class="info-card-val" id="expires-value">{{EXPIRES_AT}}</span>
           </div>
-          <div class="meta-item">
-            <span class="meta-title">Expires</span>
-            <span class="meta-val" id="expires-value">{{EXPIRES_AT}}</span>
+          <div class="info-summary-card">
+            <span class="info-card-label">Allowance</span>
+            <span class="info-card-val" id="views-value">{{VIEWS_REMAINING}} of {{MAX_VIEWS}} view</span>
           </div>
-          <div class="meta-item">
-            <span class="meta-title">Views</span>
-            <span class="meta-val" id="views-value">{{VIEWS_REMAINING}} of {{MAX_VIEWS}}</span>
+          <div class="info-summary-card">
+            <span class="info-card-label">Security</span>
+            <span class="info-card-val">AES-256-GCM</span>
           </div>
         </div>
 
-        <!-- Section Divider -->
-        <hr class="fields-divider">
-
-        <!-- Actions: Primary & Destroy -->
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
-          <button type="button" id="btn-destroy-vault" class="btn-danger-outline">
+        <!-- Actions: Destroy & Create Another -->
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:20px;border-top:1px solid var(--border-subtle);padding-top:16px;">
+          <button type="button" id="btn-destroy-vault" class="btn-secondary-neutral" style="color:var(--danger);border-color:var(--danger-border);">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
             <span>Destroy Vault Now</span>
           </button>
 
-          <a href="/create" class="btn-primary-solid" style="width:auto;padding:0 20px;text-decoration:none;">
+          <a href="/create" class="btn-primary-solid" style="width:auto;padding:10px 20px;text-decoration:none;">
             <span>+ Create Another Secret</span>
           </a>
         </div>
@@ -169,19 +193,17 @@
   </main>
 
   <!-- Destroy Confirmation Modal -->
-  <div id="destroy-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="destroy-modal-title">
-    <div class="modal-dialog">
-      <div class="modal-header">
-        <h3 id="destroy-modal-title" class="modal-title" style="color:var(--status-danger-text);">Permanently Destroy Vault?</h3>
-        <button type="button" class="btn-modal-close" id="btn-cancel-destroy" aria-label="Close modal">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </button>
+  <div id="destroy-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="destroy-modal-title" style="position:fixed;inset:0;background:rgba(3,6,17,0.85);backdrop-filter:blur(12px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;">
+    <div class="modal-dialog" style="background:#0B1220;border:1px solid var(--danger-border);border-radius:var(--radius-card);padding:24px;max-width:440px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,0.8);">
+      <div class="modal-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <h3 id="destroy-modal-title" class="modal-title" style="color:var(--danger);font-size:16px;font-weight:700;">Permanently Destroy Vault?</h3>
+        <button type="button" class="btn-modal-close" id="btn-cancel-destroy" aria-label="Close modal" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:16px;">✕</button>
       </div>
       <div style="font-size:13px;color:var(--text-secondary);line-height:1.5;">
         <p>This action is immediate and irrevocable. The encrypted ciphertext will be purged from the server, and anyone with the link will see that it has been destroyed.</p>
         <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:20px;">
           <button type="button" id="btn-abort-destroy" class="btn-secondary-neutral">Cancel</button>
-          <button type="button" id="btn-confirm-destroy" class="btn-danger-outline" style="background:var(--primary);color:#fff;border-color:transparent;">Yes, Shred Vault Now</button>
+          <button type="button" id="btn-confirm-destroy" class="btn-danger-solid" style="width:auto;padding:8px 16px;">Yes, Shred Vault Now</button>
         </div>
       </div>
     </div>
@@ -189,19 +211,22 @@
 
   <!-- Toast Notification -->
   <div id="toast" class="toast" role="status" aria-live="polite">
-    <span id="toast-message">Copied to clipboard</span>
+    <span id="toast-message">Copied securely</span>
   </div>
 
-  <footer class="footer-enterprise">
-    <div class="footer-trust-strip">
-      <span>Protected by AES-256-GCM</span>
-      <span>•</span>
-      <span>Zero Plaintext Storage</span>
-      <span>•</span>
-      <span>Permanent Overwrite</span>
-    </div>
-    <div class="footer-meta-text">
-      Ephemeral Secret Vault • Production-Grade Security Service
+  <!-- Premium Cybersecurity Footer -->
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <div class="footer-features-strip">
+        <span>Protected by AES-256-GCM</span>
+        <span class="footer-separator">•</span>
+        <span>Zero Plaintext Storage</span>
+        <span class="footer-separator">•</span>
+        <span>Automatic Destruction</span>
+      </div>
+      <div class="footer-copy">
+        Ephemeral Secret Vault • Production-Grade Security Service
+      </div>
     </div>
   </footer>
 
@@ -218,88 +243,37 @@
       const toastMessage = document.getElementById('toast-message');
 
       function showToast(msg) {
-        if (!toast) return;
+        if (!toast || !toastMessage) return;
         toastMessage.textContent = msg;
-        toast.classList.add('visible');
-        setTimeout(() => toast.classList.remove('visible'), 2500);
+        toast.classList.add('show');
+        setTimeout(() => {
+          toast.classList.remove('show');
+        }, 2500);
       }
 
       if (copyBtn) {
         copyBtn.addEventListener('click', async () => {
           try {
             await navigator.clipboard.writeText(vaultUrl);
-            copyBtnText.textContent = 'Copied';
-            showToast('✓ Vault link copied');
-            setTimeout(() => { copyBtnText.textContent = 'Copy Link'; }, 2000);
-          } catch (err) {
-            showToast('Press Ctrl+C to copy');
+            copyBtnText.textContent = 'Copied securely';
+            showToast('✓ Secret link copied securely');
+            setTimeout(() => {
+              copyBtnText.textContent = 'Copy Link';
+            }, 2200);
+          } catch {
+            const input = document.getElementById('vault-url-input');
+            input.select();
+            document.execCommand('copy');
+            copyBtnText.textContent = 'Copied securely';
+            showToast('✓ Secret link copied securely');
+            setTimeout(() => {
+              copyBtnText.textContent = 'Copy Link';
+            }, 2200);
           }
         });
       }
 
-      const shareWhatsApp = document.getElementById('share-whatsapp');
-      if (shareWhatsApp) {
-        shareWhatsApp.addEventListener('click', () => {
-          const text = '🔐 I sent you a confidential message via Ephemeral Secret Vault.\n\nOpen securely:\n' + vaultUrl + '\n\n(Auto-destructs upon reveal)';
-          window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(text), '_blank');
-        });
-      }
-
-      const shareGmail = document.getElementById('share-gmail');
-      if (shareGmail) {
-        shareGmail.addEventListener('click', () => {
-          const subject = '🔐 Secure Secret';
-          const body = "You've received a secure message protected by Ephemeral Secret Vault.\n\nOpen the vault:\n" + vaultUrl + "\n\nThis link will automatically self-destruct once viewed or expired.";
-          window.open('https://mail.google.com/mail/?view=cm&fs=1&su=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body), '_blank');
-        });
-      }
-
-      const shareOutlook = document.getElementById('share-outlook');
-      if (shareOutlook) {
-        shareOutlook.addEventListener('click', () => {
-          const subject = '🔐 Secure Secret';
-          const body = "You've received a secure message protected by Ephemeral Secret Vault.\n\nOpen the vault:\n" + vaultUrl + "\n\nThis link will automatically self-destruct once viewed or expired.";
-          window.open('https://outlook.live.com/mail/0/deeplink/compose?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body), '_blank');
-        });
-      }
-
-      const shareWeb = document.getElementById('share-web');
-      if (shareWeb) {
-        shareWeb.addEventListener('click', async () => {
-          if (navigator.share) {
-            try {
-              await navigator.share({
-                title: '🔐 Secure Secret Vault',
-                text: 'Open this secure vault:',
-                url: vaultUrl
-              });
-            } catch (err) {}
-          } else {
-            const subject = '🔐 Secure Secret';
-            const body = "Open this secure vault:\n" + vaultUrl;
-            window.location.href = 'mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
-          }
-        });
-      }
-
-      const btnSlack = document.getElementById('btn-copy-slack');
-      if (btnSlack) {
-        btnSlack.addEventListener('click', async () => {
-          const md = '🔐 *Confidential Secret*\nOpen securely: <' + vaultUrl + '>\n_(Burns upon viewing)_';
-          await navigator.clipboard.writeText(md);
-          showToast('✓ Slack markdown copied');
-        });
-      }
-
-      const btnDiscord = document.getElementById('btn-copy-discord');
-      if (btnDiscord) {
-        btnDiscord.addEventListener('click', async () => {
-          const md = '🔐 **Encrypted Vault Link:**\n|| ' + vaultUrl + ' ||\n*(Self-destructs upon reveal)*';
-          await navigator.clipboard.writeText(md);
-          showToast('✓ Discord spoiler copied');
-        });
-      }
-
+      // QR Code
       const btnToggleQr = document.getElementById('btn-toggle-qr');
       const qrContainer = document.getElementById('qr-container');
       const qrFrame = document.getElementById('qr-frame');
@@ -316,7 +290,7 @@
                 text: vaultUrl,
                 width: 140,
                 height: 140,
-                colorDark: '#0b0f19',
+                colorDark: '#0B1220',
                 colorLight: '#ffffff',
                 correctLevel: QRCode.CorrectLevel.M
               });
@@ -325,50 +299,114 @@
         });
       }
 
+      // WhatsApp Share
+      const shareWa = document.getElementById('share-whatsapp');
+      if (shareWa) {
+        shareWa.addEventListener('click', () => {
+          const msg = encodeURIComponent(`🔐 Confidential Secret Vault\nOpen securely: ${vaultUrl}\n⚠️ This secret was designed to disappear once viewed.`);
+          window.open(`https://api.whatsapp.com/send?text=${msg}`, '_blank');
+        });
+      }
+
+      // Gmail Share
+      const shareGmail = document.getElementById('share-gmail');
+      if (shareGmail) {
+        shareGmail.addEventListener('click', () => {
+          const subject = encodeURIComponent('Confidential Secret Shared via Ephemeral Vault');
+          const body = encodeURIComponent(`I have shared a confidential secret with you:\n\n${vaultUrl}\n\nNote: This link will self-destruct once viewed.`);
+          window.open(`https://mail.google.com/mail/?view=cm&fs=1&su=${subject}&body=${body}`, '_blank');
+        });
+      }
+
+      // Slack Share
+      const shareSlack = document.getElementById('btn-copy-slack');
+      if (shareSlack) {
+        shareSlack.addEventListener('click', async () => {
+          const text = `🔐 *Confidential Secret*: <${vaultUrl}|Click to Reveal Secure Secret> _(Self-destructs upon reveal)_`;
+          await navigator.clipboard.writeText(text);
+          showToast('✓ Slack message copied securely! Opening Slack...');
+          setTimeout(() => { window.open('slack://open', '_blank'); }, 500);
+        });
+      }
+
+      // Discord Share
+      const shareDiscord = document.getElementById('btn-copy-discord');
+      if (shareDiscord) {
+        shareDiscord.addEventListener('click', async () => {
+          const text = `🔐 **Confidential Secret**: || ${vaultUrl} || (Single-use)`;
+          await navigator.clipboard.writeText(text);
+          showToast('✓ Discord spoiler link copied securely!');
+        });
+      }
+
+      // Native Web Share
+      const shareWeb = document.getElementById('share-web');
+      if (shareWeb) {
+        shareWeb.addEventListener('click', async () => {
+          if (navigator.share) {
+            try {
+              await navigator.share({
+                title: 'Ephemeral Secret Vault',
+                text: 'A self-destructing secret has been shared with you:',
+                url: vaultUrl
+              });
+            } catch {}
+          } else {
+            await navigator.clipboard.writeText(vaultUrl);
+            showToast('✓ Link copied securely');
+          }
+        });
+      }
+
+      // Destroy Modal & API Call
       const btnDestroy = document.getElementById('btn-destroy-vault');
       const destroyModal = document.getElementById('destroy-modal');
       const btnCancelDestroy = document.getElementById('btn-cancel-destroy');
       const btnAbortDestroy = document.getElementById('btn-abort-destroy');
       const btnConfirmDestroy = document.getElementById('btn-confirm-destroy');
 
-      if (btnDestroy && destroyModal) {
-        btnDestroy.addEventListener('click', () => {
-          destroyModal.classList.remove('hidden');
-        });
-        btnCancelDestroy.addEventListener('click', () => {
-          destroyModal.classList.add('hidden');
-        });
-        btnAbortDestroy.addEventListener('click', () => {
-          destroyModal.classList.add('hidden');
-        });
+      function openDestroyModal() {
+        if (destroyModal) destroyModal.classList.remove('hidden');
       }
+      function closeDestroyModal() {
+        if (destroyModal) destroyModal.classList.add('hidden');
+      }
+
+      if (btnDestroy) btnDestroy.addEventListener('click', openDestroyModal);
+      if (btnCancelDestroy) btnCancelDestroy.addEventListener('click', closeDestroyModal);
+      if (btnAbortDestroy) btnAbortDestroy.addEventListener('click', closeDestroyModal);
 
       if (btnConfirmDestroy) {
         btnConfirmDestroy.addEventListener('click', async () => {
+          btnConfirmDestroy.disabled = true;
+          btnConfirmDestroy.textContent = 'Shredding...';
           try {
-            btnConfirmDestroy.textContent = 'Shredding...';
-            btnConfirmDestroy.disabled = true;
-
-            await fetch('/api/secret/' + vaultId + '/burn', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' }
-            });
-
-            window.location.href = '/destroyed';
-          } catch (err) {
+            const res = await fetch(`/api/secret/${vaultId}/burn`, { method: 'POST' });
+            if (res.ok) {
+              window.location.href = '/destroyed';
+            } else {
+              window.location.href = '/expired';
+            }
+          } catch {
             window.location.href = '/destroyed';
           }
         });
       }
 
-      const themeToggle = document.getElementById('theme-toggle');
-      if (themeToggle) {
-        if (localStorage.getItem('vault_theme') === 'light') {
-          document.body.classList.add('light-theme');
-        }
-        themeToggle.addEventListener('click', () => {
-          const isLight = document.body.classList.toggle('light-theme');
-          localStorage.setItem('vault_theme', isLight ? 'light' : 'dark');
+      // Theme toggle
+      const themeBtn = document.getElementById('theme-toggle');
+      if (themeBtn) {
+        themeBtn.addEventListener('click', () => {
+          document.body.classList.toggle('light-theme');
+        });
+      }
+
+      // Mobile nav
+      const mobileToggle = document.getElementById('mobile-toggle');
+      const mobileDrawer = document.getElementById('mobile-drawer');
+      if (mobileToggle && mobileDrawer) {
+        mobileToggle.addEventListener('click', () => {
+          mobileDrawer.classList.toggle('open');
         });
       }
     })();

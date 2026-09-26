@@ -126,6 +126,25 @@
   }
 
   /**
+   * Delete a single history entry by id
+   * @param {string} id
+   */
+  async function removeHistoryEntry(id) {
+    if (!id) return;
+    const history = await getHistory();
+    const updated = history.filter(item => item.id !== id);
+
+    if (isExtensionEnv()) {
+      return new Promise((resolve) => {
+        chrome.storage.local.set({ [STORAGE_KEYS.HISTORY]: updated }, () => resolve(updated));
+      });
+    }
+
+    memoryStore[STORAGE_KEYS.HISTORY] = updated;
+    return updated;
+  }
+
+  /**
    * Clear history
    */
   async function clearHistory() {
@@ -144,6 +163,7 @@
     saveSettings,
     getHistory,
     addHistoryEntry,
+    removeHistoryEntry,
     clearHistory
   };
 });
