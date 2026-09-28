@@ -28,7 +28,7 @@
   "crons": [
     {
       "path":     "/api/cron/whatsapp-cleanup",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 0 * * *"
     }
   ]
 }
