@@ -4,174 +4,204 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow, noarchive">
-  <meta name="referrer" content="no-referrer">
   <title>Browser Extension — Ephemeral Secret Vault</title>
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="stylesheet" href="/css/style.css">
-  <link rel="stylesheet" href="/style.css">
+  <style>
+    .ext-wrap { max-width: 960px; margin: 0 auto; padding: 48px 24px 96px; }
+    .browser-chrome { background: var(--bg-elevated); border: 1px solid var(--border-medium); border-radius: var(--r-xl); overflow: hidden; box-shadow: var(--shadow-xl); max-width: 340px; }
+    .chrome-bar { height: 36px; background: var(--bg-base); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 12px; gap: 6px; }
+    .chrome-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .chrome-url { flex: 1; background: rgba(255,255,255,0.04); border-radius: 5px; padding: 3px 10px; font-size: 11px; font-family: var(--font-mono); color: var(--text-4); }
+    .popup-inner { padding: 14px; }
+    .popup-tab-row { display: flex; gap: 2px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: var(--r-md); padding: 2px; margin-bottom: 12px; }
+    .popup-tab { flex: 1; padding: 6px 4px; text-align: center; font-size: 10px; font-weight: 600; color: var(--text-3); border-radius: 5px; cursor: pointer; transition: all var(--t-base); }
+    .popup-tab.active { background: var(--bg-elevated); color: var(--text-1); border: 1px solid var(--border); }
+    .popup-field { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: var(--r-md); padding: 8px 10px; margin-bottom: 8px; }
+    .popup-field-label { font-size: 9px; font-weight: 700; letter-spacing: 0.08em; color: var(--brand-light); text-transform: uppercase; margin-bottom: 4px; }
+    .popup-field-val { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-2); }
+    .popup-btn { width: 100%; height: 34px; background: var(--brand); color: #fff; border: none; border-radius: var(--r-md); font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; }
+
+    .feature-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .step-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+    @media (max-width:700px) { .feature-grid-2 { grid-template-columns: 1fr; } .step-row { grid-template-columns: 1fr; } }
+  </style>
 </head>
 <body id="top">
-  <!-- Master Futuristic Cybersecurity Navbar -->
   <header class="navbar">
     <div class="nav-container">
-      <a href="/" class="nav-brand" title="Ephemeral Secret Vault">
-        <svg class="nav-monochrome-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-        </svg>
-        <span class="brand-name">Ephemeral Secret Vault</span>
+      <a href="/" class="nav-brand">
+        <div class="nav-brand-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+        <span class="brand-name"><span class="brand-ephemeral">Ephemeral</span><span class="brand-vault">Secret Vault</span></span>
       </a>
-
-      <nav class="nav-links-row" aria-label="Main Navigation">
-        <a href="/">Home</a>
-        <a href="/create">Product</a>
-        <a href="/file">File Vault</a>
-        <a href="/security">Security</a>
-        <a href="/extension" class="active">Extension</a>
-        <a href="/how-it-works">How It Works</a>
-        <a href="/dashboard">Dashboard</a>
+      <nav class="nav-links-row">
+        <a href="/">Home</a><a href="/create">Product</a><a href="/security">Security</a>
+        <a href="/extension" class="active">Extension</a><a href="/how-it-works">How It Works</a><a href="/dashboard">Dashboard</a>
       </nav>
-
       <div class="nav-actions">
-        <span class="status-pill status-neutral">
-          <span class="status-dot"></span>
-          <span>AES-256-GCM</span>
-        </span>
-
-        <button type="button" class="btn-icon-plain" id="theme-toggle" aria-label="Toggle Theme" title="Toggle theme">
-          <svg id="theme-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-          </svg>
-        </button>
-
-        <button type="button" class="mobile-nav-toggle" id="mobile-toggle" aria-label="Open Navigation Menu">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-        </button>
+        <span class="nav-badge"><span class="dot"></span>AES-256-GCM</span>
+        <button class="btn-icon-plain" id="theme-toggle" aria-label="Toggle theme"><svg id="theme-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg></button>
+        <a href="/create" class="btn-nav-cta">Create Vault →</a>
+        <button class="mobile-nav-toggle" id="mobile-toggle" aria-label="Open menu"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
       </div>
     </div>
   </header>
-
-  <!-- Mobile Navigation Drawer -->
   <div class="mobile-menu-drawer" id="mobile-drawer">
-    <a href="/">Home</a>
-    <a href="/create">Product</a>
-    <a href="/file">File Vault</a>
-    <a href="/security">Security</a>
-    <a href="/extension" class="active">Extension</a>
-    <a href="/how-it-works">How It Works</a>
-    <a href="/dashboard">Dashboard</a>
+    <a href="/">Home</a><a href="/create">Product</a><a href="/security">Security</a>
+    <a href="/extension" class="active">Extension</a><a href="/how-it-works">How It Works</a><a href="/dashboard">Dashboard</a>
   </div>
 
-  <!-- Extension Container -->
-  <main class="viewport-layout" style="padding-top:40px;padding-bottom:60px;">
-    <div style="max-width:880px;width:100%;margin:0 auto;padding:0 20px;">
-      
-      <!-- Header -->
-      <header class="card-header-clean" style="text-align:left;margin-bottom:36px;">
-        <span class="section-label">OFFICIAL BROWSER COMPANION</span>
-        <h1 class="page-title" style="font-size:32px;letter-spacing:-0.03em;margin-bottom:10px;">
-          Secure Sharing Extension
-        </h1>
-        <p class="page-subtitle" style="font-size:15px;margin:0;max-width:680px;">
-          Send sensitive passwords, API keys, credentials, and files directly through WhatsApp Web, Gmail, Outlook, Slack, and Discord without ever putting the plaintext secret in the chat message.
-        </p>
-      </header>
+  <main>
+    <div class="ext-wrap">
 
-      <!-- Action Card -->
-      <section class="vault-card" style="margin-bottom:28px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:18px;">
-          <div>
-            <div style="font-size:16px;font-weight:700;color:var(--text-primary);letter-spacing:-0.01em;margin-bottom:4px;">Install for Chromium Browsers</div>
-            <div style="font-size:13px;color:var(--text-muted);">Compatible with Google Chrome, Microsoft Edge, Brave, and Firefox (MV3)</div>
+      <!-- Hero -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;margin-bottom:80px;">
+        <div>
+          <div class="hero-eyebrow" style="margin-bottom:20px;width:fit-content;">
+            <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4"></circle><line x1="21.17" y1="8" x2="12" y2="8"></line></svg>
+            Browser Extension
           </div>
-          <div style="display:flex;gap:10px;">
-            <a href="/download" class="btn-primary-solid" style="height:42px;padding:0 22px;font-size:13px;text-decoration:none;display:inline-flex;">
-              Install Extension →
+          <h1 style="font-size:clamp(28px,4vw,44px);font-weight:800;letter-spacing:-0.04em;line-height:1.15;margin-bottom:16px;">
+            Protect Secrets<br>
+            <span class="grad-text">Anywhere You Type</span>
+          </h1>
+          <p style="font-size:15px;color:var(--text-2);line-height:1.7;margin-bottom:28px;">Detect sensitive data inside Gmail, Slack, WhatsApp, Teams, Discord, and more. Vault it in one click and share the link instead.</p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <a href="/download" class="btn-hero-primary-pill" style="height:46px;padding:0 24px;font-size:14px;">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline></svg>
+              Download Extension
             </a>
-            <a href="/create" class="btn-secondary-clean" style="height:42px;padding:0 18px;font-size:13px;text-decoration:none;display:inline-flex;">
-              Use Web App
-            </a>
+            <a href="/how-it-works" class="btn-hero-glass-pill" style="height:46px;padding:0 20px;font-size:14px;">How It Works</a>
           </div>
         </div>
-      </section>
 
-      <!-- Workflow Grid -->
-      <div style="margin-bottom:32px;">
-        <span class="section-label">IN-BROWSER WORKFLOW</span>
-        <h2 style="font-size:20px;font-weight:700;color:var(--text-primary);letter-spacing:-0.02em;margin-bottom:18px;">Zero Plaintext in Message Drafts</h2>
-        
-        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:16px;">
-          <div class="vault-card" style="padding:20px;">
-            <div style="font-size:11px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">01 • Write or Paste</div>
-            <div style="font-size:13.5px;color:var(--text-secondary);line-height:1.6;">Open any chat message in WhatsApp, Gmail, or Slack. Press Ctrl+Shift+V or right-click to trigger the vault modal.</div>
-          </div>
-
-          <div class="vault-card" style="padding:20px;">
-            <div style="font-size:11px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">02 • Smart Detection</div>
-            <div style="font-size:13.5px;color:var(--text-secondary);line-height:1.6;">The extension automatically recognizes API tokens, AWS keys, JWTs, and passwords, suggesting instant protection.</div>
-          </div>
-
-          <div class="vault-card" style="padding:20px;">
-            <div style="font-size:11px;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">03 • In-Memory Encryption</div>
-            <div style="font-size:13.5px;color:var(--text-secondary);line-height:1.6;">The payload is encrypted before transmission. If offline, the extension falls back to client-side Web Crypto AES-256-GCM.</div>
-          </div>
-
-          <div class="vault-card" style="padding:20px;">
-            <div style="font-size:11px;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">04 • Safe Link Replaced</div>
-            <div style="font-size:13.5px;color:var(--text-secondary);line-height:1.6;">The chat input is safely replaced with an auto-expiring single-use link. Recipient opens link to decrypt and self-destruct.</div>
+        <!-- Browser mockup -->
+        <div style="display:flex;justify-content:center;">
+          <div class="browser-chrome">
+            <div class="chrome-bar">
+              <div class="chrome-dot" style="background:#FF5F57;"></div>
+              <div class="chrome-dot" style="background:#FEBC2E;"></div>
+              <div class="chrome-dot" style="background:#28C840;"></div>
+              <div class="chrome-url">mail.google.com</div>
+            </div>
+            <div class="popup-inner">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);">
+                <div style="width:28px;height:28px;border-radius:var(--r-md);background:var(--brand);display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+                <div><div style="font-size:12px;font-weight:700;color:var(--text-1);">Ephemeral Vault</div><div style="font-size:10px;color:var(--text-3);">Secure Secret Sharing</div></div>
+              </div>
+              <div class="popup-tab-row">
+                <div class="popup-tab active">🔐 Protect</div>
+                <div class="popup-tab">📋 Recent</div>
+                <div class="popup-tab">🛡 Security</div>
+              </div>
+              <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:var(--r-md);padding:6px 10px;margin-bottom:8px;font-size:10.5px;color:var(--red-text);display:flex;align-items:center;gap:5px;">
+                <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                API key detected — vault it?
+              </div>
+              <div class="popup-field">
+                <div class="popup-field-label">Secret Content</div>
+                <div class="popup-field-val">sk-proj-xK9mQ2v••••••</div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;">
+                <div class="popup-field"><div class="popup-field-label">Expires</div><div class="popup-field-val">10 minutes</div></div>
+                <div class="popup-field"><div class="popup-field-label">Max Views</div><div class="popup-field-val">1 view</div></div>
+              </div>
+              <button class="popup-btn">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                Create Secure Link
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Security Guardrails -->
-      <section class="vault-card">
-        <h2 style="font-size:18px;font-weight:700;color:var(--text-primary);letter-spacing:-0.02em;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--primary);"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-          Extension Security Architecture
-        </h2>
-        
-        <div style="display:flex;flex-direction:column;gap:14px;">
-          <div style="background:var(--bg-subtle);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:14px 16px;">
-            <div style="font-weight:700;color:var(--text-primary);margin-bottom:4px;font-size:13.5px;">Isolated Shadow DOM</div>
-            <div style="font-size:13px;color:var(--text-secondary);line-height:1.5;">Extension injection renders strictly inside an Isolated Shadow DOM. Host pages (e.g., Slack or WhatsApp scripts) cannot read, inspect, or intercept the passphrase input.</div>
+      <!-- Features -->
+      <div style="margin-bottom:72px;">
+        <div style="text-align:center;margin-bottom:32px;">
+          <span class="section-label">Features</span>
+          <h2 style="font-size:28px;font-weight:800;color:var(--text-1);letter-spacing:-0.03em;">Everything You Need</h2>
+        </div>
+        <div class="feature-grid-2">
+          <div class="feature-card-linear">
+            <div class="feature-icon-box"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+            <h3>Smart Detection</h3>
+            <p>Automatically recognizes API keys, passwords, certificates, JWTs, private keys, and .env variables as you type in any web app.</p>
           </div>
-
-          <div style="background:var(--bg-subtle);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:14px 16px;">
-            <div style="font-weight:700;color:var(--text-primary);margin-bottom:4px;font-size:13.5px;">Zero Persistent Secrets</div>
-            <div style="font-size:13px;color:var(--text-secondary);line-height:1.5;">The extension service worker zeroizes all payload references after transmission. No plaintexts or decrypted blobs are retained in extension storage.</div>
+          <div class="feature-card-linear">
+            <div class="feature-icon-box" style="background:var(--accent-dim);border-color:var(--border-accent);color:var(--accent-light);"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div>
+            <h3>One-Click Vault</h3>
+            <p>Select any text or click the extension icon to instantly create an encrypted vault link without leaving the page you're on.</p>
+          </div>
+          <div class="feature-card-linear">
+            <div class="feature-icon-box" style="background:var(--green-dim);border-color:var(--green-border);color:var(--green-text);"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
+            <h3>Platform Integrations</h3>
+            <p>Native content scripts for Gmail, Slack, WhatsApp, Outlook, Discord, Teams, and Telegram — deep integration, not just a popup.</p>
+          </div>
+          <div class="feature-card-linear">
+            <div class="feature-icon-box" style="background:var(--yellow-dim);border-color:var(--yellow-border);color:var(--yellow-text);"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+            <h3>Isolated Shadow DOM</h3>
+            <p>Extension UI is rendered in an isolated Shadow DOM — host page scripts can never access or intercept your secrets.</p>
           </div>
         </div>
-      </section>
+      </div>
 
+      <!-- Install steps -->
+      <div style="margin-bottom:72px;">
+        <div style="text-align:center;margin-bottom:32px;">
+          <span class="section-label">Installation</span>
+          <h2 style="font-size:28px;font-weight:800;color:var(--text-1);letter-spacing:-0.03em;">Up in 60 Seconds</h2>
+        </div>
+        <div class="step-row">
+          <div style="text-align:center;">
+            <div style="width:52px;height:52px;border-radius:var(--r-xl);background:var(--brand);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:18px;font-weight:800;color:#fff;margin:0 auto 14px;box-shadow:var(--shadow-brand);">1</div>
+            <div style="font-size:14px;font-weight:700;color:var(--text-1);margin-bottom:6px;">Download ZIP</div>
+            <div style="font-size:12.5px;color:var(--text-3);">Download the extension archive from <a href="/download" style="color:var(--brand-light);">our install page</a></div>
+          </div>
+          <div style="text-align:center;">
+            <div style="width:52px;height:52px;border-radius:var(--r-xl);background:var(--brand);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:18px;font-weight:800;color:#fff;margin:0 auto 14px;box-shadow:var(--shadow-brand);">2</div>
+            <div style="font-size:14px;font-weight:700;color:var(--text-1);margin-bottom:6px;">Load Unpacked</div>
+            <div style="font-size:12.5px;color:var(--text-3);">Open <span style="font-family:var(--font-mono);color:var(--accent-light);">chrome://extensions</span>, enable Developer Mode, click "Load unpacked"</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="width:52px;height:52px;border-radius:var(--r-xl);background:var(--brand);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:18px;font-weight:800;color:#fff;margin:0 auto 14px;box-shadow:var(--shadow-brand);">3</div>
+            <div style="font-size:14px;font-weight:700;color:var(--text-1);margin-bottom:6px;">Pin &amp; Use</div>
+            <div style="font-size:12.5px;color:var(--text-3);">Pin the extension to your toolbar and start vaulting secrets from any web app</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Platform badges -->
+      <div class="card" style="padding:28px;text-align:center;margin-bottom:48px;">
+        <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-3);margin-bottom:20px;">Works On</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);font-weight:500;"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.57 1.37 5.06L2 22l5.1-1.33C8.54 21.51 10.22 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2Z" fill="#25D366"/></svg>WhatsApp</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);font-weight:500;"><svg viewBox="0 0 24 24" width="22" height="22"><rect x="2" y="4" width="20" height="16" rx="2" fill="#1a1a2e"/><path d="M2 6l10 7 10-7" stroke="#EA4335" stroke-width="2"/></svg>Gmail</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);font-weight:500;"><svg viewBox="0 0 24 24" width="22" height="22"><rect x="3" y="10" width="4" height="4" rx="2" fill="#E01E5A"/><rect x="8" y="10" width="8" height="4" rx="2" fill="#36C5F0"/><rect x="17" y="10" width="4" height="4" rx="2" fill="#2EB67D"/><rect x="10" y="3" width="4" height="4" rx="2" fill="#ECB22E"/><rect x="10" y="8" width="4" height="8" rx="2" fill="#E01E5A"/></svg>Slack</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);font-weight:500;"><svg viewBox="0 0 24 24" width="22" height="22" fill="#5865F2"><path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09-.01-.02-.04-.03-.07-.03-1.5.26-2.93.71-4.27 1.33-.01 0-.02.01-.03.02-2.72 4.07-3.47 8.03-3.1 11.95 0 .02.01.04.03.05 1.8 1.32 3.53 2.12 5.24 2.65.03.01.06 0 .07-.02.4-.55.76-1.13 1.07-1.74.02-.04 0-.08-.04-.09-.57-.22-1.11-.48-1.64-.78-.04-.02-.04-.08-.01-.11.11-.08.22-.17.33-.25.02-.02.05-.02.07-.01 3.44 1.57 7.15 1.57 10.55 0 .02-.01.05-.01.07.01.11.09.22.17.33.26.04.03.04.08-.01.11-.52.31-1.07.56-1.64.78-.04.01-.05.06-.04.09.32.61.68 1.19 1.07 1.74.01.02.05.03.08.02 1.72-.53 3.45-1.33 5.25-2.65.02-.01.03-.03.03-.05.44-4.53-.73-8.46-3.1-11.95z"/></svg>Discord</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);font-weight:500;"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M19.5 7.5A2.5 2.5 0 1 0 17 5a2.5 2.5 0 0 0 2.5 2.5z" fill="#6264A7"/><path d="M13 6A3.5 3.5 0 1 0 9.5 2.5 3.5 3.5 0 0 0 13 6z" fill="#464EB8"/><rect x="2" y="8" width="8" height="9" rx="2" fill="#505AC9"/></svg>Teams</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);font-weight:500;"><svg viewBox="0 0 24 24" width="22" height="22" fill="#26A5E4"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"></path></svg>Telegram</div>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div style="text-align:center;background:var(--brand-dim);border:1px solid var(--border-brand);border-radius:var(--r-2xl);padding:40px 32px;">
+        <h2 style="font-size:24px;font-weight:800;color:var(--text-1);letter-spacing:-0.03em;margin-bottom:10px;">Ready to install?</h2>
+        <p style="font-size:13px;color:var(--text-3);margin-bottom:22px;">Free, open-source, and installs in under a minute.</p>
+        <a href="/download" class="btn-hero-primary-pill" style="height:46px;padding:0 28px;font-size:14px;">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline></svg>
+          Download Extension (.ZIP)
+        </a>
+      </div>
     </div>
   </main>
 
-  <footer class="footer-enterprise">
-    <div class="footer-meta-text">
-      Ephemeral Secret Vault • AES-256-GCM Zero-Trace Cryptographic Service
-    </div>
-  </footer>
-
   <script>
-    const themeBtn = document.getElementById('theme-toggle');
-    if (themeBtn) {
-      themeBtn.addEventListener('click', () => {
-        const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
-        document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
-        localStorage.setItem('theme', isDark ? 'light' : 'dark');
-      });
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme) {
-        document.documentElement.setAttribute('data-theme', savedTheme);
-      }
-    }
-    const mobileToggle = document.getElementById('mobile-toggle');
-    const mobileDrawer = document.getElementById('mobile-drawer');
-    if (mobileToggle && mobileDrawer) {
-      mobileToggle.addEventListener('click', () => {
-        mobileDrawer.classList.toggle('open');
-      });
-    }
+    const tt = document.getElementById('theme-toggle'), ti = document.getElementById('theme-icon');
+    if (localStorage.getItem('vault_theme') === 'light') document.body.classList.add('light-theme');
+    function setIcon(l) { ti.innerHTML = l ? '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>' : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>'; }
+    setIcon(document.body.classList.contains('light-theme'));
+    tt?.addEventListener('click', () => { const l = document.body.classList.toggle('light-theme'); localStorage.setItem('vault_theme', l ? 'light' : 'dark'); setIcon(l); });
+    document.getElementById('mobile-toggle')?.addEventListener('click', () => document.getElementById('mobile-drawer').classList.toggle('open'));
   </script>
 </body>
 </html>

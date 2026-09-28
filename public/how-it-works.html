@@ -8,203 +8,198 @@
   <title>How It Works — Ephemeral Secret Vault</title>
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="stylesheet" href="/css/style.css">
-  <link rel="stylesheet" href="/style.css">
+  <style>
+    .hiw-wrap { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+    .step-connector { width: 2px; flex: 1; background: linear-gradient(to bottom, var(--border-brand), rgba(124,58,237,0.05)); margin: 8px auto 0; min-height: 32px; }
+    .step-item:last-child .step-connector { display: none; }
+    .tech-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    @media (max-width: 700px) { .tech-grid { grid-template-columns: 1fr; } }
+  </style>
 </head>
 <body id="top">
-  <!-- Master Futuristic Cybersecurity Navbar -->
   <header class="navbar">
     <div class="nav-container">
-      <a href="/" class="nav-brand" title="Ephemeral Secret Vault">
-        <svg class="nav-monochrome-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-        </svg>
-        <span class="brand-name">Ephemeral Secret Vault</span>
+      <a href="/" class="nav-brand">
+        <div class="nav-brand-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+        <span class="brand-name"><span class="brand-ephemeral">Ephemeral</span><span class="brand-vault">Secret Vault</span></span>
       </a>
-
-      <nav class="nav-links-row" aria-label="Main Navigation">
-        <a href="/">Home</a>
-        <a href="/create">Product</a>
-        <a href="/file">File Vault</a>
-        <a href="/security">Security</a>
-        <a href="/extension">Extension</a>
-        <a href="/how-it-works" class="active">How It Works</a>
-        <a href="/dashboard">Dashboard</a>
+      <nav class="nav-links-row">
+        <a href="/">Home</a><a href="/create">Product</a><a href="/security">Security</a>
+        <a href="/extension">Extension</a><a href="/how-it-works" class="active">How It Works</a><a href="/dashboard">Dashboard</a>
       </nav>
-
       <div class="nav-actions">
-        <span class="status-pill status-neutral">
-          <span class="status-dot"></span>
-          <span>AES-256-GCM</span>
-        </span>
-
-        <button type="button" class="btn-icon-plain" id="theme-toggle" aria-label="Toggle Theme" title="Toggle theme">
-          <svg id="theme-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-          </svg>
-        </button>
-
-        <button type="button" class="mobile-nav-toggle" id="mobile-toggle" aria-label="Open Navigation Menu">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-        </button>
+        <span class="nav-badge"><span class="dot"></span>AES-256-GCM</span>
+        <button class="btn-icon-plain" id="theme-toggle" aria-label="Toggle theme"><svg id="theme-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg></button>
+        <a href="/create" class="btn-nav-cta">Create Vault →</a>
+        <button class="mobile-nav-toggle" id="mobile-toggle" aria-label="Open menu"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
       </div>
     </div>
   </header>
-
-  <!-- Mobile Navigation Drawer -->
   <div class="mobile-menu-drawer" id="mobile-drawer">
-    <a href="/">Home</a>
-    <a href="/create">Product</a>
-    <a href="/file">File Vault</a>
-    <a href="/security">Security</a>
-    <a href="/extension">Extension</a>
-    <a href="/how-it-works" class="active">How It Works</a>
-    <a href="/dashboard">Dashboard</a>
+    <a href="/">Home</a><a href="/create">Product</a><a href="/security">Security</a><a href="/how-it-works" class="active">How It Works</a><a href="/dashboard">Dashboard</a>
   </div>
 
-  <!-- How It Works Container -->
-  <main class="viewport-layout" style="padding-top:40px;padding-bottom:60px;">
-    <div style="max-width:880px;width:100%;margin:0 auto;padding:0 20px;">
-      
-      <header class="card-header-clean" style="text-align:left;margin-bottom:36px;">
-        <span class="section-label">END-TO-END SECRET LIFECYCLE</span>
-        <h1 class="page-title" style="font-size:32px;letter-spacing:-0.03em;margin-bottom:10px;">How Ephemeral Vaulting Works</h1>
-        <p class="page-subtitle" style="font-size:15px;margin:0;max-width:680px;">
-          From creation to permanent cryptographic destruction: understand what happens at each stage of your secret's lifecycle.
-        </p>
-      </header>
+  <main>
+    <div class="hiw-wrap">
+      <!-- Hero -->
+      <div style="text-align:center;margin-bottom:64px;">
+        <div class="hero-eyebrow" style="margin:0 auto 20px;">
+          <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+          Cryptographic Lifecycle
+        </div>
+        <h1 style="font-size:clamp(32px,5vw,52px);font-weight:800;letter-spacing:-0.04em;line-height:1.1;margin-bottom:16px;">
+          How <span class="grad-text">Ephemeral</span> Works
+        </h1>
+        <p style="font-size:15px;color:var(--text-2);max-width:540px;margin:0 auto;line-height:1.7;">From browser-side encryption to physical server deletion — your secret never travels in the open.</p>
+      </div>
 
-      <!-- 6 Detailed Steps -->
-      <div style="display:flex;flex-direction:column;gap:16px;">
-        
+      <!-- Steps -->
+      <div style="margin-bottom:72px;">
         <!-- Step 1 -->
-        <section class="vault-card" style="padding:22px;">
-          <div style="display:flex;align-items:flex-start;gap:16px;">
-            <div style="width:36px;height:36px;border-radius:8px;background:rgba(40, 117, 255, 0.12);border:1px solid rgba(40, 117, 255, 0.3);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--primary);flex-shrink:0;box-shadow:0 0 15px rgba(40, 117, 255, 0.15);">01</div>
-            <div>
-              <h2 style="font-size:16px;font-weight:700;color:var(--text-primary);letter-spacing:-0.01em;margin-bottom:8px;">
-                Step 1: Input Secret Content or File
-              </h2>
-              <p style="font-size:13.5px;color:var(--text-secondary);line-height:1.6;margin:0;">
-                You provide sensitive text (API keys, passwords, database URLs, notes) or upload a confidential file (code scripts, certificates, PDFs, images up to 10 MB). You configure an expiration duration (from 5 minutes up to 7 days) and view allowance (1 to 5 views).
-              </p>
+        <div class="step-item" style="display:grid;grid-template-columns:80px 1fr;gap:32px;align-items:start;padding-bottom:0;">
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div style="width:56px;height:56px;border-radius:var(--r-xl);background:var(--grad-brand);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:20px;font-weight:800;color:#fff;box-shadow:var(--shadow-brand);flex-shrink:0;">01</div>
+            <div class="step-connector"></div>
+          </div>
+          <div style="padding-top:8px;padding-bottom:40px;">
+            <span style="display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--brand-light);background:var(--brand-dim);border:1px solid var(--border-brand);padding:3px 10px;border-radius:var(--r-pill);margin-bottom:10px;">Create</span>
+            <h2 style="font-size:22px;font-weight:800;color:var(--text-1);letter-spacing:-0.025em;margin-bottom:8px;">Draft Your Secret</h2>
+            <p style="font-size:14px;color:var(--text-3);line-height:1.7;margin-bottom:14px;">Paste confidential notes, credentials, API keys, certificates, or upload a file. The creation interface supports text up to 10 KB and files up to 15 MB.</p>
+            <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;display:flex;align-items:center;gap:12px;">
+              <div style="width:34px;height:34px;border-radius:var(--r-md);background:var(--brand-dim);border:1px solid var(--border-brand);color:var(--brand-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></div>
+              <div><strong style="display:block;font-size:12.5px;color:var(--text-1);">Auto-detection</strong><span style="font-size:11.5px;color:var(--text-3);">Classifies API keys, passwords, certificates, JWTs automatically</span></div>
             </div>
           </div>
-        </section>
-
+        </div>
         <!-- Step 2 -->
-        <section class="vault-card" style="padding:22px;">
-          <div style="display:flex;align-items:flex-start;gap:16px;">
-            <div style="width:36px;height:36px;border-radius:8px;background:rgba(40, 117, 255, 0.12);border:1px solid rgba(40, 117, 255, 0.3);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--primary);flex-shrink:0;box-shadow:0 0 15px rgba(40, 117, 255, 0.15);">02</div>
-            <div>
-              <h2 style="font-size:16px;font-weight:700;color:var(--text-primary);letter-spacing:-0.01em;margin-bottom:8px;">
-                Step 2: Server-Side In-Memory AES-256-GCM Encryption
-              </h2>
-              <p style="font-size:13.5px;color:var(--text-secondary);line-height:1.6;margin:0;">
-                Upon receipt via HTTPS TLS 1.3, the secret is immediately encrypted using AES-256-GCM with a newly generated cryptographically random 96-bit IV. The plaintext is zeroized from heap memory and never touches disk unencrypted.
-              </p>
+        <div class="step-item" style="display:grid;grid-template-columns:80px 1fr;gap:32px;align-items:start;padding-bottom:0;">
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div style="width:56px;height:56px;border-radius:var(--r-xl);background:var(--grad-cta);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:20px;font-weight:800;color:#fff;box-shadow:var(--shadow-accent);flex-shrink:0;">02</div>
+            <div class="step-connector"></div>
+          </div>
+          <div style="padding-top:8px;padding-bottom:40px;">
+            <span style="display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent-light);background:var(--accent-dim);border:1px solid var(--border-accent);padding:3px 10px;border-radius:var(--r-pill);margin-bottom:10px;">Encrypt</span>
+            <h2 style="font-size:22px;font-weight:800;color:var(--text-1);letter-spacing:-0.025em;margin-bottom:8px;">AES-256-GCM in Your Browser</h2>
+            <p style="font-size:14px;color:var(--text-3);line-height:1.7;margin-bottom:14px;">With Zero-Knowledge mode enabled, your browser uses the Web Crypto API to generate a 256-bit key and encrypt the secret locally. The server receives only ciphertext — the plaintext and key never leave your device.</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:12px 14px;"><div style="font-size:10px;font-weight:700;color:var(--text-4);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Algorithm</div><div style="font-size:12px;font-weight:700;color:var(--accent-light);font-family:var(--font-mono);">AES-256-GCM</div></div>
+              <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:12px 14px;"><div style="font-size:10px;font-weight:700;color:var(--text-4);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">IV Length</div><div style="font-size:12px;font-weight:700;color:var(--accent-light);font-family:var(--font-mono);">96-bit random</div></div>
+              <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:12px 14px;"><div style="font-size:10px;font-weight:700;color:var(--text-4);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Auth Tag</div><div style="font-size:12px;font-weight:700;color:var(--accent-light);font-family:var(--font-mono);">128-bit GCM</div></div>
+              <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:12px 14px;"><div style="font-size:10px;font-weight:700;color:var(--text-4);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Location</div><div style="font-size:12px;font-weight:700;color:var(--green-text);font-family:var(--font-mono);">URL hash only</div></div>
             </div>
           </div>
-        </section>
-
+        </div>
         <!-- Step 3 -->
-        <section class="vault-card" style="padding:22px;">
-          <div style="display:flex;align-items:flex-start;gap:16px;">
-            <div style="width:36px;height:36px;border-radius:8px;background:rgba(40, 117, 255, 0.12);border:1px solid rgba(40, 117, 255, 0.3);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--primary);flex-shrink:0;box-shadow:0 0 15px rgba(40, 117, 255, 0.15);">03</div>
-            <div>
-              <h2 style="font-size:16px;font-weight:700;color:var(--text-primary);letter-spacing:-0.01em;margin-bottom:8px;">
-                Step 3: Unique Vault Link Generation
-              </h2>
-              <p style="font-size:13.5px;color:var(--text-secondary);line-height:1.6;margin:0;">
-                The vault generates a non-sequential, random 64-bit hexadecimal Vault ID. The Vault ID is an opaque pointer that contains zero secret data and zero encryption keys.
-              </p>
-            </div>
+        <div class="step-item" style="display:grid;grid-template-columns:80px 1fr;gap:32px;align-items:start;padding-bottom:0;">
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div style="width:56px;height:56px;border-radius:var(--r-xl);background:linear-gradient(135deg,var(--green),#059669);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:20px;font-weight:800;color:#fff;flex-shrink:0;">03</div>
+            <div class="step-connector"></div>
           </div>
-        </section>
-
+          <div style="padding-top:8px;padding-bottom:40px;">
+            <span style="display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--green-text);background:var(--green-dim);border:1px solid var(--green-border);padding:3px 10px;border-radius:var(--r-pill);margin-bottom:10px;">Share</span>
+            <h2 style="font-size:22px;font-weight:800;color:var(--text-1);letter-spacing:-0.025em;margin-bottom:8px;">Send via Any Platform</h2>
+            <p style="font-size:14px;color:var(--text-3);line-height:1.7;margin-bottom:14px;">A random, non-enumerable 128-bit vault link is generated. Share it via WhatsApp, Gmail, Slack, Discord, Teams, or Telegram. The link itself contains no secret data — only an encrypted pointer.</p>
+            <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:12px 16px;font-family:var(--font-mono);font-size:12px;color:var(--brand-light);word-break:break-all;">https://vault.domain/v/<span style="color:var(--accent-light);">a8f9c1e2b3d4…</span><span style="color:var(--text-4);">#key=</span><span style="color:var(--green-text);">bX3kP9mQ…</span></div>
+          </div>
+        </div>
         <!-- Step 4 -->
-        <section class="vault-card" style="padding:22px;">
-          <div style="display:flex;align-items:flex-start;gap:16px;">
-            <div style="width:36px;height:36px;border-radius:8px;background:rgba(40, 117, 255, 0.12);border:1px solid rgba(40, 117, 255, 0.3);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--primary);flex-shrink:0;box-shadow:0 0 15px rgba(40, 117, 255, 0.15);">04</div>
-            <div>
-              <h2 style="font-size:16px;font-weight:700;color:var(--text-primary);letter-spacing:-0.01em;margin-bottom:8px;">
-                Step 4: Safe Distribution (WhatsApp, Gmail, Outlook, Slack)
-              </h2>
-              <p style="font-size:13.5px;color:var(--text-secondary);line-height:1.6;margin:0;">
-                You share the link via WhatsApp, email, Slack, or any platform. The actual secret NEVER enters message drafts or cloud backups. When preview crawlers (Slackbot, Twitterbot, etc.) inspect the link, they receive a dummy static preview shell with zero decrypt operations.
-              </p>
+        <div class="step-item" style="display:grid;grid-template-columns:80px 1fr;gap:32px;align-items:start;padding-bottom:0;">
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div style="width:56px;height:56px;border-radius:var(--r-xl);background:linear-gradient(135deg,var(--yellow),#d97706);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:20px;font-weight:800;color:#fff;flex-shrink:0;">04</div>
+            <div class="step-connector"></div>
+          </div>
+          <div style="padding-top:8px;padding-bottom:40px;">
+            <span style="display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--yellow-text);background:var(--yellow-dim);border:1px solid var(--yellow-border);padding:3px 10px;border-radius:var(--r-pill);margin-bottom:10px;">Authorize</span>
+            <h2 style="font-size:22px;font-weight:800;color:var(--text-1);letter-spacing:-0.025em;margin-bottom:8px;">Two-Step Backend Authorization</h2>
+            <p style="font-size:14px;color:var(--text-3);line-height:1.7;margin-bottom:14px;">The backend validates the request context, checks for bot/crawler traffic (preventing accidental preview burns), and issues a single-use reveal token. The recipient must submit both the token and optional passphrase to proceed.</p>
+            <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:12px 16px;">
+              <div style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Two-Step Flow</div>
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-2);"><div style="width:18px;height:18px;border-radius:50%;background:var(--brand-dim);border:1px solid var(--border-brand);color:var(--brand-light);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;flex-shrink:0;">1</div>POST /api/vault/:id/reveal/request → returns token</div>
+                <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-2);"><div style="width:18px;height:18px;border-radius:50%;background:var(--brand-dim);border:1px solid var(--border-brand);color:var(--brand-light);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;flex-shrink:0;">2</div>POST /api/vault/:id/reveal + token → ciphertext</div>
+              </div>
             </div>
           </div>
-        </section>
-
+        </div>
         <!-- Step 5 -->
-        <section class="vault-card" style="padding:22px;">
-          <div style="display:flex;align-items:flex-start;gap:16px;">
-            <div style="width:36px;height:36px;border-radius:8px;background:rgba(34, 211, 238, 0.12);border:1px solid rgba(34, 211, 238, 0.3);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--cyan);flex-shrink:0;box-shadow:0 0 15px rgba(34, 211, 238, 0.15);">05</div>
-            <div>
-              <h2 style="font-size:16px;font-weight:700;color:var(--text-primary);letter-spacing:-0.01em;margin-bottom:8px;">
-                Step 5: Two-Step Authorized Reveal Flow
-              </h2>
-              <p style="font-size:13.5px;color:var(--text-secondary);line-height:1.6;margin:0;">
-                When the recipient opens the link, the page loads with zero plaintext. When they click "Reveal Secret", the frontend requests a single-use authorization token from the backend. The backend validates policy, decrements views, decrypts in memory, and returns the payload.
-              </p>
-            </div>
+        <div class="step-item" style="display:grid;grid-template-columns:80px 1fr;gap:32px;align-items:start;">
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div style="width:56px;height:56px;border-radius:var(--r-xl);background:linear-gradient(135deg,var(--red),#dc2626);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:20px;font-weight:800;color:#fff;flex-shrink:0;">05</div>
           </div>
-        </section>
-
-        <!-- Step 6 -->
-        <section class="vault-card" style="padding:22px;">
-          <div style="display:flex;align-items:flex-start;gap:16px;">
-            <div style="width:36px;height:36px;border-radius:8px;background:rgba(34, 211, 238, 0.12);border:1px solid rgba(34, 211, 238, 0.3);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--cyan);flex-shrink:0;box-shadow:0 0 15px rgba(34, 211, 238, 0.15);">06</div>
-            <div>
-              <h2 style="font-size:16px;font-weight:700;color:var(--text-primary);letter-spacing:-0.01em;margin-bottom:8px;">
-                Step 6: Cryptographic Shredding &amp; Zero Retention
-              </h2>
-              <p style="font-size:13.5px;color:var(--text-secondary);line-height:1.6;margin:0;">
-                Once the view limit is reached or the expiration time elapses, the database record is atomically deleted. Memory buffers are overwritten with zeros. Any subsequent attempts to view the URL return 404 or redirect to the burned page.
-              </p>
-            </div>
+          <div style="padding-top:8px;">
+            <span style="display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--red-text);background:var(--red-dim);border:1px solid var(--red-border);padding:3px 10px;border-radius:var(--r-pill);margin-bottom:10px;">Reveal &amp; Shred</span>
+            <h2 style="font-size:22px;font-weight:800;color:var(--text-1);letter-spacing:-0.025em;margin-bottom:8px;">Atomic Decrypt &amp; Permanent Purge</h2>
+            <p style="font-size:14px;color:var(--text-3);line-height:1.7;margin-bottom:14px;">The ciphertext is returned to the browser, decrypted in RAM using the key from the URL hash, and displayed. Simultaneously, the SQLite record is atomically decremented — if views reach zero, the row is hard-deleted and WAL-checkpointed in the same transaction.</p>
+            <div style="background:var(--red-dim);border:1px solid var(--red-border);border-radius:var(--r-lg);padding:12px 16px;font-size:12px;color:var(--text-2);line-height:1.6;font-family:var(--font-mono);">UPDATE secrets SET views_remaining = views_remaining - 1 WHERE id = ? RETURNING ...<br>DELETE FROM secrets WHERE id = ? <span style="color:var(--text-4);">-- if views_remaining = 0</span></div>
           </div>
-        </section>
-
+        </div>
       </div>
 
-      <!-- Bottom CTA -->
-      <div style="margin-top:36px;text-align:center;">
-        <a href="/create" class="btn-primary-solid" style="width:auto;padding:0 28px;text-decoration:none;display:inline-flex;height:46px;">
-          <span>Create a Vault Now →</span>
-        </a>
+      <!-- Tech stack -->
+      <div style="margin-bottom:64px;">
+        <div style="text-align:center;margin-bottom:32px;">
+          <span class="section-label">Technology Stack</span>
+          <h2 style="font-size:28px;font-weight:800;color:var(--text-1);letter-spacing:-0.03em;">Built for Security</h2>
+        </div>
+        <div class="tech-grid">
+          <div class="feature-card-linear">
+            <div class="feature-icon-box"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div>
+            <h3>AES-256-GCM</h3>
+            <p style="font-family:var(--font-mono);font-size:11px;color:var(--accent-light);margin-bottom:6px;">NIST SP 800-38D</p>
+            <p>Authenticated encryption with 96-bit IV and 128-bit integrity tag. Tamper detection built-in.</p>
+          </div>
+          <div class="feature-card-linear">
+            <div class="feature-icon-box" style="background:var(--accent-dim);border-color:var(--border-accent);color:var(--accent-light);"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"></path></svg></div>
+            <h3>SQLite WAL</h3>
+            <p style="font-family:var(--font-mono);font-size:11px;color:var(--accent-light);margin-bottom:6px;">secure_delete = ON</p>
+            <p>Write-Ahead Log with PRAGMA secure_delete ensures zero residual ciphertext on disk after purge.</p>
+          </div>
+          <div class="feature-card-linear">
+            <div class="feature-icon-box" style="background:var(--green-dim);border-color:var(--green-border);color:var(--green-text);"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line></svg></div>
+            <h3>Web Crypto API</h3>
+            <p style="font-family:var(--font-mono);font-size:11px;color:var(--green-text);margin-bottom:6px;">SubtleCrypto.encrypt()</p>
+            <p>Browser-native cryptography. Key generation, encryption, and decryption never touch the server.</p>
+          </div>
+          <div class="feature-card-linear">
+            <div class="feature-icon-box" style="background:var(--yellow-dim);border-color:var(--yellow-border);color:var(--yellow-text);"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></div>
+            <h3>PBKDF2 / bcrypt</h3>
+            <p style="font-family:var(--font-mono);font-size:11px;color:var(--yellow-text);margin-bottom:6px;">Key stretching</p>
+            <p>Optional passphrase protection uses PBKDF2 key-stretching with a random salt to resist brute-force.</p>
+          </div>
+          <div class="feature-card-linear">
+            <div class="feature-icon-box"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg></div>
+            <h3>Bot Guard</h3>
+            <p style="font-family:var(--font-mono);font-size:11px;color:var(--brand-light);margin-bottom:6px;">Preview crawler detection</p>
+            <p>Detects and blocks WhatsApp, Slack, Discord link-preview crawlers to prevent accidental burns.</p>
+          </div>
+          <div class="feature-card-linear">
+            <div class="feature-icon-box" style="background:var(--accent-dim);border-color:var(--border-accent);color:var(--accent-light);"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div>
+            <h3>Rate Limiting</h3>
+            <p style="font-family:var(--font-mono);font-size:11px;color:var(--accent-light);margin-bottom:6px;">30 create / 60 reveal per min</p>
+            <p>Per-IP rate limits on creation and reveal endpoints prevent automated scraping or flooding.</p>
+          </div>
+        </div>
       </div>
 
+      <!-- CTA -->
+      <div style="text-align:center;background:linear-gradient(135deg,rgba(124,58,237,0.08),rgba(6,182,212,0.05));border:1px solid rgba(124,58,237,0.20);border-radius:var(--r-2xl);padding:48px 32px;">
+        <h2 style="font-size:28px;font-weight:800;color:var(--text-1);letter-spacing:-0.03em;margin-bottom:10px;">Ready to try it?</h2>
+        <p style="font-size:14px;color:var(--text-3);margin-bottom:24px;">Your first encrypted vault is one click away — no account required.</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+          <a href="/create" class="btn-hero-primary-pill" style="height:46px;padding:0 28px;font-size:14px;">Create Secure Vault →</a>
+          <a href="/security" class="btn-hero-glass-pill" style="height:46px;padding:0 22px;font-size:14px;">Security Architecture</a>
+        </div>
+      </div>
     </div>
   </main>
 
-  <footer class="footer-enterprise">
-    <div class="footer-meta-text">
-      Ephemeral Secret Vault • AES-256-GCM Zero-Trace Cryptographic Service
-    </div>
-  </footer>
-
   <script>
-    const themeBtn = document.getElementById('theme-toggle');
-    if (themeBtn) {
-      themeBtn.addEventListener('click', () => {
-        const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
-        document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
-        localStorage.setItem('theme', isDark ? 'light' : 'dark');
-      });
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme) {
-        document.documentElement.setAttribute('data-theme', savedTheme);
-      }
-    }
-    const mobileToggle = document.getElementById('mobile-toggle');
-    const mobileDrawer = document.getElementById('mobile-drawer');
-    if (mobileToggle && mobileDrawer) {
-      mobileToggle.addEventListener('click', () => {
-        mobileDrawer.classList.toggle('open');
-      });
-    }
+    const tt = document.getElementById('theme-toggle'), ti = document.getElementById('theme-icon');
+    if (localStorage.getItem('vault_theme') === 'light') document.body.classList.add('light-theme');
+    function setIcon(l) { ti.innerHTML = l ? '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>' : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>'; }
+    setIcon(document.body.classList.contains('light-theme'));
+    tt?.addEventListener('click', () => { const l = document.body.classList.toggle('light-theme'); localStorage.setItem('vault_theme', l ? 'light' : 'dark'); setIcon(l); });
+    document.getElementById('mobile-toggle')?.addEventListener('click', () => document.getElementById('mobile-drawer').classList.toggle('open'));
   </script>
 </body>
 </html>

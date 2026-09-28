@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <title>Admin Dashboard — Ephemeral Secret Vault</title>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/leaflet.css">
+  <style>
+    html, body { height: 100%; overflow: hidden; }
+    body { display: flex; flex-direction: column; background: var(--bg-app); }
+
+    /* ── Top bar ── */
+    .admin-topbar {
+      height: 56px; flex-shrink: 0;
+      background: var(--bg-overlay); border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      display: flex; align-items: center; padding: 0 20px; gap: 14px;
+      position: sticky; top: 0; z-index: 200;
+    }
+    .admin-topbar-brand { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 700; color: var(--text-1); text-decoration: none; }
+    .admin-topbar-brand-icon { width: 28px; height: 28px; border-radius: var(--r-md); background: var(--brand); display: flex; align-items: center; justify-content: center; color: #fff; flex-shrink: 0; }
+    .admin-badge-live { display: flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: var(--green-text); background: var(--green-dim); border: 1px solid var(--green-border); padding: 3px 10px; border-radius: var(--r-pill); }
+    .admin-badge-live .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); animation: pulse-dot 2s ease infinite; }
+    .admin-topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+    .admin-user-pill { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-2); }
+    .admin-user-avatar { width: 28px; height: 28px; border-radius: var(--r-md); background: var(--brand); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; }
+    .btn-admin-logout { font-size: 11px; font-weight: 600; color: var(--text-3); background: transparent; border: 1px solid var(--border); padding: 5px 12px; border-radius: var(--r-md); cursor: pointer; transition: all var(--t-base); }
+    .btn-admin-logout:hover { color: var(--red-text); border-color: var(--red-border); background: var(--red-dim); }
+
+    /* ── Shell ── */
+    .admin-shell { display: flex; flex: 1; overflow: hidden; }
+
+    /* ── Sidebar ── */
+    .admin-sidebar {
+      width: 220px; flex-shrink: 0;
+      background: var(--bg-base); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; overflow-y: auto; padding: 12px 10px;
+    }
+    .sidebar-section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.10em; text-transform: uppercase; color: var(--text-4); padding: 10px 10px 4px; }
+    .sidebar-nav-item {
+      display: flex; align-items: center; gap: 10px; padding: 9px 10px;
+      border-radius: var(--r-md); cursor: pointer;
+      font-size: 13px; font-weight: 500; color: var(--text-2);
+      transition: all var(--t-base); border: 1px solid transparent;
+      background: transparent; width: 100%; text-align: left;
+    }
+    .sidebar-nav-item svg { width: 15px; height: 15px; flex-shrink: 0; }
+    .sidebar-nav-item:hover { background: var(--surface-hover); color: var(--text-1); }
+    .sidebar-nav-item.active { background: var(--brand-dim); border-color: var(--border-brand); color: var(--text-1); }
+    .sidebar-badge { margin-left: auto; min-width: 18px; height: 18px; padding: 0 5px; background: var(--red); color: #fff; font-size: 10px; font-weight: 700; border-radius: var(--r-pill); display: flex; align-items: center; justify-content: center; }
+
+    /* ── Main ── */
+    .admin-main { flex: 1; overflow-y: auto; padding: 24px; background: var(--bg-app); }
+    .admin-panel { display: none; animation: fade-in 0.2s var(--ease-out); }
+    .admin-panel.active { display: block; }
+
+    /* ── Panel header ── */
+    .panel-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+    .panel-title { font-size: 20px; font-weight: 800; color: var(--text-1); letter-spacing: -0.025em; }
+    .panel-subtitle { font-size: 12px; color: var(--text-3); margin-top: 3px; }
+
+    /* ── Admin stat cards ── */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
+    .admin-stat-card {
+      background: var(--bg-surface); border: 1px solid var(--border);
+      border-radius: var(--r-xl); padding: 16px 18px; position: relative; overflow: hidden;
+      transition: border-color var(--t-base), transform var(--t-base);
+    }
+    .admin-stat-card:hover { border-color: var(--border-brand); transform: translateY(-2px); }
+    .stat-card-label { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); margin-bottom: 8px; }
+    .stat-card-value { font-family: var(--font-mono); font-size: 28px; font-weight: 700; color: var(--text-1); line-height: 1; }
+    .stat-card-sub { font-size: 11px; color: var(--text-4); margin-top: 4px; }
+    .stat-card-accent { position: absolute; top: 0; right: 0; width: 3px; height: 100%; border-radius: 0 var(--r-xl) var(--r-xl) 0; }
+    .admin-stat-card.indigo .stat-card-accent { background: var(--brand); }
+    .admin-stat-card.green  .stat-card-accent { background: var(--green); }
+    .admin-stat-card.amber  .stat-card-accent { background: var(--yellow); }
+    .admin-stat-card.red    .stat-card-accent { background: var(--red); }
+    .admin-stat-card.cyan   .stat-card-accent { background: var(--accent); }
+
+    /* Legacy stat-card alias (for JS that uses .stat-card.indigo etc.) */
+    .stat-card { @extend .admin-stat-card; }
+
+    /* ── Admin table ── */
+    .admin-table-wrap { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--r-xl); overflow: hidden; }
+    .admin-table-toolbar { padding: 14px 18px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+    .admin-table-toolbar-title { font-size: 14px; font-weight: 700; color: var(--text-1); }
+    .admin-search { flex: 1; min-width: 160px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: var(--r-md); padding: 7px 12px; font-size: 12.5px; color: var(--text-1); font-family: inherit; outline: none; }
+    .admin-search::placeholder { color: var(--text-4); }
+    .admin-search:focus { border-color: var(--brand); }
+    .admin-select { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: var(--r-md); padding: 7px 10px; font-size: 12px; color: var(--text-2); cursor: pointer; font-family: inherit; outline: none; }
+    .admin-select:focus { border-color: var(--brand); }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { padding: 10px 16px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-3); border-bottom: 1px solid var(--border); white-space: nowrap; background: rgba(255,255,255,0.02); }
+    td { padding: 12px 16px; border-bottom: 1px solid var(--border-subtle); color: var(--text-2); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+    .td-mono { font-family: var(--font-mono); font-size: 11.5px; }
+
+    /* ── Status badges ── */
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: var(--r-pill); font-size: 10px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; border: 1px solid; }
+    .badge-active   { background: var(--green-dim);  color: var(--green-text);  border-color: var(--green-border); }
+    .badge-expired  { background: var(--yellow-dim); color: var(--yellow-text); border-color: var(--yellow-border); }
+    .badge-revoked  { background: var(--red-dim);    color: var(--red-text);    border-color: var(--red-border); }
+    .badge-burned   { background: var(--brand-dim);  color: var(--brand-light); border-color: var(--border-brand); }
+    .badge-disabled { background: rgba(255,255,255,0.05); color: var(--text-3); border-color: var(--border); }
+    .badge-low      { background: var(--green-dim);  color: var(--green-text);  border-color: var(--green-border); }
+    .badge-medium   { background: var(--yellow-dim); color: var(--yellow-text); border-color: var(--yellow-border); }
+    .badge-high     { background: rgba(249,115,22,0.12); color: #FDA987; border-color: rgba(249,115,22,0.30); }
+    .badge-critical { background: var(--red-dim);    color: var(--red-text);    border-color: var(--red-border); animation: pulse-dot 1.5s infinite; }
+    .badge-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+    /* ── Action buttons ── */
+    .btn-sm { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; padding: 5px 10px; border-radius: var(--r-sm); cursor: pointer; border: 1px solid; transition: all var(--t-base); white-space: nowrap; }
+    .btn-sm-ghost   { background: transparent; border-color: var(--border); color: var(--text-2); }
+    .btn-sm-ghost:hover { background: var(--surface-hover); color: var(--text-1); }
+    .btn-sm-indigo  { background: var(--brand-dim);  border-color: var(--border-brand); color: var(--brand-light); }
+    .btn-sm-indigo:hover { background: rgba(124,58,237,0.22); }
+    .btn-sm-green   { background: var(--green-dim);  border-color: var(--green-border); color: var(--green-text); }
+    .btn-sm-green:hover { background: rgba(16,185,129,0.2); }
+    .btn-sm-danger  { background: var(--red-dim);    border-color: var(--red-border);   color: var(--red-text); }
+    .btn-sm-danger:hover { background: rgba(239,68,68,0.2); }
+    .btn-sm-amber   { background: var(--yellow-dim); border-color: var(--yellow-border); color: var(--yellow-text); }
+    .btn-sm-amber:hover { background: rgba(245,158,11,0.2); }
+    .action-bar { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    /* ── Two-col grid ── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+    @media (max-width: 1024px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* ── Activity feed ── */
+    .activity-feed { display: flex; flex-direction: column; gap: 2px; max-height: 320px; overflow-y: auto; }
+    .activity-item { display: flex; align-items: flex-start; gap: 10px; padding: 9px 10px; border-radius: var(--r-md); transition: background var(--t-base); font-size: 12.5px; }
+    .activity-item:hover { background: rgba(255,255,255,0.02); }
+    .activity-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+    .activity-dot-green  { background: var(--green); box-shadow: 0 0 5px rgba(16,185,129,0.5); }
+    .activity-dot-amber  { background: var(--yellow); }
+    .activity-dot-red    { background: var(--red); box-shadow: 0 0 5px rgba(239,68,68,0.5); }
+    .activity-dot-indigo { background: var(--brand); box-shadow: 0 0 5px var(--brand-glow); }
+    .activity-content { flex: 1; }
+    .activity-title { font-weight: 600; color: var(--text-1); }
+    .activity-meta  { color: var(--text-4); margin-top: 1px; font-size: 11px; }
+
+    /* ── Modal ── */
+    .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(8px); padding: 20px; }
+    .modal-backdrop.open { display: flex; }
+    .modal-box { background: var(--bg-elevated); border: 1px solid var(--border-medium); border-radius: var(--r-2xl); padding: 28px; max-width: 560px; width: 100%; max-height: 85vh; overflow-y: auto; box-shadow: var(--shadow-xl); animation: modal-box-in 0.25s var(--ease-out); }
+    .modal-title { font-size: 18px; font-weight: 700; color: var(--text-1); margin-bottom: 6px; }
+    .modal-body { font-size: 13px; color: var(--text-2); line-height: 1.65; }
+    .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border-subtle); }
+    .btn-modal-cancel  { padding: 9px 18px; border-radius: var(--r-md); font-size: 13px; font-weight: 600; background: transparent; border: 1px solid var(--border); color: var(--text-2); cursor: pointer; }
+    .btn-modal-cancel:hover { color: var(--text-1); border-color: var(--border-medium); }
+    .btn-modal-danger  { padding: 9px 18px; border-radius: var(--r-md); font-size: 13px; font-weight: 700; background: var(--red); border: none; color: #fff; cursor: pointer; box-shadow: 0 4px 14px var(--red-dim); }
+    .btn-modal-danger:hover { opacity: 0.9; }
+    .btn-modal-primary { padding: 9px 18px; border-radius: var(--r-md); font-size: 13px; font-weight: 700; background: var(--brand); border: none; color: #fff; cursor: pointer; }
+    .btn-modal-primary:hover { background: var(--brand-hover); }
+
+    /* ── Toast ── */
+    #admin-toast { position: fixed; bottom: 20px; right: 20px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; }
+    .admin-toast-item { display: flex; align-items: center; gap: 10px; background: var(--bg-elevated); border: 1px solid var(--border-medium); border-radius: var(--r-xl); padding: 12px 16px; font-size: 13px; font-weight: 500; color: var(--text-1); box-shadow: var(--shadow-lg); max-width: 340px; animation: slide-down 0.3s var(--ease-out); }
+
+    /* ── Timeline ── */
+    .timeline { display: flex; flex-direction: column; }
+    .timeline-item { display: flex; gap: 14px; padding-bottom: 18px; position: relative; }
+    .timeline-item:last-child { padding-bottom: 0; }
+    .timeline-left { display: flex; flex-direction: column; align-items: center; }
+    .timeline-dot { width: 30px; height: 30px; border-radius: var(--r-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 12px; }
+    .timeline-line { width: 1px; flex: 1; background: var(--border-subtle); margin-top: 6px; min-height: 20px; }
+    .timeline-item:last-child .timeline-line { display: none; }
+    .timeline-content { flex: 1; padding-top: 4px; }
+    .timeline-title { font-size: 13px; font-weight: 700; color: var(--text-1); margin-bottom: 2px; }
+    .timeline-meta  { font-size: 11px; color: var(--text-3); }
+
+    /* ── Detail grid ── */
+    .detail-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
+    @media (max-width: 600px) { .detail-grid { grid-template-columns: 1fr; } }
+    .detail-field { background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); border-radius: var(--r-md); padding: 10px 14px; }
+    .detail-field-label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-4); margin-bottom: 4px; }
+    .detail-field-value { font-size: 12.5px; font-weight: 500; color: var(--text-2); font-family: var(--font-mono); word-break: break-all; }
+
+    /* ── Empty state ── */
+    .empty-state { text-align: center; padding: 52px 20px; }
+    .empty-state svg { opacity: 0.25; margin-bottom: 12px; }
+    .empty-state-title { font-size: 14px; font-weight: 600; color: var(--text-3); margin-bottom: 4px; }
+    .empty-state-desc  { font-size: 12px; color: var(--text-4); }
+
+    /* ── Settings ── */
+    .settings-grid   { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; }
+    @media (max-width: 700px) { .settings-grid { grid-template-columns: 1fr; } }
+    .settings-group  label { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; }
+    .settings-input  { width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: var(--r-md); padding: 9px 12px; font-size: 13px; color: var(--text-1); font-family: inherit; outline: none; transition: border-color var(--t-base); }
+    .settings-input:focus { border-color: var(--brand); }
+    .settings-toggle { display: flex; align-items: center; gap: 10px; }
+    .toggle-switch   { position: relative; width: 36px; height: 20px; flex-shrink: 0; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider   { position: absolute; cursor: pointer; inset: 0; background: rgba(255,255,255,0.08); border: 1px solid var(--border-medium); border-radius: 20px; transition: var(--t-base); }
+    .toggle-slider:before { position: absolute; content: ''; height: 14px; width: 14px; left: 2px; bottom: 2px; background: var(--text-3); border-radius: 50%; transition: var(--t-base); }
+    input:checked + .toggle-slider { background: var(--brand-dim); border-color: var(--brand); }
+    input:checked + .toggle-slider:before { transform: translateX(16px); background: var(--brand-light); }
+
+    /* ── Alert items ── */
+    .alert-item { background: var(--red-dim); border: 1px solid var(--red-border); border-radius: var(--r-lg); padding: 14px 16px; margin-bottom: 10px; }
+    .alert-item-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .alert-item-title  { font-size: 13px; font-weight: 700; color: var(--red-text); }
+    .alert-item-time   { margin-left: auto; font-size: 11px; color: var(--text-4); font-family: var(--font-mono); }
+    .alert-item-body   { font-size: 12px; color: var(--text-3); line-height: 1.55; }
+
+    /* ── Map ── */
+    #admin-map { height: 380px; border-radius: var(--r-xl); overflow: hidden; }
+
+    /* ── Notification popup ── */
+    #notif-container { position: fixed; top: 66px; right: 16px; z-index: 1500; display: flex; flex-direction: column; gap: 8px; max-width: 350px; }
+    .notif-card { background: var(--bg-elevated); border: 1px solid var(--border-brand); border-radius: var(--r-xl); padding: 14px 16px; box-shadow: var(--shadow-lg), var(--shadow-brand); animation: slide-down 0.3s var(--ease-out); font-size: 12.5px; }
+    .notif-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .notif-title  { font-weight: 700; color: var(--text-1); font-size: 13px; }
+    .notif-close  { margin-left: auto; background: none; border: none; color: var(--text-3); cursor: pointer; font-size: 14px; padding: 2px 4px; border-radius: var(--r-sm); }
+    .notif-close:hover { color: var(--text-1); }
+    .notif-body   { color: var(--text-2); line-height: 1.5; }
+    .notif-body strong { color: var(--text-1); }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .admin-sidebar { display: none; }
+      .admin-sidebar.open { display: flex; position: fixed; left: 0; top: 56px; bottom: 0; z-index: 300; width: 220px; }
+      .stats-grid { grid-template-columns: repeat(2,1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ TOP BAR ══════════════════════════════════════════════════════ -->
+  <header class="admin-topbar">
+    <button class="btn-icon-plain" id="sidebar-toggle" style="display:none;" aria-label="Toggle sidebar">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+
+    <a href="/" class="admin-topbar-brand">
+      <div class="admin-topbar-brand-icon">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+      </div>
+      <span>Ephemeral Vault</span>
+    </a>
+
+    <div class="admin-badge-live" id="sse-indicator">
+      <span class="dot"></span>LIVE
+    </div>
+
+    <div class="admin-topbar-right">
+      <div class="admin-user-pill">
+        <div class="admin-user-avatar" id="admin-user-avatar">A</div>
+        <span id="admin-username-display">Admin</span>
+      </div>
+      <a href="/" style="font-size:11px;color:var(--text-3);text-decoration:none;padding:5px 10px;border:1px solid var(--border);border-radius:var(--r-md);transition:all var(--t-base);"
+         onmouseover="this.style.color='var(--text-1)'" onmouseout="this.style.color='var(--text-3)'">
+        ← Vault
+      </a>
+      <button class="btn-admin-logout" id="btn-logout">Sign Out</button>
+    </div>
+  </header>
+
+  <!-- ══ SHELL ═════════════════════════════════════════════════════════ -->
+  <div class="admin-shell">
+
+    <!-- ── SIDEBAR ── -->
+    <nav class="admin-sidebar" id="admin-sidebar" aria-label="Admin navigation">
+
+      <div class="sidebar-section-label">Dashboard</div>
+      <button class="sidebar-nav-item active" data-panel="panel-overview">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        Overview
+      </button>
+      <button class="sidebar-nav-item" data-panel="panel-files">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+        Files
+      </button>
+
+      <div class="sidebar-section-label">Monitoring</div>
+      <button class="sidebar-nav-item" data-panel="panel-events">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        Access Monitor
+      </button>
+      <button class="sidebar-nav-item" data-panel="panel-alerts" id="sidebar-alerts-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        Alerts
+        <span class="sidebar-badge" id="alerts-count" style="display:none;">0</span>
+      </button>
+      <button class="sidebar-nav-item" data-panel="panel-verifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        Verification
+      </button>
+      <button class="sidebar-nav-item" data-panel="panel-locations">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+        Locations
+      </button>
+
+      <div class="sidebar-section-label">Security</div>
+      <button class="sidebar-nav-item" data-panel="panel-audit">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+        Audit Logs
+      </button>
+      <button class="sidebar-nav-item" data-panel="panel-settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        Settings
+      </button>
+
+      <div style="margin-top:auto;padding-top:12px;border-top:1px solid var(--border-subtle);">
+        <a href="/" class="sidebar-nav-item" style="text-decoration:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          Back to Vault
+        </a>
+      </div>
+    </nav>
+
+    <!-- ── MAIN CONTENT ── -->
+    <main class="admin-main" id="admin-main">
+
+      <!-- ═══ OVERVIEW PANEL ═══════════════════════════════════════ -->
+      <div id="panel-overview" class="admin-panel active">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">Overview</div>
+            <div class="panel-subtitle">Real-time vault statistics and activity feed</div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn-sm btn-sm-ghost" id="btn-refresh-overview">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+              Refresh
+            </button>
+          </div>
+        </div>
+
+        <div class="stats-grid" id="overview-stats-grid">
+          <div class="admin-stat-card indigo"><div class="stat-card-accent"></div><div class="stat-card-label">Total Files</div><div class="stat-card-value" id="stat-total-files">—</div><div class="stat-card-sub">All vaults</div></div>
+          <div class="admin-stat-card green"><div class="stat-card-accent"></div><div class="stat-card-label">Active</div><div class="stat-card-value" id="stat-active-files">—</div><div class="stat-card-sub">Currently accessible</div></div>
+          <div class="admin-stat-card amber"><div class="stat-card-accent"></div><div class="stat-card-label">Expired</div><div class="stat-card-value" id="stat-expired-files">—</div><div class="stat-card-sub">TTL exceeded</div></div>
+          <div class="admin-stat-card cyan"><div class="stat-card-accent"></div><div class="stat-card-label">Total Views</div><div class="stat-card-value" id="stat-total-views">—</div><div class="stat-card-sub">Cumulative reveals</div></div>
+          <div class="admin-stat-card red"><div class="stat-card-accent"></div><div class="stat-card-label">Suspicious</div><div class="stat-card-value" id="stat-suspicious">—</div><div class="stat-card-sub">Flagged events</div></div>
+          <div class="admin-stat-card indigo"><div class="stat-card-accent"></div><div class="stat-card-label">Access Events</div><div class="stat-card-value" id="stat-access-events">—</div><div class="stat-card-sub">Total logged</div></div>
+        </div>
+
+        <div class="two-col">
+          <div class="admin-table-wrap">
+            <div class="admin-table-toolbar">
+              <span class="admin-table-toolbar-title">Recent Activity</span>
+              <div class="admin-badge-live" style="margin-left:auto;">
+                <span class="dot"></span>SSE Feed
+              </div>
+            </div>
+            <div class="activity-feed" id="activity-feed" style="padding:8px;">
+              <div class="empty-state" style="padding:28px 16px;">
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <div class="empty-state-title">No recent activity</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-table-wrap">
+            <div class="admin-table-toolbar">
+              <span class="admin-table-toolbar-title">Risk Distribution</span>
+            </div>
+            <div id="risk-distribution-chart" style="padding:16px;display:flex;flex-direction:column;gap:10px;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span style="font-size:11px;color:var(--text-3);width:60px;">Low</span>
+                <div style="flex:1;height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;"><div id="risk-bar-low" style="height:100%;background:var(--green);border-radius:4px;width:0%;transition:width 0.5s;"></div></div>
+                <span id="risk-count-low" style="font-size:11px;color:var(--green-text);font-family:var(--font-mono);width:24px;text-align:right;">0</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span style="font-size:11px;color:var(--text-3);width:60px;">Medium</span>
+                <div style="flex:1;height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;"><div id="risk-bar-medium" style="height:100%;background:var(--yellow);border-radius:4px;width:0%;transition:width 0.5s;"></div></div>
+                <span id="risk-count-medium" style="font-size:11px;color:var(--yellow-text);font-family:var(--font-mono);width:24px;text-align:right;">0</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span style="font-size:11px;color:var(--text-3);width:60px;">High</span>
+                <div style="flex:1;height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;"><div id="risk-bar-high" style="height:100%;background:#f97316;border-radius:4px;width:0%;transition:width 0.5s;"></div></div>
+                <span id="risk-count-high" style="font-size:11px;color:#FDA987;font-family:var(--font-mono);width:24px;text-align:right;">0</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span style="font-size:11px;color:var(--text-3);width:60px;">Critical</span>
+                <div style="flex:1;height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;"><div id="risk-bar-critical" style="height:100%;background:var(--red);border-radius:4px;width:0%;transition:width 0.5s;"></div></div>
+                <span id="risk-count-critical" style="font-size:11px;color:var(--red-text);font-family:var(--font-mono);width:24px;text-align:right;">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ FILES PANEL ════════════════════════════════════════════ -->
+      <div id="panel-files" class="admin-panel">
+        <div class="panel-header">
+          <div><div class="panel-title">Files</div><div class="panel-subtitle">Manage all vault secrets and files</div></div>
+        </div>
+        <div class="admin-table-wrap">
+          <div class="admin-table-toolbar">
+            <span class="admin-table-toolbar-title">All Vault Records</span>
+            <input type="text" class="admin-search" id="files-search" placeholder="Search by ID, status…">
+            <select class="admin-select" id="files-status">
+              <option value="all">All Statuses</option>
+              <option value="active">Active</option>
+              <option value="expired">Expired</option>
+              <option value="revoked">Revoked</option>
+              <option value="burned">Burned</option>
+            </select>
+          </div>
+          <div style="overflow-x:auto;">
+            <table id="files-table">
+              <thead><tr>
+                <th>Vault ID</th><th>Status</th><th>Views Left</th>
+                <th>Created</th><th>Expires</th><th>Actions</th>
+              </tr></thead>
+              <tbody id="files-table-body">
+                <tr><td colspan="6"><div class="empty-state"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg><div class="empty-state-title">Loading files…</div></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ EVENTS PANEL ═══════════════════════════════════════════ -->
+      <div id="panel-events" class="admin-panel">
+        <div class="panel-header">
+          <div><div class="panel-title">Access Monitor</div><div class="panel-subtitle">All vault access events with risk scores</div></div>
+        </div>
+        <div class="admin-table-wrap">
+          <div class="admin-table-toolbar">
+            <span class="admin-table-toolbar-title">Access Events</span>
+            <input type="text" class="admin-search" id="events-search" placeholder="Search events…">
+            <select class="admin-select" id="events-risk-filter">
+              <option value="all">All Risks</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="critical">Critical</option>
+            </select>
+            <select class="admin-select" id="events-type-filter">
+              <option value="all">All Types</option>
+              <option value="reveal">Reveal</option>
+              <option value="attempt">Attempt</option>
+              <option value="preview">Preview</option>
+            </select>
+          </div>
+          <div style="overflow-x:auto;">
+            <table id="events-table">
+              <thead><tr>
+                <th>Timestamp</th><th>Vault ID</th><th>IP Address</th>
+                <th>Risk</th><th>Type</th><th>Country</th><th>Actions</th>
+              </tr></thead>
+              <tbody id="events-table-body">
+                <tr><td colspan="7"><div class="empty-state"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><div class="empty-state-title">Loading events…</div></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ ALERTS PANEL ═══════════════════════════════════════════ -->
+      <div id="panel-alerts" class="admin-panel">
+        <div class="panel-header">
+          <div><div class="panel-title">Alerts</div><div class="panel-subtitle">High-risk and suspicious access events</div></div>
+        </div>
+        <div id="alerts-list">
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+            <div class="empty-state-title">No alerts</div>
+            <div class="empty-state-desc">No suspicious access events detected</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ VERIFICATIONS PANEL ═══════════════════════════════════ -->
+      <div id="panel-verifications" class="admin-panel">
+        <div class="panel-header">
+          <div><div class="panel-title">Verification</div><div class="panel-subtitle">Identity verification submissions from recipients</div></div>
+        </div>
+        <div id="verifications-list">
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            <div class="empty-state-title">No verifications</div>
+            <div class="empty-state-desc">No identity verifications have been submitted</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ LOCATIONS PANEL ════════════════════════════════════════ -->
+      <div id="panel-locations" class="admin-panel">
+        <div class="panel-header">
+          <div><div class="panel-title">Locations</div><div class="panel-subtitle">Geographic distribution of vault access events</div></div>
+        </div>
+        <div class="admin-table-wrap" style="overflow:hidden;margin-bottom:16px;">
+          <div id="admin-map"></div>
+        </div>
+        <div id="locations-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;"></div>
+      </div>
+
+      <!-- ═══ AUDIT PANEL ════════════════════════════════════════════ -->
+      <div id="panel-audit" class="admin-panel">
+        <div class="panel-header">
+          <div><div class="panel-title">Audit Logs</div><div class="panel-subtitle">Immutable record of all admin and system actions</div></div>
+        </div>
+        <div class="admin-table-wrap">
+          <div class="admin-table-toolbar">
+            <span class="admin-table-toolbar-title">Audit Trail</span>
+            <input type="text" class="admin-search" id="audit-search" placeholder="Search audit logs…">
+          </div>
+          <div style="overflow-x:auto;">
+            <table id="audit-table">
+              <thead><tr><th>Timestamp</th><th>Action</th><th>Actor</th><th>Target</th><th>Result</th></tr></thead>
+              <tbody id="audit-table-body">
+                <tr><td colspan="5"><div class="empty-state"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg><div class="empty-state-title">Loading audit logs…</div></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SETTINGS PANEL ════════════════════════════════════════ -->
+      <div id="panel-settings" class="admin-panel">
+        <div class="panel-header">
+          <div><div class="panel-title">Settings</div><div class="panel-subtitle">System configuration and security policies</div></div>
+          <button class="btn-sm btn-sm-indigo" id="btn-save-settings">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+            Save Changes
+          </button>
+        </div>
+        <div id="settings-form-wrap">
+          <div class="admin-table-wrap" style="padding:20px;margin-bottom:16px;">
+            <div style="font-size:13px;font-weight:700;color:var(--text-1);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border-subtle);">System Limits</div>
+            <div class="settings-grid" id="settings-grid">
+              <div class="settings-group"><label>Max File Size (MB)</label><input type="number" class="settings-input" id="setting-max-file-size" value="10"></div>
+              <div class="settings-group"><label>Rate Limit — Create (per min)</label><input type="number" class="settings-input" id="setting-rate-create" value="30"></div>
+              <div class="settings-group"><label>Rate Limit — Burn (per min)</label><input type="number" class="settings-input" id="setting-rate-burn" value="60"></div>
+              <div class="settings-group"><label>Sweeper Interval (ms)</label><input type="number" class="settings-input" id="setting-sweeper-interval" value="10000"></div>
+              <div class="settings-group"><label for="setting-maintenance" style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                <div class="toggle-switch"><input type="checkbox" id="setting-maintenance"><span class="toggle-slider"></span></div>
+                Maintenance Mode
+              </label></div>
+              <div class="settings-group"><label for="setting-registration" style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                <div class="toggle-switch"><input type="checkbox" id="setting-registration" checked><span class="toggle-slider"></span></div>
+                Allow New Vault Creation
+              </label></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main><!-- /admin-main -->
+  </div><!-- /admin-shell -->
+
+  <!-- ══ MODALS ════════════════════════════════════════════════════════ -->
+
+  <!-- File detail modal -->
+  <div class="modal-backdrop" id="file-detail-modal">
+    <div class="modal-box">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <div class="modal-title" id="file-detail-modal-title">Vault Details</div>
+        <button class="btn-sm btn-sm-ghost" id="close-file-detail-modal">✕</button>
+      </div>
+      <div id="file-detail-timeline" class="modal-body"></div>
+      <div id="file-detail-grid" class="detail-grid" style="margin-top:16px;"></div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" id="close-file-detail-modal-2">Close</button>
+        <button class="btn-modal-danger" id="btn-modal-revoke">Revoke Access</button>
+        <button class="btn-modal-primary" id="btn-modal-extend">Extend Expiry</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm action modal -->
+  <div class="modal-backdrop" id="confirm-modal">
+    <div class="modal-box" style="max-width:420px;">
+      <div class="modal-title" id="confirm-modal-title">Confirm Action</div>
+      <div class="modal-body" id="confirm-modal-body" style="margin-top:10px;"></div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" id="confirm-cancel">Cancel</button>
+        <button class="btn-modal-danger" id="confirm-ok">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Event detail modal -->
+  <div class="modal-backdrop" id="event-detail-modal">
+    <div class="modal-box">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div class="modal-title">Access Event Detail</div>
+        <button class="btn-sm btn-sm-ghost" id="close-event-modal">✕</button>
+      </div>
+      <div id="event-detail-body" class="modal-body"></div>
+      <div id="event-map" style="height:200px;border-radius:var(--r-lg);margin-top:14px;display:none;"></div>
+      <div class="modal-footer"><button class="btn-modal-cancel" id="close-event-modal-2">Close</button></div>
+    </div>
+  </div>
+
+  <!-- ══ NOTIFICATIONS ═══════════════════════════════════════════════ -->
+  <div id="notif-container"></div>
+
+  <!-- ══ ADMIN TOAST ═════════════════════════════════════════════════ -->
+  <div id="admin-toast"></div>
+
+  <!-- ══ SCRIPTS ════════════════════════════════════════════════════ -->
+  <script src="/js/leaflet.js" onerror="console.warn('Leaflet not found')"></script>
+  <script>
+  (() => {
+    'use strict';
+
+    // ── Panel navigation ────────────────────────────────────────────
+    const sidebarBtns = document.querySelectorAll('.sidebar-nav-item[data-panel]');
+    const panels      = document.querySelectorAll('.admin-panel');
+
+    function showPanel(panelId) {
+      panels.forEach(p => p.classList.remove('active'));
+      sidebarBtns.forEach(b => b.classList.remove('active'));
+      const panel = document.getElementById(panelId);
+      const btn   = document.querySelector(`[data-panel="${panelId}"]`);
+      if (panel) panel.classList.add('active');
+      if (btn)   btn.classList.add('active');
+      // Lazy-load data
+      if (panelId === 'panel-overview')       loadOverview();
+      if (panelId === 'panel-files')          loadFiles();
+      if (panelId === 'panel-events')         loadEvents();
+      if (panelId === 'panel-alerts')         loadAlerts();
+      if (panelId === 'panel-verifications')  loadVerifications();
+      if (panelId === 'panel-locations')      loadLocations();
+      if (panelId === 'panel-audit')          loadAudit();
+      if (panelId === 'panel-settings')       loadSettings();
+    }
+
+    sidebarBtns.forEach(btn => {
+      btn.addEventListener('click', () => showPanel(btn.dataset.panel));
+    });
+
+    // ── Toast helper ─────────────────────────────────────────────────
+    function toast(msg, type = 'info') {
+      const colors = { info: 'var(--brand-light)', success: 'var(--green-text)', error: 'var(--red-text)', warning: 'var(--yellow-text)' };
+      const item = document.createElement('div');
+      item.className = 'admin-toast-item';
+      item.innerHTML = `<span style="width:6px;height:6px;border-radius:50%;background:${colors[type]||colors.info};flex-shrink:0;"></span><span>${msg}</span>`;
+      document.getElementById('admin-toast').appendChild(item);
+      setTimeout(() => item.remove(), 3500);
+    }
+
+    // ── Date format helper ────────────────────────────────────────────
+    function fmt(ts) {
+      if (!ts) return '—';
+      try { return new Date(typeof ts === 'number' && ts < 1e12 ? ts * 1000 : ts).toLocaleString(); } catch { return '—'; }
+    }
+    function truncId(id) { return id ? id.substring(0, 12) + '…' : '—'; }
+
+    // ── Badge HTML ────────────────────────────────────────────────────
+    function statusBadge(s) {
+      const map = { active:'badge-active', expired:'badge-expired', revoked:'badge-revoked', burned:'badge-burned', disabled:'badge-disabled' };
+      return `<span class="badge ${map[s]||'badge-disabled'}"><span class="badge-dot"></span>${s||'unknown'}</span>`;
+    }
+    function riskBadge(r) {
+      const map = { low:'badge-low', medium:'badge-medium', high:'badge-high', critical:'badge-critical' };
+      return `<span class="badge ${map[r]||'badge-medium'}">${r||'unknown'}</span>`;
+    }
+
+    // ── API fetch wrapper ──────────────────────────────────────────────
+    async function api(url) {
+      const res = await fetch(url, { credentials: 'same-origin' });
+      if (res.status === 401) { window.location.href = '/admin/login'; return null; }
+      if (!res.ok) return null;
+      return res.json();
+    }
+
+    // ── Logout ─────────────────────────────────────────────────────────
+    document.getElementById('btn-logout')?.addEventListener('click', async () => {
+      await fetch('/api/admin/logout', { method: 'POST', credentials: 'same-origin' });
+      window.location.href = '/admin/login';
+    });
+
+    // ── Mobile sidebar ─────────────────────────────────────────────────
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const sidebar = document.getElementById('admin-sidebar');
+    if (window.innerWidth <= 768) {
+      sidebarToggle.style.display = 'flex';
+      sidebarToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+    }
+
+    // ════════════════════════════════════════════════════════════════
+    // OVERVIEW
+    // ════════════════════════════════════════════════════════════════
+    async function loadOverview() {
+      const data = await api('/api/admin/dashboard');
+      if (!data) return;
+      const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val ?? '—'; };
+      set('stat-total-files',   data.total_files   ?? data.total ?? '—');
+      set('stat-active-files',  data.active_files  ?? data.active ?? '—');
+      set('stat-expired-files', data.expired_files ?? data.expired ?? '—');
+      set('stat-total-views',   data.total_views   ?? '—');
+      set('stat-suspicious',    data.suspicious    ?? '—');
+      set('stat-access-events', data.total_events  ?? '—');
+
+      // Risk distribution
+      if (data.risk_distribution) {
+        const rd  = data.risk_distribution;
+        const max = Math.max(rd.low||0, rd.medium||0, rd.high||0, rd.critical||0, 1);
+        ['low','medium','high','critical'].forEach(k => {
+          const bar = document.getElementById(`risk-bar-${k}`);
+          const cnt = document.getElementById(`risk-count-${k}`);
+          if (bar) bar.style.width = ((rd[k]||0) / max * 100) + '%';
+          if (cnt) cnt.textContent = rd[k] || 0;
+        });
+      }
+
+      // Activity feed
+      const feed = document.getElementById('activity-feed');
+      if (data.recent_activity && data.recent_activity.length) {
+        feed.innerHTML = data.recent_activity.slice(0,12).map(ev => {
+          const dotClass = ev.risk === 'critical' ? 'activity-dot-red' : ev.risk === 'high' ? 'activity-dot-amber' : ev.risk === 'medium' ? 'activity-dot-amber' : 'activity-dot-green';
+          return `<div class="activity-item"><div class="activity-dot ${dotClass}"></div><div class="activity-content"><div class="activity-title">${ev.event_type||ev.type||'Event'} — ${truncId(ev.vault_id||ev.secret_id)}</div><div class="activity-meta">${fmt(ev.timestamp||ev.created_at)} · ${ev.ip_address||ev.ip||'—'}</div></div></div>`;
+        }).join('');
+      }
+    }
+
+    // ════════════════════════════════════════════════════════════════
+    // FILES
+    // ════════════════════════════════════════════════════════════════
+    let allFiles = [];
+    async function loadFiles() {
+      const data = await api('/api/admin/files');
+      if (!data) return;
+      allFiles = data.files || data || [];
+      renderFiles(allFiles);
+    }
+
+    function renderFiles(files) {
+      const tbody = document.getElementById('files-table-body');
+      if (!files.length) {
+        tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="empty-state-title">No vault records found</div></div></td></tr>';
+        return;
+      }
+      tbody.innerHTML = files.map(f => `
+        <tr>
+          <td class="td-mono">${truncId(f.id)}</td>
+          <td>${statusBadge(f.status)}</td>
+          <td class="td-mono">${f.views_remaining ?? '—'}</td>
+          <td class="td-mono">${fmt(f.created_at)}</td>
+          <td class="td-mono">${fmt(f.expires_at)}</td>
+          <td>
+            <div class="action-bar">
+              <button class="btn-sm btn-sm-indigo" onclick="openFileDetail('${f.id}')">Details</button>
+              <button class="btn-sm btn-sm-amber" onclick="adminAction('toggle','${f.id}')">Toggle</button>
+              <button class="btn-sm btn-sm-ghost" onclick="adminAction('extend','${f.id}')">Extend</button>
+              <button class="btn-sm btn-sm-danger" onclick="adminAction('delete','${f.id}')">Delete</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    document.getElementById('files-search')?.addEventListener('input', e => {
+      const q = e.target.value.toLowerCase();
+      renderFiles(allFiles.filter(f => JSON.stringify(f).toLowerCase().includes(q)));
+    });
+    document.getElementById('files-status')?.addEventListener('change', e => {
+      const v = e.target.value;
+      renderFiles(v === 'all' ? allFiles : allFiles.filter(f => f.status === v));
+    });
+
+    window.openFileDetail = async function(id) {
+      const data = await api(`/api/admin/files/${id}`);
+      if (!data) return;
+      const modal = document.getElementById('file-detail-modal');
+      document.getElementById('file-detail-modal-title').textContent = `Vault: ${truncId(id)}`;
+      document.getElementById('file-detail-grid').innerHTML = [
+        ['ID', id], ['Status', data.status], ['Views Left', data.views_remaining],
+        ['Max Views', data.max_views], ['Created', fmt(data.created_at)], ['Expires', fmt(data.expires_at)],
+        ['Passphrase', data.has_passphrase ? 'Yes' : 'No'], ['File', data.has_file ? 'Yes' : 'No'],
+      ].map(([l,v]) => `<div class="detail-field"><div class="detail-field-label">${l}</div><div class="detail-field-value">${v||'—'}</div></div>`).join('');
+      const timeline = (data.timeline || data.audit_log || []).slice(0,6);
+      document.getElementById('file-detail-timeline').innerHTML = timeline.length
+        ? `<div class="timeline">${timeline.map(t => `<div class="timeline-item"><div class="timeline-left"><div class="timeline-dot" style="background:var(--brand-dim);border:1px solid var(--border-brand);color:var(--brand-light);font-size:10px;">→</div><div class="timeline-line"></div></div><div class="timeline-content"><div class="timeline-title">${t.action||t.type||'Event'}</div><div class="timeline-meta">${fmt(t.timestamp||t.created_at)}</div></div></div>`).join('')}</div>`
+        : '<p style="color:var(--text-3);font-size:12px;">No timeline data available.</p>';
+      document.getElementById('btn-modal-revoke').onclick = () => { modal.classList.remove('open'); adminAction('revoke', id); };
+      document.getElementById('btn-modal-extend').onclick = () => { modal.classList.remove('open'); adminAction('extend', id); };
+      modal.classList.add('open');
+    };
+
+    window.adminAction = async function(action, id) {
+      const msgs = { toggle:'Toggle vault status?', extend:'Extend expiry by 24 hours?', revoke:'Revoke access permanently?', delete:'Delete this vault permanently? This cannot be undone.' };
+      if (!confirm(msgs[action]||'Confirm?')) return;
+      const methods = { toggle:'POST', extend:'POST', revoke:'POST', delete:'DELETE' };
+      const endpoints = { toggle:`/api/admin/files/${id}/toggle`, extend:`/api/admin/files/${id}/extend`, revoke:`/api/admin/files/${id}/revoke`, delete:`/api/admin/files/${id}` };
+      const res = await fetch(endpoints[action], { method: methods[action], credentials: 'same-origin', headers: { 'Content-Type':'application/json' }, body: JSON.stringify({}) });
+      if (res.ok) { toast(`${action} successful`, 'success'); loadFiles(); } else { toast('Action failed', 'error'); }
+    };
+
+    ['close-file-detail-modal','close-file-detail-modal-2'].forEach(id => {
+      document.getElementById(id)?.addEventListener('click', () => document.getElementById('file-detail-modal').classList.remove('open'));
+    });
+
+    // ════════════════════════════════════════════════════════════════
+    // EVENTS
+    // ════════════════════════════════════════════════════════════════
+    let allEvents = [];
+    async function loadEvents() {
+      const data = await api('/api/admin/events');
+      if (!data) return;
+      allEvents = data.events || data || [];
+      renderEvents(allEvents);
+    }
+
+    function renderEvents(events) {
+      const tbody = document.getElementById('events-table-body');
+      if (!events.length) {
+        tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="empty-state-title">No access events</div></div></td></tr>';
+        return;
+      }
+      tbody.innerHTML = events.map(ev => `
+        <tr>
+          <td class="td-mono">${fmt(ev.timestamp||ev.created_at)}</td>
+          <td class="td-mono">${truncId(ev.vault_id||ev.secret_id)}</td>
+          <td class="td-mono">${ev.ip_address||ev.ip||'—'}</td>
+          <td>${riskBadge(ev.risk_level||ev.risk)}</td>
+          <td><span class="badge badge-disabled">${ev.event_type||ev.type||'—'}</span></td>
+          <td>${ev.country||'—'}</td>
+          <td><button class="btn-sm btn-sm-ghost" onclick="openEventDetail('${ev.id||''}')">Details</button></td>
+        </tr>
+      `).join('');
+    }
+
+    document.getElementById('events-search')?.addEventListener('input', e => {
+      const q = e.target.value.toLowerCase();
+      renderEvents(allEvents.filter(ev => JSON.stringify(ev).toLowerCase().includes(q)));
+    });
+    document.getElementById('events-risk-filter')?.addEventListener('change', e => {
+      const v = e.target.value;
+      renderEvents(v === 'all' ? allEvents : allEvents.filter(ev => (ev.risk_level||ev.risk) === v));
+    });
+
+    window.openEventDetail = async function(id) {
+      if (!id) return;
+      const data = await api(`/api/admin/events/${id}`);
+      if (!data) return;
+      const modal = document.getElementById('event-detail-modal');
+      document.getElementById('event-detail-body').innerHTML = [
+        ['Vault ID', data.vault_id||data.secret_id], ['IP', data.ip_address||data.ip],
+        ['Risk', data.risk_level||data.risk], ['Type', data.event_type||data.type],
+        ['Country', data.country], ['City', data.city], ['Timestamp', fmt(data.timestamp||data.created_at)],
+        ['User-Agent', data.user_agent],
+      ].map(([l,v]) => `<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border-subtle);font-size:12.5px;"><span style="color:var(--text-3);">${l}</span><span style="color:var(--text-1);font-family:var(--font-mono);font-size:11.5px;text-align:right;max-width:260px;word-break:break-all;">${v||'—'}</span></div>`).join('');
+      modal.classList.add('open');
+    };
+
+    ['close-event-modal','close-event-modal-2'].forEach(id => {
+      document.getElementById(id)?.addEventListener('click', () => document.getElementById('event-detail-modal').classList.remove('open'));
+    });
+
+    // ════════════════════════════════════════════════════════════════
+    // ALERTS
+    // ════════════════════════════════════════════════════════════════
+    async function loadAlerts() {
+      const data = await api('/api/admin/events?risk=critical,high') || await api('/api/admin/events');
+      if (!data) return;
+      const events = (data.events || data || []).filter(e => ['critical','high'].includes(e.risk_level||e.risk));
+      const countBadge = document.getElementById('alerts-count');
+      if (events.length) { countBadge.textContent = events.length; countBadge.style.display = 'flex'; } else { countBadge.style.display = 'none'; }
+      const list = document.getElementById('alerts-list');
+      list.innerHTML = events.length ? events.map(ev => `
+        <div class="alert-item">
+          <div class="alert-item-header">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--red-text)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            <span class="alert-item-title">${ev.event_type||ev.type||'Suspicious Access'} — ${riskBadge(ev.risk_level||ev.risk)}</span>
+            <span class="alert-item-time">${fmt(ev.timestamp||ev.created_at)}</span>
+          </div>
+          <div class="alert-item-body">Vault: <strong>${ev.vault_id||ev.secret_id||'—'}</strong> · IP: ${ev.ip_address||ev.ip||'—'} · Country: ${ev.country||'—'}</div>
+        </div>
+      `).join('') : '<div class="empty-state"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path></svg><div class="empty-state-title">No alerts</div></div>';
+    }
+
+    // ════════════════════════════════════════════════════════════════
+    // VERIFICATIONS
+    // ════════════════════════════════════════════════════════════════
+    async function loadVerifications() {
+      const data = await api('/api/admin/verifications');
+      if (!data) return;
+      const list = document.getElementById('verifications-list');
+      const verifs = data.verifications || data || [];
+      list.innerHTML = verifs.length ? `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;">${verifs.map(v => `<div class="admin-table-wrap" style="padding:14px;"><div style="font-size:11px;color:var(--text-3);margin-bottom:6px;font-family:var(--font-mono);">${truncId(v.vault_id||v.secret_id)}</div><div style="font-size:12px;color:var(--text-2);">${fmt(v.created_at||v.timestamp)}</div>${v.photo_url?`<img src="${v.photo_url}" style="width:100%;border-radius:var(--r-md);margin-top:8px;border:1px solid var(--border);" alt="Verification">`:'<div style="color:var(--text-4);font-size:11px;margin-top:6px;">No photo</div>'}</div>`).join('')}</div>` : '<div class="empty-state"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path></svg><div class="empty-state-title">No verifications</div></div>';
+    }
+
+    // ════════════════════════════════════════════════════════════════
+    // LOCATIONS
+    // ════════════════════════════════════════════════════════════════
+    let mapInstance = null;
+    async function loadLocations() {
+      const data = await api('/api/admin/locations');
+      if (!data) return;
+      const locs = data.locations || data || [];
+      // Leaflet map
+      if (typeof L !== 'undefined' && !mapInstance) {
+        mapInstance = L.map('admin-map', { zoomControl: true }).setView([20, 0], 2);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors', maxZoom: 10 }).addTo(mapInstance);
+      }
+      if (mapInstance) {
+        locs.forEach(loc => {
+          if (loc.latitude && loc.longitude) {
+            L.circleMarker([loc.latitude, loc.longitude], { radius: 5, color: 'var(--brand)', fillOpacity: 0.7 })
+              .bindPopup(`<b>${loc.country||'—'}</b><br>${loc.city||'—'}<br>${fmt(loc.timestamp)}`)
+              .addTo(mapInstance);
+          }
+        });
+      }
+      const list = document.getElementById('locations-list');
+      list.innerHTML = locs.slice(0,20).map(loc => `<div class="admin-stat-card" style="padding:12px 14px;"><div class="stat-card-label">${loc.country||'Unknown'} · ${loc.city||'—'}</div><div style="font-size:11px;color:var(--text-3);font-family:var(--font-mono);">${loc.ip_address||'—'} · ${fmt(loc.timestamp)}</div></div>`).join('');
+    }
+
+    // ════════════════════════════════════════════════════════════════
+    // AUDIT
+    // ════════════════════════════════════════════════════════════════
+    let allAudit = [];
+    async function loadAudit() {
+      const data = await api('/api/admin/audit');
+      if (!data) return;
+      allAudit = data.logs || data || [];
+      renderAudit(allAudit);
+    }
+    function renderAudit(logs) {
+      const tbody = document.getElementById('audit-table-body');
+      if (!logs.length) { tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="empty-state-title">No audit logs</div></div></td></tr>'; return; }
+      tbody.innerHTML = logs.map(l => `<tr><td class="td-mono">${fmt(l.timestamp||l.created_at)}</td><td>${l.action||'—'}</td><td class="td-mono">${l.actor||'system'}</td><td class="td-mono">${truncId(l.target_id||l.target)}</td><td><span class="badge ${l.result==='success'?'badge-active':l.result==='failure'?'badge-revoked':'badge-disabled'}">${l.result||'—'}</span></td></tr>`).join('');
+    }
+    document.getElementById('audit-search')?.addEventListener('input', e => {
+      const q = e.target.value.toLowerCase();
+      renderAudit(allAudit.filter(l => JSON.stringify(l).toLowerCase().includes(q)));
+    });
+
+    // ════════════════════════════════════════════════════════════════
+    // SETTINGS
+    // ════════════════════════════════════════════════════════════════
+    async function loadSettings() {
+      const data = await api('/api/admin/settings');
+      if (!data) return;
+      const set = (id, val) => { const el = document.getElementById(id); if (el) { if (el.type === 'checkbox') el.checked = !!val; else el.value = val ?? ''; } };
+      set('setting-max-file-size',       data.max_file_size_mb   || 10);
+      set('setting-rate-create',         data.rate_limit_create  || 30);
+      set('setting-rate-burn',           data.rate_limit_burn    || 60);
+      set('setting-sweeper-interval',    data.sweeper_interval_ms|| 10000);
+      set('setting-maintenance',         data.maintenance_mode);
+      set('setting-registration',        data.allow_creation !== false);
+    }
+
+    document.getElementById('btn-save-settings')?.addEventListener('click', async () => {
+      const payload = {
+        max_file_size_mb:    parseInt(document.getElementById('setting-max-file-size')?.value),
+        rate_limit_create:   parseInt(document.getElementById('setting-rate-create')?.value),
+        rate_limit_burn:     parseInt(document.getElementById('setting-rate-burn')?.value),
+        sweeper_interval_ms: parseInt(document.getElementById('setting-sweeper-interval')?.value),
+        maintenance_mode:    document.getElementById('setting-maintenance')?.checked,
+        allow_creation:      document.getElementById('setting-registration')?.checked,
+      };
+      const res = await fetch('/api/admin/settings', { method:'POST', credentials:'same-origin', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+      if (res.ok) toast('Settings saved', 'success'); else toast('Failed to save settings', 'error');
+    });
+
+    // ════════════════════════════════════════════════════════════════
+    // SSE — Real-time events feed
+    // ════════════════════════════════════════════════════════════════
+    function connectSSE() {
+      const indicator = document.getElementById('sse-indicator');
+      try {
+        const es = new EventSource('/api/admin/events-stream', { withCredentials: true });
+        es.onmessage = ev => {
+          try {
+            const data = JSON.parse(ev.data);
+            if (data.type === 'ping') return;
+            const feed  = document.getElementById('activity-feed');
+            const dot   = ['high','critical'].includes(data.risk_level) ? 'activity-dot-red' : data.risk_level === 'medium' ? 'activity-dot-amber' : 'activity-dot-green';
+            const item  = document.createElement('div');
+            item.className = 'activity-item';
+            item.innerHTML = `<div class="activity-dot ${dot}"></div><div class="activity-content"><div class="activity-title">${data.event_type||'Event'} — ${truncId(data.vault_id)}</div><div class="activity-meta">${fmt(data.timestamp||Date.now())} · ${data.ip_address||'—'}</div></div>`;
+            if (feed.firstChild?.classList?.contains('empty-state')) feed.innerHTML = '';
+            feed.prepend(item);
+            while (feed.children.length > 20) feed.removeChild(feed.lastChild);
+            // Show notification for high risk
+            if (['high','critical'].includes(data.risk_level)) {
+              const nc = document.getElementById('notif-container');
+              const card = document.createElement('div');
+              card.className = 'notif-card';
+              card.innerHTML = `<div class="notif-header"><span style="width:8px;height:8px;border-radius:50%;background:var(--red);"></span><span class="notif-title">High Risk Event</span><button class="notif-close" onclick="this.closest('.notif-card').remove()">✕</button></div><div class="notif-body">Vault: <strong>${truncId(data.vault_id)}</strong> · IP: ${data.ip_address||'—'}</div>`;
+              nc.appendChild(card);
+              setTimeout(() => card.remove(), 8000);
+            }
+          } catch {}
+        };
+        es.onerror = () => { indicator.style.opacity = '0.4'; setTimeout(connectSSE, 5000); };
+        es.onopen  = () => { indicator.style.opacity = '1'; };
+      } catch {}
+    }
+
+    // ── Init ──────────────────────────────────────────────────────────
+    connectSSE();
+    loadOverview();
+
+    // Close modals on backdrop click
+    document.querySelectorAll('.modal-backdrop').forEach(m => {
+      m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+    });
+  })();
+  </script>
+</body>
+</html>

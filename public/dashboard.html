@@ -8,172 +8,220 @@
   <title>Creator Dashboard — Ephemeral Secret Vault</title>
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="stylesheet" href="/css/style.css">
-  <link rel="stylesheet" href="/style.css">
+  <style>
+    .dash-wrap { max-width: 900px; width: 100%; margin: 0 auto; padding: 40px 24px 80px; }
+
+    .vault-row {
+      background: var(--bg-surface); border: 1px solid var(--border);
+      border-radius: var(--r-xl); padding: 16px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 14px;
+      transition: border-color var(--t-base), transform var(--t-base);
+    }
+    .vault-row:hover { border-color: var(--border-brand); transform: translateY(-1px); }
+
+    .vault-row-left { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .vault-row-id {
+      font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+      color: var(--text-1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .vault-row-meta { font-size: 11px; color: var(--text-3); display: flex; gap: 10px; flex-wrap: wrap; }
+    .vault-row-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+
+    .empty-state-wrapper {
+      display: flex; flex-direction: column; align-items: center; text-align: center;
+      padding: 60px 24px;
+    }
+    .empty-icon-ring {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: var(--brand-dim); border: 1px solid var(--border-brand);
+      color: var(--brand-light);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
 <body id="top">
-  <!-- Master Futuristic Cybersecurity Navbar -->
+
+  <!-- NAVBAR -->
   <header class="navbar">
     <div class="nav-container">
       <a href="/" class="nav-brand" title="Ephemeral Secret Vault">
-        <svg class="nav-monochrome-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-        </svg>
-        <span class="brand-name">Ephemeral Secret Vault</span>
+        <div class="nav-brand-icon">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        </div>
+        <span class="brand-name"><span class="brand-ephemeral">Ephemeral</span><span class="brand-vault">Secret Vault</span></span>
       </a>
-
-      <nav class="nav-links-row" aria-label="Main Navigation">
+      <nav class="nav-links-row" aria-label="Main navigation">
         <a href="/">Home</a>
         <a href="/create">Product</a>
         <a href="/file">File Vault</a>
         <a href="/security">Security</a>
         <a href="/extension">Extension</a>
-        <a href="/how-it-works">How It Works</a>
         <a href="/dashboard" class="active">Dashboard</a>
       </nav>
-
       <div class="nav-actions">
-        <span class="status-pill status-neutral">
-          <span class="status-dot"></span>
-          <span>AES-256-GCM</span>
-        </span>
-
-        <button type="button" class="btn-icon-plain" id="theme-toggle" aria-label="Toggle Theme" title="Toggle theme">
-          <svg id="theme-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-          </svg>
+        <span class="nav-badge"><span class="dot"></span>AES-256-GCM</span>
+        <button type="button" class="btn-icon-plain" id="theme-toggle" aria-label="Toggle theme">
+          <svg id="theme-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
         </button>
-
-        <button type="button" class="mobile-nav-toggle" id="mobile-toggle" aria-label="Open Navigation Menu">
+        <a href="/create" class="btn-nav-cta">+ New Secret</a>
+        <button type="button" class="mobile-nav-toggle" id="mobile-toggle" aria-label="Open menu">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Mobile Navigation Drawer -->
   <div class="mobile-menu-drawer" id="mobile-drawer">
-    <a href="/">Home</a>
-    <a href="/create">Product</a>
-    <a href="/file">File Vault</a>
-    <a href="/security">Security</a>
-    <a href="/extension">Extension</a>
-    <a href="/how-it-works">How It Works</a>
+    <a href="/">Home</a><a href="/create">Product</a><a href="/file">File Vault</a>
+    <a href="/security">Security</a><a href="/extension">Extension</a>
     <a href="/dashboard" class="active">Dashboard</a>
   </div>
 
-  <!-- Dashboard Container -->
-  <main class="viewport-layout" style="padding-top:40px;padding-bottom:60px;">
-    <div style="max-width:880px;width:100%;margin:0 auto;padding:0 20px;">
-      
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:28px;">
-        <div>
-          <span class="section-label">LOCAL MANAGEMENT</span>
-          <h1 class="page-title" style="font-size:28px;letter-spacing:-0.03em;margin-bottom:4px;">
-            Your Vault Activity
-          </h1>
-          <p class="page-subtitle" style="font-size:14px;margin:0;">
-            Manage links created from this browser. Plaintext secrets are strictly never stored in browser storage.
-          </p>
-        </div>
+  <main>
+    <div class="dash-wrap">
 
-        <div style="display:flex;gap:10px;">
-          <button type="button" id="btn-clear-history" class="btn-secondary-clean" style="height:38px;padding:0 14px;font-size:12px;">
+      <!-- Header row -->
+      <div class="dashboard-header">
+        <div>
+          <span class="eyebrow">Local Management</span>
+          <h1 class="page-title" style="font-size:26px;">Your Vault Activity</h1>
+          <p class="page-subtitle" style="font-size:13px;margin-top:4px;">Manage links created from this browser. Plaintext secrets are never stored in browser storage.</p>
+        </div>
+        <div style="display:flex;gap:8px;flex-shrink:0;">
+          <button type="button" id="btn-clear-history" class="btn btn-ghost" style="height:36px;padding:0 14px;font-size:12px;">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
             Clear History
           </button>
-          <a href="/create" class="btn-primary-solid" style="height:38px;padding:0 18px;font-size:13px;text-decoration:none;display:inline-flex;">
-            + New Secret
+          <a href="/create" class="btn btn-primary" style="height:36px;padding:0 14px;font-size:12px;text-decoration:none;">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            New Secret
           </a>
         </div>
       </div>
 
-      <!-- Quick Stats Grid (3-Column Clean Bordered Container) -->
-      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:14px;margin-bottom:24px;">
-        <div class="vault-card" style="padding:18px;">
-          <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;">Tracked Vaults</div>
-          <div id="stat-total" style="font-size:28px;font-weight:800;color:var(--text-primary);margin-top:6px;font-family:var(--font-mono);">0</div>
+      <!-- Stats -->
+      <div class="stat-cards-grid">
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-brand">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          </div>
+          <div>
+            <div class="stat-num" id="stat-total">0</div>
+            <div class="stat-label">Tracked Vaults</div>
+          </div>
         </div>
-        <div class="vault-card" style="padding:18px;">
-          <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;">Active Status</div>
-          <div id="stat-active" style="font-size:28px;font-weight:800;color:var(--status-active-text);margin-top:6px;font-family:var(--font-mono);">0</div>
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-green">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </div>
+          <div>
+            <div class="stat-num status-active-text" id="stat-active">0</div>
+            <div class="stat-label">Active Vaults</div>
+          </div>
         </div>
-        <div class="vault-card" style="padding:18px;">
-          <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;">Privacy Mode</div>
-          <div style="font-size:16px;font-weight:700;color:var(--primary);margin-top:10px;">Zero-Plaintext</div>
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-accent">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          </div>
+          <div>
+            <div style="font-size:15px;font-weight:700;color:var(--accent-light);margin-bottom:3px;line-height:1;">Zero-Plaintext</div>
+            <div class="stat-label">Privacy Mode</div>
+          </div>
         </div>
       </div>
 
-      <!-- Vaults List Table / Cards -->
-      <div class="vault-card" style="padding:0;overflow:hidden;">
-        <div style="padding:16px 20px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.02);">
-          <span style="font-size:14px;font-weight:700;color:var(--text-primary);letter-spacing:-0.01em;">Recent Vault Links</span>
-          <button type="button" id="btn-refresh-status" style="background:none;border:none;color:var(--primary);font-size:13px;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:6px;">
-            <span>↻ Refresh Status</span>
+      <!-- Vaults table card -->
+      <div class="vault-table-wrap">
+        <div class="table-toolbar">
+          <span style="font-size:14px;font-weight:700;color:var(--text-1);">Recent Vault Links</span>
+          <button type="button" id="btn-refresh-status" style="background:none;border:none;color:var(--brand-light);font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:var(--r-md);transition:background var(--t-base);"
+            onmouseover="this.style.background='var(--surface-hover)'" onmouseout="this.style.background='none'">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+            Refresh Status
           </button>
         </div>
 
-        <div id="vaults-container" style="padding:20px;">
-          <!-- Dynamically populated or empty state -->
-          <div id="empty-state" style="padding:48px 16px;text-align:center;color:var(--text-muted);">
-            <div style="width:52px;height:52px;border-radius:50%;background:rgba(40,117,255,0.08);border:1px solid rgba(40,117,255,0.2);display:flex;align-items:center;justify-content:center;margin:0 auto 16px auto;color:var(--primary);">
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <div id="vaults-container" style="padding:16px;">
+
+          <!-- Empty state -->
+          <div id="empty-state" class="empty-state-wrapper">
+            <div class="empty-icon-ring">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
             </div>
-            <div style="font-size:15px;font-weight:700;color:var(--text-primary);margin-bottom:6px;">No Vaults Created Yet</div>
-            <p style="font-size:13px;max-width:380px;margin:0 auto 20px auto;line-height:1.5;">When you create secrets on this device, anonymous metadata references will appear here for easy management.</p>
-            <a href="/create" class="btn-primary-solid" style="height:40px;padding:0 20px;font-size:13px;text-decoration:none;display:inline-flex;">
+            <h3 style="font-size:16px;font-weight:700;color:var(--text-1);margin-bottom:8px;">No Vaults Created Yet</h3>
+            <p style="font-size:13px;color:var(--text-3);max-width:380px;line-height:1.6;margin-bottom:24px;">When you create secrets on this device, anonymous metadata references appear here for easy management. Plaintext is never stored.</p>
+            <a href="/create" class="btn btn-primary">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
               Create Your First Secret
             </a>
           </div>
 
-          <div id="vaults-list" style="display:flex;flex-direction:column;gap:12px;" class="hidden"></div>
+          <!-- Vaults list (rendered by JS) -->
+          <div id="vaults-list" style="display:flex;flex-direction:column;gap:10px;" class="hidden"></div>
+
+        </div>
+      </div>
+
+      <!-- Info banner -->
+      <div class="alert alert-info" style="margin-top:20px;">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="alert-icon"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <div>
+          <strong style="display:block;margin-bottom:2px;">Privacy Notice</strong>
+          Only anonymous metadata (vault ID, creation time, expiry) is stored locally in your browser. Plaintext secrets, files, and decryption keys are never written to localStorage.
         </div>
       </div>
 
     </div>
   </main>
 
-  <!-- Toast -->
-  <div id="toast" class="toast" role="status" aria-live="polite">
-    <span id="toast-message">Copied securely</span>
+  <div id="toast" role="status" aria-live="polite">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    <span id="toast-message">Copied</span>
   </div>
-
-  <footer class="footer-enterprise">
-    <div class="footer-meta-text">
-      Ephemeral Secret Vault • AES-256-GCM Zero-Trace Cryptographic Service
-    </div>
-  </footer>
 
   <script>
     (() => {
       'use strict';
 
       const STORAGE_KEY = 'vault_created_history';
-      const emptyState = document.getElementById('empty-state');
-      const vaultsList = document.getElementById('vaults-list');
-      const statTotal = document.getElementById('stat-total');
-      const statActive = document.getElementById('stat-active');
-      const btnClearHistory = document.getElementById('btn-clear-history');
-      const btnRefresh = document.getElementById('btn-refresh-status');
-      const toast = document.getElementById('toast');
-      const toastMessage = document.getElementById('toast-message');
+      const emptyState  = document.getElementById('empty-state');
+      const vaultsList  = document.getElementById('vaults-list');
+      const statTotal   = document.getElementById('stat-total');
+      const statActive  = document.getElementById('stat-active');
+      const btnClear    = document.getElementById('btn-clear-history');
+      const btnRefresh  = document.getElementById('btn-refresh-status');
+      const toast       = document.getElementById('toast');
+      const toastMsg    = document.getElementById('toast-message');
 
       function showToast(msg) {
         if (!toast) return;
-        toastMessage.textContent = msg;
-        toast.classList.add('visible');
-        setTimeout(() => toast.classList.remove('visible'), 2500);
+        toastMsg.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
       }
 
       function getHistory() {
-        try {
-          return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-        } catch {
-          return [];
-        }
+        try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; }
       }
-
       function saveHistory(list) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+      }
+
+      function statusBadge(status) {
+        const map = {
+          active:  ['badge badge-green', 'Active'],
+          expired: ['badge badge-yellow', 'Expired'],
+          burned:  ['badge badge-red', 'Burned'],
+        };
+        const [cls, label] = map[status] || ['badge badge-neutral', 'Unknown'];
+        return `<span class="${cls}">${label}</span>`;
+      }
+
+      function formatDate(ts) {
+        if (!ts) return '—';
+        try { return new Date(ts).toLocaleString(undefined, { dateStyle: 'short', timeStyle: 'short' }); } catch { return '—'; }
       }
 
       async function renderDashboard() {
@@ -181,141 +229,117 @@
         statTotal.textContent = String(history.length);
 
         if (history.length === 0) {
-          emptyState.classList.remove('hidden');
+          emptyState.style.display = 'flex';
           vaultsList.classList.add('hidden');
           statActive.textContent = '0';
           return;
         }
 
-        emptyState.classList.remove('hidden');
+        emptyState.style.display = 'none';
         vaultsList.classList.remove('hidden');
         vaultsList.innerHTML = '';
-
         let activeCount = 0;
 
         for (const item of history) {
-          const itemEl = document.createElement('div');
-          itemEl.style.cssText = 'background:var(--bg-subtle);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;';
+          const row = document.createElement('div');
+          row.className = 'vault-row';
+          row.dataset.id = item.id;
 
-          const createdFormatted = item.createdAt ? new Date(item.createdAt).toLocaleString() : 'Recent';
-          const expiresFormatted = item.expiresAt ? new Date(item.expiresAt).toLocaleString() : '1 hour';
-          const isExpiredLocal = item.expiresAt && Date.now() > item.expiresAt;
+          const isActive = item.status === 'active';
+          if (isActive) activeCount++;
 
-          if (!isExpiredLocal && !item.burned) activeCount++;
+          const origin = window.location.origin;
+          const viewUrl = item.view_url || `${origin}/view/${item.id}`;
+          const shareUrl = `${origin}/share/${item.id}`;
 
-          const statusPillClass = isExpiredLocal || item.burned ? 'status-danger' : 'status-active';
-          const statusText = item.burned ? 'Burned' : (isExpiredLocal ? 'Expired' : 'Active');
-
-          itemEl.innerHTML = `
-            <div style="flex-grow:1;min-width:220px;">
-              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-                <span style="font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--text-primary);letter-spacing:0.02em;">${item.id || 'Secret Vault'}</span>
-                <span class="status-pill ${statusPillClass}" style="padding:2px 8px;font-size:11px;">● ${statusText}</span>
+          row.innerHTML = `
+            <div class="vault-row-left" style="flex:1;min-width:0;">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <span class="vault-row-id">${viewUrl}</span>
+                ${statusBadge(item.status || 'active')}
               </div>
-              <div style="font-size:12px;color:var(--text-muted);">
-                Created: ${createdFormatted} • Expires: ${expiresFormatted}
+              <div class="vault-row-meta">
+                <span>Created: ${formatDate(item.createdAt)}</span>
+                <span>Expires: ${formatDate(item.expiresAt)}</span>
+                ${item.has_file ? '<span class="badge badge-accent" style="font-size:10px;">File</span>' : ''}
               </div>
             </div>
-            <div style="display:flex;gap:8px;align-items:center;">
-              <button type="button" class="btn-copy-history btn-secondary-clean" data-url="${item.url || ''}" style="height:32px;padding:0 12px;font-size:12px;">
+            <div class="vault-row-actions">
+              <button type="button" data-action="copy" data-url="${viewUrl}" class="btn btn-ghost btn-sm" title="Copy link">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                 Copy
               </button>
-              <a href="/share/${item.id}" class="btn-secondary-clean" style="height:32px;padding:0 12px;font-size:12px;text-decoration:none;display:inline-flex;align-items:center;">
-                Share Center
+              <a href="${shareUrl}" class="btn btn-ghost btn-sm" style="text-decoration:none;" title="Share Center">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                Share
               </a>
-              <button type="button" class="btn-delete-item btn-icon-plain" data-id="${item.id}" title="Remove from local history">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              <button type="button" data-action="delete" data-id="${item.id}" class="btn btn-danger btn-sm" title="Remove from history">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
               </button>
             </div>
           `;
-
-          vaultsList.appendChild(itemEl);
+          vaultsList.appendChild(row);
         }
 
         statActive.textContent = String(activeCount);
-
-        // Bind delete item buttons
-        vaultsList.querySelectorAll('.btn-delete-item').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            const id = e.currentTarget.getAttribute('data-id');
-            const updated = getHistory().filter(h => h.id !== id);
-            saveHistory(updated);
-            renderDashboard();
-            showToast('Entry removed from device history');
-          });
-        });
-
-        // Bind copy buttons
-        vaultsList.querySelectorAll('.btn-copy-history').forEach(btn => {
-          btn.addEventListener('click', async (e) => {
-            const url = e.currentTarget.getAttribute('data-url');
-            if (!url) return;
-            try {
-              await navigator.clipboard.writeText(url);
-              showToast('Link copied securely');
-            } catch {
-              showToast('Failed to copy');
-            }
-          });
-        });
       }
 
-      if (btnClearHistory) {
-        btnClearHistory.addEventListener('click', () => {
-          if (confirm('Clear all local vault history from this device? (Does not destroy secrets on server)')) {
-            saveHistory([]);
-            renderDashboard();
-            showToast('History cleared');
-          }
-        });
-      }
-
-      if (btnRefresh) {
-        btnRefresh.addEventListener('click', async () => {
-          btnRefresh.disabled = true;
-          btnRefresh.textContent = 'Checking...';
-          const history = getHistory();
-          for (const item of history) {
-            if (item.id && !item.burned) {
-              try {
-                const res = await fetch(`/api/vault/${item.id}/metadata`);
-                if (res.status === 404) {
-                  item.burned = true;
-                }
-              } catch {}
-            }
-          }
-          saveHistory(history);
-          renderDashboard();
-          btnRefresh.disabled = false;
-          btnRefresh.textContent = '↻ Refresh Status';
-          showToast('Status synchronized');
-        });
-      }
-
-      // Initialize
-      renderDashboard();
-
-      // Theme toggle & mobile menu handlers
-      const themeBtn = document.getElementById('theme-toggle');
-      if (themeBtn) {
-        themeBtn.addEventListener('click', () => {
-          const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
-          document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
-          localStorage.setItem('theme', isDark ? 'light' : 'dark');
-        });
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-          document.documentElement.setAttribute('data-theme', savedTheme);
+      vaultsList.addEventListener('click', e => {
+        const btn = e.target.closest('[data-action]');
+        if (!btn) return;
+        if (btn.dataset.action === 'copy') {
+          navigator.clipboard.writeText(btn.dataset.url).then(() => showToast('Link copied!')).catch(() => showToast('Copy failed'));
         }
+        if (btn.dataset.action === 'delete') {
+          const list = getHistory().filter(i => i.id !== btn.dataset.id);
+          saveHistory(list);
+          renderDashboard();
+          showToast('Removed from history');
+        }
+      });
+
+      btnClear?.addEventListener('click', () => {
+        if (!confirm('Clear all vault history from this browser? This cannot be undone.')) return;
+        saveHistory([]);
+        renderDashboard();
+        showToast('History cleared');
+      });
+
+      btnRefresh?.addEventListener('click', async () => {
+        const history = getHistory();
+        let changed = false;
+        for (const item of history) {
+          try {
+            const res = await fetch(`/api/vault/${item.id}/metadata`);
+            if (res.status === 404) { item.status = 'burned'; changed = true; }
+            else if (res.ok) { const data = await res.json(); item.status = data.views_remaining > 0 ? 'active' : 'burned'; changed = true; }
+          } catch {}
+        }
+        if (changed) saveHistory(history);
+        renderDashboard();
+        showToast('Status refreshed');
+      });
+
+      // Theme
+      const themeToggle = document.getElementById('theme-toggle');
+      const themeIcon   = document.getElementById('theme-icon');
+      if (localStorage.getItem('vault_theme') === 'light') document.body.classList.add('light-theme');
+      function setThemeIcon(l) {
+        themeIcon.innerHTML = l
+          ? '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>'
+          : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
       }
-      const mobileToggle = document.getElementById('mobile-toggle');
-      const mobileDrawer = document.getElementById('mobile-drawer');
-      if (mobileToggle && mobileDrawer) {
-        mobileToggle.addEventListener('click', () => {
-          mobileDrawer.classList.toggle('open');
-        });
-      }
+      setThemeIcon(document.body.classList.contains('light-theme'));
+      themeToggle?.addEventListener('click', () => {
+        const isLight = document.body.classList.toggle('light-theme');
+        localStorage.setItem('vault_theme', isLight ? 'light' : 'dark');
+        setThemeIcon(isLight);
+      });
+      document.getElementById('mobile-toggle')?.addEventListener('click', () => {
+        document.getElementById('mobile-drawer').classList.toggle('open');
+      });
+
+      renderDashboard();
     })();
   </script>
 </body>

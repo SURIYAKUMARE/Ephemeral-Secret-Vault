@@ -5,31 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow, noarchive">
   <meta name="referrer" content="no-referrer">
-  <meta property="og:title" content="🔐 Secure Secret Vault">
-  <meta property="og:description" content="This protected vault requires authorization to reveal. Share sensitive information. Not the secret itself.">
+  <meta property="og:title" content="Ephemeral Secret Vault — Share the link. Never the secret.">
+  <meta property="og:description" content="Create encrypted, self-destructing vaults for secrets and files. AES-256-GCM. Zero-knowledge. No account required.">
   <title>Ephemeral Secret Vault — Share the link. Never the secret.</title>
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="stylesheet" href="/css/style.css">
-  <link rel="stylesheet" href="/style.css">
 </head>
-<body id="top">
-  <!-- Master Cybersecurity SaaS Navbar (Section 05 & 06) -->
+<body>
+
+  <!-- ═══════════════════════════════════════════ NAVBAR ═══ -->
   <header class="navbar">
     <div class="nav-container">
       <a href="/" class="nav-brand" title="Ephemeral Secret Vault">
-        <svg class="nav-monochrome-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-        </svg>
+        <div class="nav-brand-icon">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="3" y="11" width="18" height="11" rx="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
         <span class="brand-name">
           <span class="brand-ephemeral">Ephemeral</span>
           <span class="brand-vault">Secret Vault</span>
         </span>
       </a>
 
-      <!-- Desktop Navigation matching Screenshot 1 -->
-      <nav class="nav-links-row" aria-label="Main Navigation">
-        <a href="/create" class="active">Product</a>
+      <nav class="nav-links-row" aria-label="Main navigation">
+        <a href="/create">Product</a>
         <a href="/security">Security</a>
         <a href="/extension">Extension</a>
         <a href="/how-it-works">How It Works</a>
@@ -37,610 +38,446 @@
       </nav>
 
       <div class="nav-actions">
-        <!-- Security Status Pill -->
-        <span class="status-pill status-neutral" title="Zero-Knowledge Authenticated Encryption">
-          <span class="status-dot"></span>
-          <span>AES-256-GCM</span>
+        <span class="nav-badge">
+          <span class="dot"></span>AES-256-GCM
         </span>
-
-        <!-- Theme Toggle -->
-        <button type="button" class="btn-icon-plain" id="theme-toggle" aria-label="Toggle Theme" title="Toggle theme">
-          <svg id="theme-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+        <button type="button" class="btn-icon-plain" id="theme-toggle" aria-label="Toggle theme">
+          <svg id="theme-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
           </svg>
         </button>
-
-        <!-- Create Vault Pill CTA (Screenshot 1) -->
-        <a href="/create" class="btn-nav-create-pill">
-          <span>Create Vault →</span>
-        </a>
-
-        <!-- Mobile Nav Toggle -->
-        <button type="button" class="mobile-nav-toggle" id="mobile-toggle" aria-label="Open Navigation Menu">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        <a href="/create" class="btn-nav-cta">Create Vault →</a>
+        <button type="button" class="mobile-nav-toggle" id="mobile-toggle" aria-label="Open menu">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Mobile Drawer -->
-  <div class="mobile-menu-drawer" id="mobile-drawer">
-    <a href="/create" class="active">Product</a>
+  <div class="mobile-menu-drawer" id="mobile-drawer" role="navigation">
+    <a href="/create">Product</a>
     <a href="/security">Security</a>
     <a href="/extension">Extension</a>
     <a href="/how-it-works">How It Works</a>
     <a href="/dashboard">Dashboard</a>
-    <div style="padding: 16px 20px; border-top: 1px solid var(--border-subtle); margin-top: 12px;">
-      <a href="/create" class="btn-nav-create-pill" style="width: 100%; text-decoration: none; justify-content: center;">
-        <span>Create Vault →</span>
-      </a>
+    <div style="padding:12px 0 0;">
+      <a href="/create" class="btn-cta btn btn-w-full" style="justify-content:center;">Create Vault →</a>
     </div>
   </div>
 
-  <!-- Hero Composition (Screenshot 1 Exact Match) -->
-  <main class="hero-wrapper">
-    <div class="hero-grid">
-      
-      <!-- Left Column: Headline and CTAs -->
-      <section class="hero-headline-column">
-        <div class="hero-badge-pill" style="color:var(--cyan);border-color:rgba(34,211,238,0.35);">
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--cyan);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-          <span>ZERO-KNOWLEDGE • AES-256-GCM • SECURE SHARING</span>
+  <!-- ═══════════════════════════════════════════ HERO ═══ -->
+  <main>
+    <div class="hero-wrapper">
+      <div class="hero-grid">
+
+        <!-- Left: Headline + CTAs -->
+        <section class="hero-headline-column">
+          <div class="hero-eyebrow">
+            <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            Zero-Knowledge · AES-256-GCM · Self-Destructing
+          </div>
+
+          <h1 class="hero-title">
+            Share sensitive<br>information.<br>
+            <span class="hero-gradient-headline">Not the secret itself.</span>
+          </h1>
+
+          <p class="hero-desc">
+            Create an encrypted, self-expiring vault for confidential messages and files.
+            Share the secure link anywhere — the secret is permanently shredded on first view.
+          </p>
+
+          <div class="hero-actions-container">
+            <a href="/create" class="btn-hero-primary-pill">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              Create Secure Vault
+            </a>
+            <a href="/extension" class="btn-hero-glass-pill">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4"></circle><line x1="21.17" y1="8" x2="12" y2="8"></line><line x1="3.95" y1="6.06" x2="8.54" y2="14"></line><line x1="10.88" y1="21.94" x2="15.46" y2="14"></line></svg>
+              Browser Extension
+            </a>
+          </div>
+
+          <div class="hero-feature-pills-row">
+            <div class="hero-pill-badge">
+              <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              No Account Required
+            </div>
+            <div class="hero-pill-badge">
+              <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              Self-Destructing
+            </div>
+            <div class="hero-pill-badge">
+              <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              End-to-End Encrypted
+            </div>
+            <div class="hero-pill-badge">
+              <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+              Share via Any App
+            </div>
+          </div>
+        </section>
+
+        <!-- Center: 3D Padlock Visual -->
+        <section class="hero-visual-column" aria-hidden="true">
+          <div class="hero-padlock-stage">
+            <div class="padlock-halo-aura"></div>
+            <div class="padlock-pedestal-rings"></div>
+
+            <!-- Orbiting app icons -->
+            <div class="orbit-app-icon app-pos-whatsapp" title="WhatsApp">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12C2 13.85 2.5 15.57 3.37 17.06L2 22L7.1 20.67C8.54 21.51 10.22 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2Z" fill="#25D366"/><path d="M17.5 14.33C17.2 14.18 15.74 13.46 15.47 13.36C15.2 13.26 15.01 13.21 14.81 13.51C14.62 13.8 14.07 14.45 13.9 14.65C13.73 14.84 13.56 14.87 13.26 14.72C12.97 14.57 12.02 14.26 10.9 13.26C10.02 12.48 9.43 11.52 9.26 11.23C9.09 10.93 9.24 10.78 9.39 10.63C9.52 10.5 9.68 10.29 9.83 10.12C9.97 9.95 10.02 9.83 10.12 9.63C10.22 9.44 10.17 9.27 10.1 9.12C10.02 8.97 9.44 7.54 9.2 6.96C8.97 6.4 8.73 6.47 8.56 6.46H8.02C7.83 6.46 7.51 6.53 7.24 6.82C6.98 7.12 6.22 7.82 6.22 9.26C6.22 10.7 7.27 12.09 7.41 12.28C7.56 12.48 9.48 15.43 12.42 16.7C13.12 17 13.67 17.18 14.1 17.32C14.8 17.54 15.44 17.51 15.95 17.43C16.51 17.35 17.68 16.72 17.92 16.04C18.17 15.37 18.17 14.79 18.09 14.67C18.02 14.54 17.82 14.47 17.5 14.33Z" fill="white"/></svg>
+            </div>
+            <div class="orbit-app-icon app-pos-gmail" title="Gmail">
+              <svg viewBox="0 0 24 24" width="22" height="22"><rect x="2" y="4" width="20" height="16" rx="2" fill="#1a1a2e"/><path d="M2 6l10 7 10-7" stroke="#EA4335" stroke-width="2" stroke-linecap="round"/><path d="M2 20V6" stroke="#4285F4" stroke-width="1.5"/><path d="M22 20V6" stroke="#34A853" stroke-width="1.5"/></svg>
+            </div>
+            <div class="orbit-app-icon app-pos-slack" title="Slack">
+              <svg viewBox="0 0 24 24" width="20" height="20"><rect x="3" y="10" width="4" height="4" rx="2" fill="#E01E5A"/><rect x="8" y="10" width="8" height="4" rx="2" fill="#36C5F0"/><rect x="17" y="10" width="4" height="4" rx="2" fill="#2EB67D"/><rect x="10" y="3" width="4" height="4" rx="2" fill="#ECB22E"/><rect x="10" y="8" width="4" height="8" rx="2" fill="#E01E5A"/><rect x="10" y="17" width="4" height="4" rx="2" fill="#36C5F0"/></svg>
+            </div>
+            <div class="orbit-app-icon app-pos-outlook" title="Outlook">
+              <svg viewBox="0 0 24 24" width="20" height="20"><rect x="2" y="4" width="12" height="16" rx="2" fill="#0078D4"/><circle cx="8" cy="12" r="3" fill="white"/><path d="M14 6l8 3v10l-8 3V6z" fill="#28A8EA"/></svg>
+            </div>
+            <div class="orbit-app-icon app-pos-discord" title="Discord">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="#5865F2"><path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09-.01-.02-.04-.03-.07-.03-1.5.26-2.93.71-4.27 1.33-.01 0-.02.01-.03.02-2.72 4.07-3.47 8.03-3.1 11.95 0 .02.01.04.03.05 1.8 1.32 3.53 2.12 5.24 2.65.03.01.06 0 .07-.02.4-.55.76-1.13 1.07-1.74.02-.04 0-.08-.04-.09-.57-.22-1.11-.48-1.64-.78-.04-.02-.04-.08-.01-.11.11-.08.22-.17.33-.25.02-.02.05-.02.07-.01 3.44 1.57 7.15 1.57 10.55 0 .02-.01.05-.01.07.01.11.09.22.17.33.26.04.03.04.08-.01.11-.52.31-1.07.56-1.64.78-.04.01-.05.06-.04.09.32.61.68 1.19 1.07 1.74.01.02.05.03.08.02 1.72-.53 3.45-1.33 5.25-2.65.02-.01.03-.03.03-.05.44-4.53-.73-8.46-3.1-11.95-.01-.01-.02-.02-.04-.02zM8.52 14.91c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12 0 1.17-.84 2.12-1.89 2.12zm6.97 0c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12 0 1.17-.83 2.12-1.89 2.12z"/></svg>
+            </div>
+            <div class="orbit-app-icon app-pos-teams" title="Teams">
+              <svg viewBox="0 0 24 24" width="20" height="20"><path d="M19.5 7.5A2.5 2.5 0 1 0 17 5a2.5 2.5 0 0 0 2.5 2.5zM22 14v-3.5a2.5 2.5 0 0 0-5 0V14z" fill="#6264A7"/><path d="M13 6A3.5 3.5 0 1 0 9.5 2.5 3.5 3.5 0 0 0 13 6zM15 17v-6a3.5 3.5 0 0 0-7 0v6z" fill="#464EB8"/><rect x="2" y="8" width="8" height="9" rx="2" fill="#505AC9"/></svg>
+            </div>
+
+            <!-- Padlock SVG -->
+            <svg class="padlock-svg-hologram" viewBox="0 0 240 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="sg1" x1="40" y1="20" x2="200" y2="120" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#22D3EE"/>
+                  <stop offset="40%" stop-color="#9D65F5"/>
+                  <stop offset="100%" stop-color="#22D3EE"/>
+                </linearGradient>
+                <linearGradient id="sg2" x1="30" y1="90" x2="210" y2="230" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#1E1B4B"/>
+                  <stop offset="50%" stop-color="#0F172A"/>
+                  <stop offset="100%" stop-color="#1E1B4B"/>
+                </linearGradient>
+                <linearGradient id="sg3" x1="30" y1="90" x2="210" y2="230" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#22D3EE"/>
+                  <stop offset="50%" stop-color="#7C3AED"/>
+                  <stop offset="100%" stop-color="#06B6D4"/>
+                </linearGradient>
+                <linearGradient id="sg4" x1="120" y1="135" x2="120" y2="185" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#FFFFFF"/>
+                  <stop offset="100%" stop-color="#9D65F5"/>
+                </linearGradient>
+                <filter id="kglow"><feGaussianBlur stdDeviation="6" result="b"/><feComposite in="SourceGraphic" in2="b" operator="over"/></filter>
+              </defs>
+              <path d="M68 115V68C68 39.28 91.28 16 120 16C148.72 16 172 39.28 172 68V115" stroke="url(#sg1)" stroke-width="24" stroke-linecap="round"/>
+              <path d="M72 110V68C72 41.49 93.49 20 120 20C146.51 20 168 41.49 168 68V110" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+              <rect x="36" y="96" width="168" height="132" rx="28" fill="url(#sg2)" stroke="url(#sg3)" stroke-width="3.5"/>
+              <rect x="46" y="106" width="148" height="112" rx="20" fill="none" stroke="rgba(34,211,238,0.2)" stroke-width="1"/>
+              <g filter="url(#kglow)">
+                <circle cx="120" cy="148" r="13" fill="url(#sg4)"/>
+                <path d="M113 154L111 180C111 182 113 184 115 184H125C127 184 129 182 129 180L127 154Z" fill="url(#sg4)"/>
+              </g>
+            </svg>
+
+            <div class="padlock-vault-pill-base">
+              <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              Encrypted Vault
+            </div>
+          </div>
+        </section>
+
+        <!-- Right: How It Works card -->
+        <section class="privacy-panel-column">
+          <div class="how-it-works-glass-card">
+            <div class="hiw-header-row">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--accent-light)"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+              How It Works
+            </div>
+
+            <div class="hiw-step-item">
+              <div class="hiw-step-circle-icon hiw-circle-blue">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+              </div>
+              <div class="hiw-step-content">
+                <span class="hiw-step-title">01 · Create</span>
+                <span class="hiw-step-desc">Add your secret text or upload a file</span>
+              </div>
+            </div>
+
+            <div class="hiw-step-item">
+              <div class="hiw-step-circle-icon hiw-circle-cyan">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              </div>
+              <div class="hiw-step-content">
+                <span class="hiw-step-title">02 · Encrypt</span>
+                <span class="hiw-step-desc">Protected with AES-256-GCM in your browser</span>
+              </div>
+            </div>
+
+            <div class="hiw-step-item">
+              <div class="hiw-step-circle-icon hiw-circle-green">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+              </div>
+              <div class="hiw-step-content">
+                <span class="hiw-step-title">03 · Share Link</span>
+                <span class="hiw-step-desc">Send via any messaging app or email</span>
+              </div>
+            </div>
+
+            <div class="hiw-step-item">
+              <div class="hiw-step-circle-icon hiw-circle-indigo">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              </div>
+              <div class="hiw-step-content">
+                <span class="hiw-step-title">04 · Authorize</span>
+                <span class="hiw-step-desc">Two-step secure access confirmation</span>
+              </div>
+            </div>
+
+            <div class="hiw-step-item">
+              <div class="hiw-step-circle-icon hiw-circle-coral">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+              </div>
+              <div class="hiw-step-content">
+                <span class="hiw-step-title">05 · Reveal &amp; Expire</span>
+                <span class="hiw-step-desc">Secret is decrypted then permanently shredded</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div><!-- /hero-grid -->
+
+      <!-- Trust strip -->
+      <div class="trust-strip-unified-card">
+        <div class="trust-col-item">
+          <div class="trust-col-icon" style="color:var(--accent-light);">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          </div>
+          <div class="trust-col-meta">
+            <span class="trust-col-title">Encrypted at Rest</span>
+            <span class="trust-col-sub">AES-256-GCM with 96-bit IV</span>
+          </div>
         </div>
-
-        <h1 class="hero-title" style="font-size: clamp(34px, 4.4vw, 54px); line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 16px;">
-          Share sensitive<br>
-          information.<br>
-          <span class="hero-gradient-headline">Not the secret itself.</span>
-        </h1>
-
-        <div style="display:none;" aria-hidden="true">
-          <span>Share sensitive information.</span> <span>Not the secret itself.</span>
+        <div class="trust-col-item">
+          <div class="trust-col-icon" style="color:var(--brand-light);">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          </div>
+          <div class="trust-col-meta">
+            <span class="trust-col-title">Secure Transport</span>
+            <span class="trust-col-sub">TLS 1.3 end-to-end</span>
+          </div>
         </div>
+        <div class="trust-col-item">
+          <div class="trust-col-icon" style="color:var(--green-text);">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          </div>
+          <div class="trust-col-meta">
+            <span class="trust-col-title">Time-Limited Access</span>
+            <span class="trust-col-sub">Automatic TTL expiration</span>
+          </div>
+        </div>
+        <div class="trust-col-item">
+          <div class="trust-col-icon" style="color:var(--red-text);">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+          </div>
+          <div class="trust-col-meta">
+            <span class="trust-col-title">Zero Secret in URLs</span>
+            <span class="trust-col-sub">Key lives only in hash fragment</span>
+          </div>
+        </div>
+      </div><!-- /trust strip -->
 
-        <p class="hero-desc" style="font-size:14.5px;color:var(--text-secondary);line-height:1.6;margin-bottom:20px;max-width:440px;">
-          Create an encrypted, self-expiring vault for confidential messages and files. Share the secure link anywhere with end-to-end protection and two-step authorization.
+      <!-- Core Philosophy section -->
+      <section class="vault-card" style="margin-bottom:28px;">
+        <span class="section-label">Core Philosophy</span>
+        <h2 style="font-size:var(--text-xl);font-weight:800;color:var(--text-1);letter-spacing:-0.02em;margin-bottom:8px;">Share the Link. Never the Secret.</h2>
+        <p style="font-size:var(--text-sm);color:var(--text-2);line-height:1.7;margin-bottom:20px;max-width:640px;">
+          Traditional messaging apps permanently store credentials in cloud archives and push notification logs.
+          Ephemeral Secret Vault transmits only an encrypted random pointer — the payload is permanently shredded after access.
         </p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;">
+          <div style="background:var(--red-dim);border:1px solid var(--red-border);border-radius:var(--r-lg);padding:16px;">
+            <div style="font-size:11px;font-weight:700;color:var(--red-text);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Traditional Chat — Vulnerable</div>
+            <div style="font-family:var(--font-mono);font-size:12px;color:var(--text-2);background:rgba(0,0,0,0.2);padding:8px;border-radius:6px;margin-bottom:8px;">"Password: MySecret123!"</div>
+            <div style="font-size:12px;color:var(--text-3);">Saved forever in server backups, notification previews, and local device databases.</div>
+          </div>
+          <div style="background:var(--accent-dim);border:1px solid var(--border-accent);border-radius:var(--r-lg);padding:16px;">
+            <div style="font-size:11px;font-weight:700;color:var(--accent-light);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Ephemeral Vault — Protected</div>
+            <div style="font-family:var(--font-mono);font-size:12px;color:var(--brand-light);background:rgba(0,0,0,0.2);padding:8px;border-radius:6px;margin-bottom:8px;">"vault.domain/v/a8f9c1e…"</div>
+            <div style="font-size:12px;color:var(--text-3);">Self-destructing pointer. Payload is permanently purged from server RAM upon view.</div>
+          </div>
+        </div>
+        <div class="channels-strip-bar">
+          <span>WhatsApp · Link Only</span>
+          <span>Gmail · Auto-Expiring</span>
+          <span>Slack · Instant Burn</span>
+          <span>Teams · Zero Plaintext</span>
+          <span>Discord · Secure Link</span>
+        </div>
+      </section>
 
-        <!-- CTAs Row (Screenshot 1) -->
-        <div class="hero-actions-container">
+      <!-- 5-step lifecycle -->
+      <section style="margin-bottom:36px;">
+        <div style="text-align:center;margin-bottom:24px;">
+          <span class="section-label">Cryptographic Lifecycle</span>
+          <h2 style="font-size:var(--text-2xl);font-weight:800;color:var(--text-1);letter-spacing:-0.03em;">How the Vault Works</h2>
+          <p style="font-size:var(--text-sm);color:var(--text-2);max-width:520px;margin:8px auto 0;">
+            From browser encryption to physical server deletion — the secret never travels in the open.
+          </p>
+        </div>
+        <div class="lifecycle-5step-grid">
+          <div class="lifecycle-step-card">
+            <span class="lifecycle-step-num">Step 01</span>
+            <h3 class="lifecycle-step-title">Create</h3>
+            <p class="lifecycle-step-desc">Draft your confidential note or upload credentials, tokens, or scripts.</p>
+          </div>
+          <div class="lifecycle-step-card">
+            <span class="lifecycle-step-num">Step 02</span>
+            <h3 class="lifecycle-step-title">Encrypt</h3>
+            <p class="lifecycle-step-desc">AES-256-GCM generates a random 96-bit IV and authenticated ciphertext tag in your browser.</p>
+          </div>
+          <div class="lifecycle-step-card">
+            <span class="lifecycle-step-num">Step 03</span>
+            <h3 class="lifecycle-step-title">Share Link</h3>
+            <p class="lifecycle-step-desc">Dispatch the single-use link through WhatsApp, Slack, Teams, or email.</p>
+          </div>
+          <div class="lifecycle-step-card">
+            <span class="lifecycle-step-num">Step 04</span>
+            <h3 class="lifecycle-step-title">Authorize</h3>
+            <p class="lifecycle-step-desc">Backend validates context and issues a single-use reveal token.</p>
+          </div>
+          <div class="lifecycle-step-card">
+            <span class="lifecycle-step-num">Step 05</span>
+            <h3 class="lifecycle-step-title">Reveal &amp; Shred</h3>
+            <p class="lifecycle-step-desc">Decrypted in browser RAM; database row is physically purged immediately after.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 12 feature cards -->
+      <section style="margin-bottom:48px;">
+        <div style="text-align:center;margin-bottom:28px;">
+          <span class="section-label">Enterprise Security</span>
+          <h2 style="font-size:var(--text-2xl);font-weight:800;color:var(--text-1);letter-spacing:-0.03em;">Engineered for High-Trust Teams</h2>
+          <p style="font-size:var(--text-sm);color:var(--text-2);max-width:520px;margin:8px auto 0;">
+            Every feature is architected with defense-in-depth principles to protect your sensitive payloads.
+          </p>
+        </div>
+        <div class="feature-grid-12">
+          <div class="feature-card-linear">
+            <div class="feature-icon-box"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></div>
+            <h3>Secure Links</h3>
+            <p>128-bit random pointers that never reveal secrets in URLs or server logs.</p>
+          </div>
+          <div class="feature-card-linear">
+            <div class="feature-icon-box"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+            <h3>Encrypted Vaults</h3>
+            <p>AES-256-GCM with 128-bit integrity tags guaranteeing tamper-evident storage.</p>
+          </div>
+          <div class="feature-card-linear">
+            <div class="feature-icon-box"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
+            <h3>Auto Expiration</h3>
+            <p>Background sweepers purge records upon TTL expiration — zero data retention.</p>
+          </div>
+          <div class="feature-card-linear">
+            <div class="feature-icon-box"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg></div>
+            <h3>One-Time Access</h3>
+            <p>Single-use cryptographic shredding purges database rows on first reveal.</p>
+          </div>
+          <div class="feature-card-linear">
+            <div class="feature-icon-box"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></div>
+            <h3>View Limits</h3>
+            <p>Granular view counts decrementing atomically within strict SQLite transactions.</p>
+          </div>
+          <div class="feature-card-linear">
+            <div class="feature-icon-box"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><circle cx="12" cy="16" r="1"></circle><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+            <h3>Passcode Gate</h3>
+            <p>Optional PBKDF2 key-stretching requiring a secondary passphrase before decryption.</p>
+          </div>
+          <div class="feature-card-linear">
+            <div class="feature-icon-box"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg></div>
+            <h3>Share Anywhere</h3>
+            <p>Native integration with WhatsApp, Slack, Teams, Discord, Gmail, and Telegram.</p>
+          </div>
+          <div class="feature-card-linear">
+            <div class="feature-icon-box"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg></div>
+            <h3>File Vault</h3>
+            <p>Securely upload and share confidential files up to 15 MB with full encryption.</p>
+          </div>
+          <div class="feature-card-linear">
+            <div class="feature-icon-box"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4"></circle><line x1="21.17" y1="8" x2="12" y2="8"></line></svg></div>
+            <h3>Browser Extension</h3>
+            <p>Detect and vault sensitive data directly from Gmail, Slack, WhatsApp, and more.</p>
+          </div>
+          <div class="feature-card-linear">
+            <div class="feature-icon-box" style="background:var(--accent-dim);border-color:var(--border-accent);color:var(--accent-light);"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div>
+            <h3>Zero-Knowledge</h3>
+            <p>Client-side encryption means the server never sees your plaintext or decryption key.</p>
+          </div>
+          <div class="feature-card-linear">
+            <div class="feature-icon-box"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line></svg></div>
+            <h3>Audit Trail</h3>
+            <p>Immutable access logs and cryptographically-signed burn receipts for compliance.</p>
+          </div>
+          <div class="feature-card-linear">
+            <div class="feature-icon-box"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg></div>
+            <h3>Admin Dashboard</h3>
+            <p>Full control panel with real-time monitoring, revocation, and access event tracking.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA section -->
+      <section style="text-align:center;padding:48px 0;border-top:1px solid var(--border-subtle);">
+        <div class="hero-eyebrow" style="margin:0 auto 20px;">Ready to secure your secrets?</div>
+        <h2 style="font-size:var(--text-2xl);font-weight:800;color:var(--text-1);letter-spacing:-0.03em;margin-bottom:12px;">Start sharing securely — no account needed</h2>
+        <p style="font-size:var(--text-sm);color:var(--text-2);margin-bottom:28px;">Your first encrypted vault is one click away.</p>
+        <div style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;">
           <a href="/create" class="btn-hero-primary-pill">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            <span>Create Secure Vault →</span>
-            <span class="sr-only">Create Secret Now</span>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            Create Secure Vault →
           </a>
-          <a href="/extension" class="btn-hero-glass-pill">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4"></circle><line x1="21.17" y1="8" x2="12" y2="8"></line><line x1="3.95" y1="6.06" x2="8.54" y2="14"></line><line x1="10.88" y1="21.94" x2="15.46" y2="14"></line></svg>
-            <span>Browser Extension</span>
-          </a>
-        </div>
-
-        <!-- 4-Pill Feature Row (Screenshot 1) -->
-        <div class="hero-feature-pills-row">
-          <div class="hero-pill-badge">
-            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            <span>No Account Required</span>
-          </div>
-          <div class="hero-pill-badge">
-            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            <span>Self-Destructing Secrets</span>
-          </div>
-          <div class="hero-pill-badge">
-            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-            <span>End-to-End Encryption</span>
-          </div>
-          <div class="hero-pill-badge">
-            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-            <span>Share via Any App</span>
-          </div>
+          <a href="/how-it-works" class="btn-hero-glass-pill">Learn How It Works</a>
         </div>
       </section>
 
-      <!-- Center Column: 3D Holographic Metallic Padlock & Orbiting App Badges (Screenshot 1) -->
-      <section class="hero-visual-column" aria-label="Futuristic Security Padlock Hologram">
-        <div class="hero-padlock-stage">
-          <div class="padlock-halo-aura"></div>
-          <div class="padlock-pedestal-rings"></div>
-
-          <!-- Orbiting App Icons (WhatsApp, Gmail, Slack, Outlook, Discord, Teams) -->
-          <!-- WhatsApp -->
-          <div class="orbit-app-icon app-pos-whatsapp" title="WhatsApp • Link Only">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none">
-              <path d="M12 2C6.48 2 2 6.48 2 12C2 13.85 2.5 15.57 3.37 17.06L2 22L7.1 20.67C8.54 21.51 10.22 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2Z" fill="#25D366"/>
-              <path d="M17.5 14.33C17.2 14.18 15.74 13.46 15.47 13.36C15.2 13.26 15.01 13.21 14.81 13.51C14.62 13.8 14.07 14.45 13.9 14.65C13.73 14.84 13.56 14.87 13.26 14.72C12.97 14.57 12.02 14.26 10.9 13.26C10.02 12.48 9.43 11.52 9.26 11.23C9.09 10.93 9.24 10.78 9.39 10.63C9.52 10.5 9.68 10.29 9.83 10.12C9.97 9.95 10.02 9.83 10.12 9.63C10.22 9.44 10.17 9.27 10.1 9.12C10.02 8.97 9.44 7.54 9.2 6.96C8.97 6.4 8.73 6.47 8.56 6.46H8.02C7.83 6.46 7.51 6.53 7.24 6.82C6.98 7.12 6.22 7.82 6.22 9.26C6.22 10.7 7.27 12.09 7.41 12.28C7.56 12.48 9.48 15.43 12.42 16.7C13.12 17 13.67 17.18 14.1 17.32C14.8 17.54 15.44 17.51 15.95 17.43C16.51 17.35 17.68 16.72 17.92 16.04C18.17 15.37 18.17 14.79 18.09 14.67C18.02 14.54 17.82 14.47 17.5 14.33Z" fill="#FFFFFF"/>
-            </svg>
-            <span class="sr-only">WhatsApp • Link Only</span>
-          </div>
-
-          <!-- Gmail -->
-          <div class="orbit-app-icon app-pos-gmail" title="Gmail • Auto-Expiring">
-            <svg viewBox="0 0 24 24" width="22" height="22">
-              <path d="M20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4Z" fill="#1E293B"/>
-              <path d="M22 6L12 13L2 6" stroke="#EA4335" stroke-width="2.2" stroke-linecap="round"/>
-              <path d="M2 18V6" stroke="#4285F4" stroke-width="2.2" stroke-linecap="round"/>
-              <path d="M22 18V6" stroke="#34A853" stroke-width="2.2" stroke-linecap="round"/>
-            </svg>
-            <span class="sr-only">Gmail • Auto-Expiring</span>
-          </div>
-
-          <!-- Slack -->
-          <div class="orbit-app-icon app-pos-slack" title="Slack • Instant Burn">
-            <svg viewBox="0 0 24 24" width="20" height="20">
-              <rect x="3" y="10" width="4" height="4" rx="2" fill="#E01E5A"/>
-              <rect x="8" y="10" width="8" height="4" rx="2" fill="#36C5F0"/>
-              <rect x="17" y="10" width="4" height="4" rx="2" fill="#2EB67D"/>
-              <rect x="10" y="3" width="4" height="4" rx="2" fill="#ECB22E"/>
-              <rect x="10" y="8" width="4" height="8" rx="2" fill="#E01E5A"/>
-              <rect x="10" y="17" width="4" height="4" rx="2" fill="#36C5F0"/>
-            </svg>
-            <span class="sr-only">Slack • Instant Burn</span>
-          </div>
-
-          <!-- Outlook -->
-          <div class="orbit-app-icon app-pos-outlook" title="Outlook">
-            <svg viewBox="0 0 24 24" width="20" height="20">
-              <rect x="2" y="4" width="12" height="16" rx="2" fill="#0078D4"/>
-              <path d="M8 8C6.34 8 5 9.34 5 11C5 12.66 6.34 14 8 14C9.66 14 11 12.66 11 11C11 9.34 9.66 8 8 8Z" fill="#FFFFFF"/>
-              <path d="M14 6L21 8.5V17.5L14 20V6Z" fill="#28A8EA" opacity="0.8"/>
-            </svg>
-          </div>
-
-          <!-- Discord -->
-          <div class="orbit-app-icon app-pos-discord" title="Discord">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="#5865F2">
-              <path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09-.01-.02-.04-.03-.07-.03-1.5.26-2.93.71-4.27 1.33-.01 0-.02.01-.03.02-2.72 4.07-3.47 8.03-3.1 11.95 0 .02.01.04.03.05 1.8 1.32 3.53 2.12 5.24 2.65.03.01.06 0 .07-.02.4-.55.76-1.13 1.07-1.74.02-.04 0-.08-.04-.09-.57-.22-1.11-.48-1.64-.78-.04-.02-.04-.08-.01-.11.11-.08.22-.17.33-.25.02-.02.05-.02.07-.01 3.44 1.57 7.15 1.57 10.55 0 .02-.01.05-.01.07.01.11.09.22.17.33.26.04.03.04.08-.01.11-.52.31-1.07.56-1.64.78-.04.01-.05.06-.04.09.32.61.68 1.19 1.07 1.74.01.02.05.03.08.02 1.72-.53 3.45-1.33 5.25-2.65.02-.01.03-.03.03-.05.44-4.53-.73-8.46-3.1-11.95-.01-.01-.02-.02-.04-.02zM8.52 14.91c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12 0 1.17-.84 2.12-1.89 2.12zm6.97 0c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12 0 1.17-.83 2.12-1.89 2.12z"/>
-            </svg>
-          </div>
-
-          <!-- Teams -->
-          <div class="orbit-app-icon app-pos-teams" title="Microsoft Teams">
-            <svg viewBox="0 0 24 24" width="20" height="20">
-              <path d="M19.5 7.5A2.5 2.5 0 1 0 17 5a2.5 2.5 0 0 0 2.5 2.5zM22 14v-3.5a2.5 2.5 0 0 0-5 0V14z" fill="#6264A7"/>
-              <path d="M13 6A3.5 3.5 0 1 0 9.5 2.5 3.5 3.5 0 0 0 13 6zM15 17v-6a3.5 3.5 0 0 0-7 0v6z" fill="#464EB8"/>
-              <rect x="2" y="8" width="8" height="9" rx="2" fill="#505AC9"/>
-              <path d="M4 11h4M6 11v4" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
-          </div>
-
-          <!-- 3D Padlock Hologram SVG -->
-          <svg class="padlock-svg-hologram" viewBox="0 0 240 260" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="shackleGrad" x1="40" y1="20" x2="200" y2="120" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#38BDF8"/>
-                <stop offset="30%" stop-color="#818CF8"/>
-                <stop offset="70%" stop-color="#C084FC"/>
-                <stop offset="100%" stop-color="#38BDF8"/>
-              </linearGradient>
-              <linearGradient id="bodyBevelGrad" x1="30" y1="90" x2="210" y2="230" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#1E3A8A"/>
-                <stop offset="40%" stop-color="#0F172A"/>
-                <stop offset="80%" stop-color="#1E1B4B"/>
-                <stop offset="100%" stop-color="#312E81"/>
-              </linearGradient>
-              <linearGradient id="bodyRimGrad" x1="30" y1="90" x2="210" y2="230" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#38BDF8"/>
-                <stop offset="50%" stop-color="#A855F7"/>
-                <stop offset="100%" stop-color="#06B6D4"/>
-              </linearGradient>
-              <linearGradient id="keyholeGrad" x1="120" y1="135" x2="120" y2="185" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#FFFFFF"/>
-                <stop offset="40%" stop-color="#F472B6"/>
-                <stop offset="100%" stop-color="#EC4899"/>
-              </linearGradient>
-              <filter id="keyholeGlow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="8" result="blur"/>
-                <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-              </filter>
-            </defs>
-
-            <!-- Padlock Shackle -->
-            <path d="M68 115V68C68 39.28 91.28 16 120 16C148.72 16 172 39.28 172 68V115" stroke="url(#shackleGrad)" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M72 110V68C72 41.49 93.49 20 120 20C146.51 20 168 41.49 168 68V110" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
-
-            <!-- Padlock Main Body -->
-            <rect x="36" y="96" width="168" height="132" rx="28" fill="url(#bodyBevelGrad)" stroke="url(#bodyRimGrad)" stroke-width="4"/>
-            <rect x="46" y="106" width="148" height="112" rx="20" fill="none" stroke="rgba(56,189,248,0.25)" stroke-width="1.5"/>
-
-            <!-- Glowing Keyhole Center -->
-            <g filter="url(#keyholeGlow)">
-              <circle cx="120" cy="148" r="14" fill="url(#keyholeGrad)"/>
-              <path d="M112 154L110 182C110 184 112 186 114 186H126C128 186 130 184 130 182L128 154Z" fill="url(#keyholeGrad)"/>
-            </g>
-          </svg>
-
-          <!-- Pedestal Badge -->
-          <div class="padlock-vault-pill-base">
-            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--cyan);"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            <span>Encrypted Vault</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- Right Column: How It Works Glass Card (Screenshot 1) -->
-      <section class="privacy-panel-column">
-        <div class="how-it-works-glass-card">
-          <div class="hiw-header-row">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--cyan);"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-            <span>How It Works</span>
-          </div>
-
-          <div class="hiw-step-item">
-            <div class="hiw-step-circle-icon hiw-circle-blue">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-            </div>
-            <div class="hiw-step-content">
-              <span class="hiw-step-title">01 Create</span>
-              <span class="hiw-step-desc">Add your message or file</span>
-            </div>
-          </div>
-
-          <div class="hiw-step-item">
-            <div class="hiw-step-circle-icon hiw-circle-cyan">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            </div>
-            <div class="hiw-step-content">
-              <span class="hiw-step-title">02 Encrypt</span>
-              <span class="hiw-step-desc">Protected with AES-256-GCM</span>
-            </div>
-          </div>
-
-          <div class="hiw-step-item">
-            <div class="hiw-step-circle-icon hiw-circle-green">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-            </div>
-            <div class="hiw-step-content">
-              <span class="hiw-step-title">03 Share Link</span>
-              <span class="hiw-step-desc">Send via any app</span>
-            </div>
-          </div>
-
-          <div class="hiw-step-item">
-            <div class="hiw-step-circle-icon hiw-circle-indigo">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-            </div>
-            <div class="hiw-step-content">
-              <span class="hiw-step-title">04 Authorize</span>
-              <span class="hiw-step-desc">Secure two-step access</span>
-            </div>
-          </div>
-
-          <div class="hiw-step-item">
-            <div class="hiw-step-circle-icon hiw-circle-coral">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            </div>
-            <div class="hiw-step-content">
-              <span class="hiw-step-title">05 Reveal &amp; Expire</span>
-              <span class="hiw-step-desc">Automatically self-destructs</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-    </div>
-
-    <!-- Bottom 4-Column Trust Strip (Screenshot 1 Exact Match) -->
-    <div class="trust-strip-unified-card">
-      <div class="trust-col-item">
-        <div class="trust-col-icon" style="color:var(--cyan);">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-        </div>
-        <div class="trust-col-meta">
-          <span class="trust-col-title">Encrypted at Rest</span>
-          <span class="trust-col-sub">AES-256-GCM encryption</span>
-        </div>
-      </div>
-
-      <div class="trust-col-item">
-        <div class="trust-col-icon" style="color:var(--cyan);">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-        </div>
-        <div class="trust-col-meta">
-          <span class="trust-col-title">Secure Transport</span>
-          <span class="trust-col-sub">TLS 1.3 protected</span>
-        </div>
-      </div>
-
-      <div class="trust-col-item">
-        <div class="trust-col-icon" style="color:var(--purple);">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-        </div>
-        <div class="trust-col-meta">
-          <span class="trust-col-title">Time-Limited Access</span>
-          <span class="trust-col-sub">Automatic expiration</span>
-        </div>
-      </div>
-
-      <div class="trust-col-item">
-        <div class="trust-col-icon" style="color:#F43F5E;">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
-        </div>
-        <div class="trust-col-meta">
-          <span class="trust-col-title">No Secret in URLs</span>
-          <span class="trust-col-sub">Zero-knowledge architecture</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Core Philosophy Comparison Card -->
-    <section class="vault-card" style="margin-bottom: 28px;">
-      <span class="section-label">CORE PHILOSOPHY</span>
-      <h2 style="font-size: 22px; font-weight: 700; color: #FFFFFF; margin-bottom: 8px;">Share the Link, Never the Secret</h2>
-      <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 20px;">
-        Traditional messaging platforms preserve passwords, keys, and credentials permanently in cloud archives and logs. Ephemeral Secret Vault transmits only an encrypted pointer:
-      </p>
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px;">
-        <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid var(--danger-border); border-radius: var(--radius-md); padding: 16px;">
-          <div style="font-size: 11px; font-weight: 700; color: var(--danger); text-transform: uppercase; margin-bottom: 6px;">Traditional Chat (Vulnerable)</div>
-          <div style="font-family: var(--font-mono); font-size: 12.5px; color: var(--text-muted);">"Password: MySecret123"</div>
-          <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 8px;">Saved forever across server backups, notification previews, and local device databases.</div>
-        </div>
-
-        <div style="background: rgba(34, 211, 238, 0.08); border: 1px solid var(--border-luminous); border-radius: var(--radius-md); padding: 16px;">
-          <div style="font-size: 11px; font-weight: 700; color: var(--cyan); text-transform: uppercase; margin-bottom: 6px;">Ephemeral Vault (Protected)</div>
-          <div style="font-family: var(--font-mono); font-size: 12.5px; color: var(--primary-bright);">"vault.domain/v/a8f9c1e..."</div>
-          <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 8px;">Self-destructing random pointer. Payload is permanently shredded from RAM upon view.</div>
-        </div>
-      </div>
-
-      <div class="channels-strip-bar">
-        <span>WhatsApp • Link Only</span>
-        <span>Gmail • Auto-Expiring</span>
-        <span>Slack • Instant Burn</span>
-        <span>Teams • Zero Plaintext</span>
-        <span>Discord • Spoiler Link</span>
-      </div>
-    </section>
-
-    <!-- Section 31: 5-Step Visual Lifecycle Explanation -->
-    <section style="margin-bottom: 36px;">
-      <div style="text-align: center; margin-bottom: 20px;">
-        <span class="section-label">HOW IT WORKS</span>
-        <h2 style="font-size: 26px; font-weight: 700; color: #FFFFFF; letter-spacing: -0.02em;">Cryptographic Lifecycle</h2>
-        <p style="font-size: 14px; color: var(--text-secondary); max-width: 520px; margin: 6px auto 0 auto;">
-          From browser encryption to physical server deletion, the secret never travels in the open.
-        </p>
-      </div>
-
-      <div class="lifecycle-5step-grid">
-        <div class="lifecycle-step-card">
-          <span class="lifecycle-step-num">STEP 01</span>
-          <h3 class="lifecycle-step-title">Create</h3>
-          <p class="lifecycle-step-desc">Draft your confidential note or upload credentials, tokens, or scripts.</p>
-        </div>
-        <div class="lifecycle-step-card">
-          <span class="lifecycle-step-num">STEP 02</span>
-          <h3 class="lifecycle-step-title">Encrypt</h3>
-          <p class="lifecycle-step-desc">AES-256-GCM generates a random 96-bit IV and authenticated ciphertext tag.</p>
-        </div>
-        <div class="lifecycle-step-card">
-          <span class="lifecycle-step-num">STEP 03</span>
-          <h3 class="lifecycle-step-title">Share Link</h3>
-          <p class="lifecycle-step-desc">Dispatch the single-use random link through WhatsApp, Slack, Teams, or email.</p>
-        </div>
-        <div class="lifecycle-step-card">
-          <span class="lifecycle-step-num">STEP 04</span>
-          <h3 class="lifecycle-step-title">Authorize</h3>
-          <p class="lifecycle-step-desc">Recipient opens link; backend validates context and issues a single-use reveal token.</p>
-        </div>
-        <div class="lifecycle-step-card">
-          <span class="lifecycle-step-num">STEP 05</span>
-          <h3 class="lifecycle-step-title">Reveal / Shred</h3>
-          <p class="lifecycle-step-desc">Decrypted in browser RAM; database row is physically purged immediately.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Section 32: 12 Product Feature Cards -->
-    <section style="margin-bottom: 36px;">
-      <div style="text-align: center; margin-bottom: 24px;">
-        <span class="section-label">ENTERPRISE SECURITY</span>
-        <h2 style="font-size: 26px; font-weight: 700; color: #FFFFFF; letter-spacing: -0.02em;">Engineered for High-Trust Teams</h2>
-        <p style="font-size: 14px; color: var(--text-secondary); max-width: 520px; margin: 6px auto 0 auto;">
-          Every feature is architected with defense-in-depth principles to protect your sensitive payloads.
-        </p>
-      </div>
-
-      <div class="feature-grid-12">
-        <div class="feature-card-linear">
-          <div class="feature-icon-box">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-          </div>
-          <h3>Secure Links</h3>
-          <p>Cryptographically random, non-enumerable 128-bit pointers that never reveal secrets in URLs or server access logs.</p>
-        </div>
-
-        <div class="feature-card-linear">
-          <div class="feature-icon-box">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-          </div>
-          <h3>Encrypted Vaults</h3>
-          <p>Authenticated AES-256-GCM ciphertexts with 128-bit integrity tags guaranteeing tamper-evident storage.</p>
-        </div>
-
-        <div class="feature-card-linear">
-          <div class="feature-icon-box">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-          </div>
-          <h3>Auto Expiration</h3>
-          <p>Automated background sweepers purge records upon TTL expiration, guaranteeing zero long-term data retention.</p>
-        </div>
-
-        <div class="feature-card-linear">
-          <div class="feature-icon-box">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
-          </div>
-          <h3>One-Time Access</h3>
-          <p>Single-use cryptographic shredding purges database rows the millisecond the recipient's reveal completes.</p>
-        </div>
-
-        <div class="feature-card-linear">
-          <div class="feature-icon-box">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-          </div>
-          <h3>View Limits</h3>
-          <p>Granular allowance counts (1, 3, 5, 10, or custom limits) decrementing atomically within strict SQLite transactions.</p>
-        </div>
-
-        <div class="feature-card-linear">
-          <div class="feature-icon-box">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><circle cx="12" cy="16" r="1"></circle><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-          </div>
-          <h3>Passcode Protection</h3>
-          <p>Optional PBKDF2 key-stretching defense requiring a secondary passphrase before authorized decryption.</p>
-        </div>
-
-        <div class="feature-card-linear">
-          <div class="feature-icon-box">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-          </div>
-          <h3>Secure Sharing</h3>
-          <p>Direct deep links for WhatsApp, Slack, Teams, Discord, Gmail, and Outlook that share strictly the vault pointer.</p>
-        </div>
-
-        <div class="feature-card-linear">
-          <div class="feature-icon-box">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10z"></path></svg>
-          </div>
-          <h3>Browser Extension</h3>
-          <p>Manifest V3 companion for instant vault creation from any active tab without opening the full web application.</p>
-        </div>
-
-        <div class="feature-card-linear">
-          <div class="feature-icon-box">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-          </div>
-          <h3>Secure Clipboard</h3>
-          <p>Explicit-action clipboard ingestion that previews content and never continuously or silently polls your device.</p>
-        </div>
-
-        <div class="feature-card-linear">
-          <div class="feature-icon-box">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-          </div>
-          <h3>File Protection</h3>
-          <p>Encrypted binary storage for certificates, scripts, PDFs, and keys up to 15 MB with automatic MIME isolation.</p>
-        </div>
-
-        <div class="feature-card-linear">
-          <div class="feature-icon-box">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-          </div>
-          <h3>Creator Controls</h3>
-          <p>Local metadata tracking with manual emergency burn capabilities that permanently shred links on demand.</p>
-        </div>
-
-        <div class="feature-card-linear">
-          <div class="feature-icon-box">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-          </div>
-          <h3>Audit Events</h3>
-          <p>Tamper-evident verification receipts and zero-plaintext access tracking for security compliance reviews.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Bottom CTA Bar -->
-    <div style="background: linear-gradient(135deg, rgba(40,117,255,0.12) 0%, rgba(139,92,246,0.08) 100%); border: 1px solid var(--border-focus); border-radius: var(--radius-card); padding: 32px 24px; text-align: center; margin-bottom: 24px;">
-      <h2 style="font-size: 24px; font-weight: 700; color: #FFFFFF; margin-bottom: 8px;">Ready to share securely?</h2>
-      <p style="font-size: 14px; color: var(--text-secondary); max-width: 460px; margin: 0 auto 20px auto;">
-        No account required. Your secret is encrypted before it ever leaves your browser buffer.
-      </p>
-      <a href="/create" class="btn-primary-solid" style="display: inline-flex; width: auto; padding: 12px 32px; font-size: 14.5px; text-decoration: none;">
-        <span>Create Secure Vault Now →</span>
-      </a>
-    </div>
-
+    </div><!-- /hero-wrapper -->
   </main>
 
-  <!-- Premium Cybersecurity Footer -->
-  <footer class="app-footer">
-    <div class="footer-inner">
-      <div class="footer-features-strip">
-        <span>Protected by AES-256-GCM</span>
-        <span class="footer-separator">•</span>
-        <span>Zero Plaintext Storage</span>
-        <span class="footer-separator">•</span>
-        <span>Automatic Destruction</span>
-      </div>
-      <div class="footer-copy" style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;">
-        <span>Ephemeral Secret Vault • Production-Grade Security Service</span>
-        <span>•</span>
-        <a href="/test-center" style="color:var(--text-muted);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--cyan)'" onmouseout="this.style.color='var(--text-muted)'">Test Center</a>
-        <span>•</span>
-        <a href="/benchmark" style="color:var(--text-muted);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--cyan)'" onmouseout="this.style.color='var(--text-muted)'">Benchmark</a>
-      </div>
-    </div>
-  </footer>
-
-  <!-- Enterprise Sign-In Modal (Zero-Knowledge Explanation) -->
-  <div id="signin-modal" class="signin-modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="signin-modal-title">
-    <div class="signin-modal-dialog">
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(40,117,255,0.15); border: 1px solid rgba(40,117,255,0.3); display: flex; align-items: center; justify-content: center; color: var(--cyan);">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-          </div>
-          <div>
-            <h3 id="signin-modal-title" style="font-size: 16px; font-weight: 700; color: #FFFFFF;">Zero-Knowledge Access</h3>
-            <span style="font-size: 11px; color: var(--text-muted);">No Credentials Stored on Servers</span>
-          </div>
-        </div>
-        <button type="button" id="btn-close-signin" style="background: none; border: none; color: var(--text-muted); font-size: 18px; cursor: pointer; padding: 4px;">✕</button>
-      </div>
-
-      <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.55; margin-bottom: 20px;">
-        Ephemeral Secret Vault requires <strong>no account or password</strong> to create and share secure vaults. For enterprise teams requiring centralized API keys or SAML SSO, connect with your security workspace:
-      </p>
-
-      <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px;">
-        <a href="/create" class="btn-primary-solid" style="text-decoration: none; justify-content: center; height: 40px;">
-          <span>Continue Anonymously (Zero-Trace) →</span>
-        </a>
-        <a href="/security" class="btn-secondary-neutral" style="text-decoration: none; justify-content: center; height: 40px;">
-          <span>Explore Architecture &amp; Threat Model</span>
-        </a>
-      </div>
-
-      <div style="font-size: 11px; color: var(--text-muted); text-align: center;">
-        End-to-end encrypted with authenticated AES-256-GCM.
-      </div>
-    </div>
+  <!-- Toast -->
+  <div id="toast" role="alert" aria-live="polite">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    <span id="toast-message"></span>
   </div>
 
   <script>
-    // Theme toggle interaction
-    const themeBtn = document.getElementById('theme-toggle');
-    if (themeBtn) {
-      themeBtn.addEventListener('click', () => {
-        document.body.classList.toggle('light-theme');
-      });
-    }
+    // Theme toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon   = document.getElementById('theme-icon');
+    const saved = localStorage.getItem('vault_theme');
+    if (saved === 'light') { document.body.classList.add('light-theme'); }
 
-    // Mobile navigation toggle
+    function setThemeIcon(isLight) {
+      themeIcon.innerHTML = isLight
+        ? '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>'
+        : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+    }
+    setThemeIcon(document.body.classList.contains('light-theme'));
+
+    themeToggle.addEventListener('click', () => {
+      const isLight = document.body.classList.toggle('light-theme');
+      localStorage.setItem('vault_theme', isLight ? 'light' : 'dark');
+      setThemeIcon(isLight);
+    });
+
+    // Mobile nav
     const mobileToggle = document.getElementById('mobile-toggle');
     const mobileDrawer = document.getElementById('mobile-drawer');
-    if (mobileToggle && mobileDrawer) {
-      mobileToggle.addEventListener('click', () => {
-        mobileDrawer.classList.toggle('open');
-      });
-    }
-
-    // Sign in modal toggle
-    const btnSignIn = document.getElementById('btn-signin-trigger');
-    const signinModal = document.getElementById('signin-modal');
-    const btnCloseSignIn = document.getElementById('btn-close-signin');
-    if (btnSignIn && signinModal && btnCloseSignIn) {
-      btnSignIn.addEventListener('click', () => {
-        signinModal.classList.remove('hidden');
-      });
-      btnCloseSignIn.addEventListener('click', () => {
-        signinModal.classList.add('hidden');
-      });
-      signinModal.addEventListener('click', (e) => {
-        if (e.target === signinModal) signinModal.classList.add('hidden');
-      });
-    }
+    mobileToggle.addEventListener('click', () => {
+      mobileDrawer.classList.toggle('open');
+    });
   </script>
 </body>
 </html>
