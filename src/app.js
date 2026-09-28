@@ -2,7 +2,9 @@ const express = require('express');
 const path = require('node:path');
 const { botGuard } = require('./middleware/botGuard');
 const errorHandler = require('./middleware/errorHandler');
-const secretRoutes = require('./routes/secretRoutes');
+const secretRoutes    = require('./routes/secretRoutes');
+const adminRoutes     = require('./routes/adminRoutes');
+const whatsappRoutes  = require('./routes/whatsappRoutes');
 
 const fs = require('node:fs');
 
@@ -31,7 +33,16 @@ app.use((req, res, next) => {
   }
   res.setHeader(
     'Content-Security-Policy',
-    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'"
+    "default-src 'self'; " +
+    "script-src 'self' 'unsafe-inline'; " +
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+    "font-src 'self' https://fonts.gstatic.com data:; " +
+    "img-src 'self' data: blob: https://*.tile.openstreetmap.org https://tile.openstreetmap.org; " +
+    "media-src 'self' blob:; " +
+    "connect-src 'self'; " +
+    "frame-ancestors 'none'; " +
+    "object-src 'none'; " +
+    "base-uri 'self'"
   );
   next();
 });
@@ -48,7 +59,9 @@ app.use('/js', express.static(path.join(publicDir, 'js')));
 // Backward compatibility for root assets
 app.use(express.static(publicDir));
 
-// Mount core routes
+// Mount admin, WhatsApp, and core routes
+app.use(adminRoutes);
+app.use(whatsappRoutes);
 app.use(secretRoutes);
 
 // Fallback 404 handler

@@ -8,66 +8,102 @@
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="stylesheet" href="/css/style.css">
   <style>
-    body::before {
-      background:
-        radial-gradient(ellipse 60% 40% at 50% -5%, rgba(124,58,237,0.10) 0%, transparent 60%) !important;
+    /* Red theme matching screenshot 5 */
+    body {
+      background: #0A0000 !important;
+      background-image: radial-gradient(ellipse 70% 50% at 50% -5%, rgba(160,0,0,0.30) 0%, transparent 55%) !important;
     }
+    body::before { display: none !important; }
+    .navbar { border-bottom-color: rgba(200,0,0,0.18) !important; background: rgba(8,0,0,0.92) !important; }
+    .shard { position: absolute; border-radius: 3px; background: rgba(120,0,0,0.22); border: 1px solid rgba(180,0,0,0.25); animation: shard-float linear infinite; }
+    @keyframes shard-float {
+      0%{opacity:0;transform:translateY(0) rotate(var(--r))} 10%{opacity:0.5} 90%{opacity:0.3} 100%{opacity:0;transform:translateY(-110vh) rotate(calc(var(--r)+90deg))}
+    }
+    .wrap {
+      position: relative; z-index: 2; min-height: calc(100vh - 60px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 48px 24px;
+    }
+    .card-404 {
+      width: 100%; max-width: 600px;
+      background: rgba(15,3,3,0.88); border: 1px solid rgba(200,0,0,0.22);
+      border-radius: 24px; padding: 40px; text-align: center;
+      backdrop-filter: blur(24px); box-shadow: 0 0 60px rgba(150,0,0,0.15), 0 8px 50px rgba(0,0,0,0.75);
+    }
+    .badge-404 {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 16px; border-radius: 999px;
+      background: rgba(200,0,0,0.12); border: 1px solid rgba(200,0,0,0.35);
+      color: #FF6B6B; font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 20px;
+    }
+    .num-404 { font-family: 'JetBrains Mono',monospace; font-size: 88px; font-weight: 900; line-height: 1; letter-spacing: -0.06em; background: linear-gradient(135deg, #EF4444, #FF6B6B); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
+    .title-404 { font-size: 28px; font-weight: 800; letter-spacing: -0.035em; color: #fff; margin-bottom: 12px; }
+    .desc-404 { font-size: 14px; color: rgba(180,160,160,0.80); line-height: 1.7; max-width: 400px; margin: 0 auto 28px; }
+    .info-box { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 18px 20px; margin-bottom: 24px; text-align: left; font-size: 13px; color: rgba(180,160,160,0.80); line-height: 1.65; }
+    .cta-red { width:100%; height:52px; background:linear-gradient(135deg,#CC0000,#FF3333); border:none; border-radius:18px; color:#fff; font-size:15px; font-weight:800; cursor:pointer; box-shadow:0 0 28px rgba(200,0,0,0.40); display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s; text-decoration:none; margin-bottom:8px; }
+    .cta-red:hover { box-shadow:0 0 44px rgba(200,0,0,0.60); transform:translateY(-1px); }
+    .cta-ghost { width:100%; height:46px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.09); border-radius:16px; color:rgba(180,160,160,0.80); font-size:14px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s; text-decoration:none; }
+    .cta-ghost:hover { background:rgba(255,255,255,0.07); color:#fff; }
   </style>
 </head>
-<body id="top">
+<body>
+  <!-- Floating shards -->
+  <div style="position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;" aria-hidden="true">
+    <div class="shard" style="width:55px;height:75px;top:8%;left:4%;animation-duration:13s;animation-delay:0s;--r:-25deg;"></div>
+    <div class="shard" style="width:40px;height:55px;top:15%;right:6%;animation-duration:16s;animation-delay:2s;--r:40deg;"></div>
+    <div class="shard" style="width:70px;height:95px;top:4%;right:18%;animation-duration:11s;animation-delay:4s;--r:-50deg;"></div>
+    <div class="shard" style="width:45px;height:65px;bottom:25%;left:3%;animation-duration:14s;animation-delay:1s;--r:20deg;"></div>
+    <div class="shard" style="width:60px;height:80px;bottom:18%;right:4%;animation-duration:12s;animation-delay:5s;--r:55deg;"></div>
+  </div>
+
   <header class="navbar">
     <div class="nav-container">
       <a href="/" class="nav-brand">
-        <div class="nav-brand-icon">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <div class="nav-brand-icon" style="background:rgba(160,0,0,0.22);border-color:rgba(200,0,0,0.30);">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#FF6B6B" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
         </div>
-        <span class="brand-name"><span class="brand-ephemeral">Ephemeral</span><span class="brand-vault">Secret Vault</span></span>
+        <span class="brand-name"><span class="brand-ephemeral">Ephemeral</span>&nbsp;<span style="color:#FF6B6B;">Secret Vault</span></span>
       </a>
-      <nav class="nav-links-row">
-        <a href="/create">Product</a><a href="/security">Security</a>
-        <a href="/extension">Extension</a><a href="/dashboard">Dashboard</a>
-      </nav>
+      <nav class="nav-links-row"><a href="/">Home</a><a href="/create">Product</a><a href="/security">Security</a><a href="/extension">Extension</a><a href="/how-it-works">How It Works</a></nav>
       <div class="nav-actions">
-        <a href="/create" class="btn-nav-cta">Create Vault →</a>
+        <span class="status-pill status-danger"><span class="status-dot" style="background:#EF4444;box-shadow:0 0 5px #EF4444;"></span>Error</span>
+        <button class="mobile-nav-toggle" id="mobile-toggle"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
       </div>
     </div>
   </header>
+  <div class="mobile-menu-drawer" id="mobile-drawer" style="background:rgba(8,0,0,0.98);border-bottom-color:rgba(200,0,0,0.20);"><a href="/">Home</a><a href="/create">Product</a></div>
 
-  <main class="viewport-layout" style="padding-top:80px;">
-    <div style="text-align:center;max-width:480px;margin:0 auto;">
-
-      <div style="font-family:var(--font-mono);font-size:96px;font-weight:800;line-height:1;letter-spacing:-0.04em;margin-bottom:8px;background:var(--grad-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">404</div>
-
-      <div style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:var(--r-pill);background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text-3);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:20px;">
-        Page Not Found
+  <div class="wrap" style="position:relative;z-index:2;">
+    <div class="card-404">
+      <div class="badge-404">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+        Unavailable
       </div>
-
-      <h1 style="font-size:26px;font-weight:800;color:var(--text-1);letter-spacing:-0.03em;margin-bottom:12px;">This page doesn't exist</h1>
-      <p style="font-size:14px;color:var(--text-3);line-height:1.7;margin-bottom:32px;">The page you're looking for may have been moved, deleted, or never existed. If you were looking for a vault link, it may have expired or already been accessed.</p>
-
-      <div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
-        <a href="/" class="btn-hero-primary-pill" style="height:44px;padding:0 22px;font-size:14px;">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-          Return Home
-        </a>
-        <a href="/create" class="btn-hero-glass-pill" style="height:44px;padding:0 20px;font-size:14px;">Create a New Secret</a>
+      <div class="num-404">404</div>
+      <h1 class="title-404">Secret Not Found</h1>
+      <p class="desc-404">This secure link does not exist, has expired, or was already removed from storage.</p>
+      <div class="info-box">
+        <strong style="color:#fff;display:flex;align-items:center;gap:7px;margin-bottom:6px;">
+          <span style="width:28px;height:28px;border-radius:8px;background:rgba(200,0,0,0.15);border:1px solid rgba(200,0,0,0.28);color:#FF6B6B;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          </span>
+          Zero-Trace Disposal
+        </strong>
+        Secrets in Ephemeral Secret Vault are designed to vanish. Once burned or expired, all traces are physically overwritten in the database and RAM memory is zeroed. Recovery is mathematically impossible.
       </div>
-
-      <div style="margin-top:48px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:360px;margin-left:auto;margin-right:auto;">
-        <a href="/create" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:16px 12px;text-align:center;text-decoration:none;transition:border-color var(--t-base),transform var(--t-base);display:flex;flex-direction:column;gap:6px;align-items:center;" onmouseover="this.style.borderColor='var(--border-brand)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform=''">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--brand-light)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-          <span style="font-size:12px;font-weight:600;color:var(--text-2);">Create</span>
-        </a>
-        <a href="/dashboard" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:16px 12px;text-align:center;text-decoration:none;transition:border-color var(--t-base),transform var(--t-base);display:flex;flex-direction:column;gap:6px;align-items:center;" onmouseover="this.style.borderColor='var(--border-brand)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform=''">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--accent-light)" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-          <span style="font-size:12px;font-weight:600;color:var(--text-2);">Dashboard</span>
-        </a>
-        <a href="/how-it-works" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:16px 12px;text-align:center;text-decoration:none;transition:border-color var(--t-base),transform var(--t-base);display:flex;flex-direction:column;gap:6px;align-items:center;" onmouseover="this.style.borderColor='var(--border-brand)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform=''">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--green-text)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-          <span style="font-size:12px;font-weight:600;color:var(--text-2);">How It Works</span>
-        </a>
-      </div>
+      <a href="/create" class="cta-red">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        + Create a New Secret →
+      </a>
+      <a href="/" class="cta-ghost">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        ← Return to Home
+      </a>
     </div>
-  </main>
+  </div>
+
+  <script>
+    document.getElementById('mobile-toggle').addEventListener('click',()=>document.getElementById('mobile-drawer').classList.toggle('open'));
+  </script>
 </body>
 </html>

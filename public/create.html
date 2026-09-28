@@ -5,830 +5,1142 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow, noarchive">
   <meta name="referrer" content="no-referrer">
-  <meta property="og:title" content="Create Secret — Ephemeral Secret Vault">
-  <meta property="og:description" content="Share sensitive credentials, keys, or files securely. Encrypted at rest with AES-256-GCM and automatically destroyed after viewing.">
   <title>Create Secret — Ephemeral Secret Vault</title>
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="stylesheet" href="/css/style.css">
   <style>
-    /* Page-specific additions */
-    .create-page-wrap {
-      width: 100%;
-      max-width: 1140px;
-      margin: 0 auto;
-      padding: 32px 24px 80px;
+    /* Page layout */
+    body { overflow-y: auto; }
+
+    .create-page-outer {
+      min-height: calc(100vh - var(--nav-h));
+      padding: 40px 28px 80px;
+      max-width: 1120px; margin: 0 auto;
       display: grid;
-      grid-template-columns: 1fr 320px;
-      gap: 24px;
-      align-items: start;
+      grid-template-columns: 1fr 300px;
+      gap: 24px; align-items: start;
     }
-    .create-right-rail { display: flex; flex-direction: column; gap: 16px; }
 
-    .reveal-mode-toggle-group {
-      display: flex; gap: 4px;
+    /* ── Stepper — screenshot 3 top ── */
+    .stepper-row {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 0; margin-bottom: 28px;
+    }
+    .step-col {
+      display: flex; align-items: center; gap: 12px;
+      padding: 16px 20px;
       background: rgba(255,255,255,0.03);
-      border: 1px solid var(--border);
-      border-radius: var(--r-lg); padding: 3px;
+      border: 1px solid var(--border-glass);
+      position: relative; transition: background var(--t-base);
     }
-    .reveal-mode-btn {
-      flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;
-      padding: 7px 10px; border-radius: var(--r-md);
-      font-size: 12px; font-weight: 600; color: var(--text-3);
-      background: transparent; border: none; cursor: pointer; transition: all var(--t-base);
-    }
-    .reveal-mode-btn.active {
-      background: var(--bg-elevated); color: var(--text-1);
-      border: 1px solid var(--border); box-shadow: var(--shadow-xs);
-    }
+    .step-col:first-child { border-radius: var(--r-xl) 0 0 var(--r-xl); }
+    .step-col:last-child  { border-radius: 0 var(--r-xl) var(--r-xl) 0; }
+    .step-col + .step-col { border-left: none; }
 
-    .countdown-bar-wrapper {
-      background: rgba(255,255,255,0.02);
-      border: 1px solid var(--border);
-      border-radius: var(--r-lg); padding: 12px 14px;
-      margin-bottom: 16px;
+    .step-circle {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800; flex-shrink: 0;
+      background: rgba(255,255,255,0.07); border: 1px solid var(--border-glass);
+      color: var(--t3); transition: all var(--t-base);
     }
-    .countdown-meta-row {
-      display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;
+    .step-col.active  .step-circle {
+      background: linear-gradient(135deg, var(--purple), var(--cyan));
+      border-color: var(--purple); color: #fff;
+      box-shadow: var(--glow-purple);
     }
-    .timer-progress-track {
-      height: 3px; background: rgba(255,255,255,0.06); border-radius: var(--r-pill); overflow: hidden;
+    .step-col.completed .step-circle {
+      background: linear-gradient(135deg, var(--purple), var(--cyan));
+      border-color: var(--cyan); color: #fff;
+      box-shadow: var(--glow-cyan);
     }
-    .timer-progress-fill {
-      height: 100%; border-radius: var(--r-pill); transition: width 1s linear;
-    }
+    .step-col.active  { background: rgba(124,58,237,0.06); border-color: var(--border-brand); }
+    .step-col.completed { background: rgba(0,212,255,0.04); border-color: var(--border-cyan); }
+    .step-title { font-size: 13px; font-weight: 700; color: var(--t3); }
+    .step-col.active .step-title, .step-col.completed .step-title { color: var(--t1); }
+    .step-sub { font-size: 11px; color: var(--t4); margin-top: 1px; }
+    .step-col.active .step-sub { color: var(--t3); }
 
-    .result-link-row {
-      display: flex; align-items: center; gap: 8px;
-      background: rgba(255,255,255,0.02);
-      border: 1px solid var(--border-medium);
-      border-radius: var(--r-lg); padding: 8px 12px;
+    /* ── Mode tabs — screenshot 3 ── */
+    .mode-tabs {
+      display: grid; grid-template-columns: 1fr 1fr;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--r-xl); padding: 4px;
+      margin-bottom: 24px; gap: 4px;
     }
-
-    .decrypted-formats-row {
-      display: flex; gap: 4px; margin-top: 10px; flex-wrap: wrap;
-    }
-    .decrypted-format-btn {
-      display: flex; align-items: center; gap: 4px;
-      padding: 5px 10px; border-radius: var(--r-md);
-      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
-      color: var(--text-3); font-size: 11px; font-weight: 600;
-      cursor: pointer; transition: all var(--t-fast);
-    }
-    .decrypted-format-btn.active { background: var(--brand-dim); border-color: var(--border-brand); color: var(--brand-light); }
-    .decrypted-format-btn:hover  { border-color: var(--border-medium); color: var(--text-1); }
-
-    .share-platform-row {
-      display: grid; grid-template-columns: repeat(7,1fr); gap: 6px; margin-top: 12px;
-    }
-    .share-plat-btn {
-      display: flex; flex-direction: column; align-items: center; gap: 3px;
-      padding: 8px 4px; border-radius: var(--r-md);
-      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-      cursor: pointer; font-size: 9px; color: var(--text-3);
+    .mode-tab {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 12px 16px; border-radius: var(--r-lg);
+      font-size: 13.5px; font-weight: 600; color: var(--t3);
+      background: transparent; border: none; cursor: pointer;
       transition: all var(--t-base);
     }
-    .share-plat-btn:hover { background: var(--bg-elevated); border-color: var(--border-medium); color: var(--text-1); transform: translateY(-1px); }
-
-    .qr-container { display: flex; flex-direction: column; align-items: center; padding: 16px 0; }
-    .qr-frame { background: #fff; padding: 8px; border-radius: var(--r-md); }
-
-    .result-meta-strip {
-      display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px;
+    .mode-tab.active {
+      background: var(--grad-btn); color: #fff;
+      box-shadow: var(--shadow-btn);
     }
-    .result-meta-item {
+    .mode-tab:not(.active):hover { color: var(--t1); background: rgba(255,255,255,0.05); }
+
+    /* ── Secret textarea ── */
+    .secret-area-wrap { position: relative; }
+    .secret-textarea-new {
+      width: 100%; min-height: 150px; resize: vertical;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--r-xl); padding: 16px;
+      color: var(--t1); font-family: var(--mono); font-size: 13.5px; line-height: 1.7;
+      outline: none; transition: border-color var(--t-base), box-shadow var(--t-base);
+    }
+    .secret-textarea-new::placeholder { color: var(--t4); font-family: var(--font); }
+    .secret-textarea-new:focus {
+      border-color: var(--purple);
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.15), 0 0 16px rgba(124,58,237,0.10);
+    }
+    .textarea-actions {
+      display: flex; align-items: center; gap: 8px;
+      position: absolute; top: 10px; right: 12px;
+    }
+    .textarea-action-btn {
       display: flex; align-items: center; gap: 4px;
-      font-size: 11px; color: var(--text-3);
-      padding: 4px 8px; border-radius: var(--r-pill);
-      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      padding: 4px 10px; border-radius: var(--r-md);
+      background: rgba(255,255,255,0.06); border: 1px solid var(--border-glass);
+      color: var(--t2); font-size: 11px; font-weight: 600;
+      cursor: pointer; transition: all var(--t-fast);
     }
+    .textarea-action-btn:hover { color: var(--t1); border-color: var(--border-brand); }
 
-    .zk-active-notice {
-      display: flex; align-items: center; gap: 6px;
-      font-size: 11px; color: var(--accent-light);
-      padding: 8px 12px; border-radius: var(--r-md);
-      background: var(--accent-dim); border: 1px solid var(--border-accent);
-      margin-top: 8px;
+    /* ── 3-col config row ── */
+    .config-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+    .config-item-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--t3); margin-bottom: 7px;
+      display: flex; align-items: center; gap: 5px;
     }
+    .select-with-icon {
+      position: relative; display: flex; align-items: center;
+    }
+    .select-prefix-icon {
+      position: absolute; left: 12px; color: var(--cyan-l); pointer-events: none; z-index: 1;
+    }
+    .select-new {
+      width: 100%; appearance: none;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border-glass);
+      border-radius: var(--r-xl); color: var(--t1); font-size: 13.5px;
+      padding: 0 36px 0 40px; height: 48px; outline: none;
+      cursor: pointer; transition: border-color var(--t-base);
+    }
+    .select-new:focus { border-color: var(--purple); }
+    .select-arrow {
+      position: absolute; right: 12px; pointer-events: none;
+      color: var(--t3);
+    }
+    .select-new option { background: #0D0A26; }
+    .select-helper { font-size: 11.5px; color: var(--t3); margin-top: 5px; }
 
-    /* Slide to reveal */
-    #slide-reveal-widget {
-      background: rgba(255,255,255,0.02); border: 1px solid var(--border);
-      border-radius: var(--r-lg); height: 46px; position: relative;
-      display: flex; align-items: center; padding: 0 4px; user-select: none; margin-top: 10px;
+    /* ZK card — screenshot 3 */
+    .zk-card {
+      display: flex; align-items: center; gap: 16px;
+      background: linear-gradient(135deg, rgba(0,212,255,0.06) 0%, rgba(124,58,237,0.06) 100%);
+      border: 1px solid rgba(0,212,255,0.22);
+      border-radius: var(--r-xl); padding: 16px 18px; margin-bottom: 20px;
     }
-    #slide-thumb {
-      position: absolute; left: 4px; width: 38px; height: 38px;
-      background: var(--brand); border-radius: var(--r-md);
+    .zk-icon {
+      width: 44px; height: 44px; border-radius: var(--r-lg); flex-shrink: 0;
+      background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(124,58,237,0.15));
+      border: 1px solid rgba(0,212,255,0.30);
       display: flex; align-items: center; justify-content: center;
-      color: #fff; cursor: grab; box-shadow: var(--shadow-brand);
+      color: var(--cyan-l);
+    }
+    .zk-badge {
+      display: inline-flex; padding: 2px 8px; border-radius: var(--r-pill);
+      background: rgba(0,212,255,0.12); border: 1px solid var(--border-cyan);
+      color: var(--cyan-l); font-size: 10px; font-weight: 700;
+      letter-spacing: 0.05em; margin-left: 8px;
     }
 
-    .confidential-portal-badge {
+    /* Security score — screenshot 3 */
+    .security-score-wrap {
+      margin-bottom: 20px;
+    }
+    .score-header-row {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
+    }
+    .score-label { font-size: 11px; font-weight: 800; letter-spacing: 0.10em; text-transform: uppercase; color: var(--t3); }
+    .score-val-strong { font-size: 13px; font-weight: 800; color: var(--green); }
+    .score-bar-track {
+      height: 6px; background: rgba(255,255,255,0.07); border-radius: 999px; overflow: hidden; margin-bottom: 12px;
+    }
+    .score-bar-fill {
+      height: 100%; border-radius: 999px;
+      background: linear-gradient(90deg, var(--purple) 0%, var(--cyan) 100%);
+      box-shadow: 0 0 8px var(--cyan); transition: width 0.5s var(--ease);
+    }
+    .score-checks {
+      display: flex; flex-wrap: wrap; gap: 12px;
+    }
+    .score-check {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 12px; color: var(--t2);
+    }
+    .score-check-dot {
+      width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--purple), var(--cyan));
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* Submit button — full gradient matching screenshot */
+    .submit-btn-gradient {
+      width: 100%; height: 56px;
+      background: linear-gradient(90deg, #7C3AED 0%, #4F46E5 40%, #00D4FF 100%);
+      border: none; border-radius: var(--r-2xl);
+      color: #fff; font-size: 16px; font-weight: 800;
+      cursor: pointer; letter-spacing: -0.01em;
+      box-shadow: 0 0 40px rgba(124,58,237,0.55);
+      transition: all var(--t-base);
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .submit-btn-gradient:hover { box-shadow: 0 0 60px rgba(124,58,237,0.70); transform: translateY(-1px); }
+    .submit-btn-gradient:active { transform: translateY(0); }
+    .submit-btn-gradient:disabled { opacity: 0.50; cursor: not-allowed; transform: none; }
+
+    /* Trust strip below button — screenshot 3 */
+    .trust-row { display: flex; align-items: center; justify-content: center; gap: 20px; margin-top: 14px; font-size: 12px; color: var(--t4); flex-wrap: wrap; }
+    .trust-row-item { display: flex; align-items: center; gap: 5px; }
+    .trust-sep { opacity: 0.20; }
+
+    /* ── ACCESS POLICY sidebar — screenshot 3 right ── */
+    .access-policy-card {
+      background: var(--bg-card); border: 1px solid var(--border-glass);
+      border-radius: var(--r-2xl); padding: 24px;
+      backdrop-filter: blur(24px); position: sticky; top: 80px;
+    }
+    .ap-header {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
+      padding-bottom: 16px; border-bottom: 1px solid var(--border);
+    }
+    .ap-icon {
+      width: 36px; height: 36px; border-radius: var(--r-md);
+      background: var(--purple-d); border: 1px solid var(--border-brand);
+      color: var(--purple-l); display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .ap-title { font-size: 15px; font-weight: 800; color: var(--t1); }
+    .ap-sub   { font-size: 11.5px; color: var(--t3); margin-top: 2px; }
+
+    .ap-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .ap-row:last-child { border-bottom: none; }
+    .ap-row-left { display: flex; align-items: center; gap: 10px; }
+    .ap-row-icon { width: 28px; height: 28px; border-radius: var(--r-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .ap-row-title { font-size: 13px; font-weight: 600; color: var(--t1); }
+    .ap-row-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+    /* Select in AP sidebar */
+    .ap-select {
+      appearance: none; background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-glass); border-radius: var(--r-md);
+      color: var(--t2); font-size: 12.5px; padding: 5px 24px 5px 10px;
+      cursor: pointer; outline: none; width: 100px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 24 24' fill='none' stroke='%236B7BA4' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 8px center;
+    }
+    .ap-select option { background: #0D0A26; }
+
+    /* ── RESULT SECTION — screenshots 2 ── */
+    .result-outer {
+      padding: 24px 0;
+    }
+    /* Stepper completed state for result */
+    .result-stepper { margin-bottom: 24px; }
+
+    .result-link-section {
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass);
+      border-radius: var(--r-2xl); padding: 20px; margin-bottom: 16px;
+    }
+    .result-link-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .result-link-icon {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--cyan-d); border: 1px solid var(--border-cyan);
+      color: var(--cyan-l); display: flex; align-items: center; justify-content: center;
+    }
+    .result-link-title { font-size: 15px; font-weight: 800; color: var(--t1); }
+    .result-link-sub { font-size: 12px; color: var(--t3); margin-bottom: 14px; }
+
+    .result-link-box {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(0,0,0,0.30); border: 1px solid rgba(0,212,255,0.20);
+      border-radius: var(--r-xl); padding: 12px 16px; overflow: hidden;
+    }
+    .result-link-box svg { color: var(--cyan-l); flex-shrink: 0; }
+    .result-link-text {
+      flex: 1; background: none; border: none; outline: none;
+      color: var(--cyan-l); font-family: var(--mono); font-size: 13px;
+      min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .result-link-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+    .result-copy-btn {
       display: inline-flex; align-items: center; gap: 6px;
-      font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
-      text-transform: uppercase; padding: 4px 12px; border-radius: var(--r-pill);
-      background: var(--brand-dim); border: 1px solid var(--border-brand);
-      color: var(--brand-light); margin-bottom: 14px;
+      padding: 0 18px; height: 38px;
+      background: var(--grad-btn); color: #fff;
+      font-size: 13px; font-weight: 700; border: none; border-radius: var(--r-lg);
+      cursor: pointer; box-shadow: var(--shadow-btn); white-space: nowrap;
+      transition: all var(--t-base);
     }
+    .result-copy-btn:hover { box-shadow: 0 0 30px rgba(124,58,237,0.60); }
 
-    .reveal-shield-crest {
-      width: 64px; height: 64px; border-radius: var(--r-2xl);
-      background: var(--brand-dim); border: 1px solid var(--border-brand);
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 16px; box-shadow: var(--shadow-brand);
-      animation: float-y 4s ease-in-out infinite;
-      color: var(--brand-light);
+    .result-open-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 0 14px; height: 38px;
+      background: rgba(255,255,255,0.06); color: var(--t2);
+      border: 1px solid var(--border-glass); border-radius: var(--r-lg);
+      font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none;
+      transition: all var(--t-base); white-space: nowrap;
     }
+    .result-open-btn:hover { background: rgba(255,255,255,0.10); color: var(--t1); }
 
-    .btn-secondary-neutral {
-      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-      padding: 0 16px; height: 38px;
-      background: rgba(255,255,255,0.05); color: var(--text-2);
-      border: 1px solid var(--border); border-radius: var(--r-md);
-      font-size: 13px; font-weight: 600; cursor: pointer;
-      transition: all var(--t-base); text-decoration: none;
+    /* Share platforms row — screenshot 2 */
+    .share-section {
+      background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass);
+      border-radius: var(--r-2xl); padding: 18px; margin-bottom: 16px;
     }
-    .btn-secondary-neutral:hover { background: rgba(255,255,255,0.08); color: var(--text-1); }
+    .share-header { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+    .share-title  { font-size: 14px; font-weight: 700; color: var(--t1); }
+    .share-sub    { font-size: 12px; color: var(--t3); margin-bottom: 14px; }
 
-    .decrypted-alert-banner {
-      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
-      background: var(--red-dim); border: 1px solid var(--red-border);
-      border-radius: var(--r-lg); padding: 14px 16px; margin-bottom: 16px;
+    .share-platforms {
+      display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px;
     }
-
-    .ram-security-box {
-      display: flex; align-items: center; justify-content: space-between; gap: 12px;
-      background: rgba(124,58,237,0.06); border: 1px solid var(--border-brand);
-      border-radius: var(--r-lg); padding: 12px 14px; margin-top: 14px;
+    .share-btn {
+      display: flex; flex-direction: column; align-items: center; gap: 5px;
+      padding: 14px 8px; border-radius: var(--r-xl);
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border-glass);
+      cursor: pointer; font-size: 11px; font-weight: 600; color: var(--t2);
+      transition: all var(--t-base);
     }
+    .share-btn:hover { background: var(--bg-elevated); border-color: var(--border-brand); color: var(--t1); transform: translateY(-2px); }
 
-    .btn-wipe-ram-red {
-      background: var(--red-dim); color: var(--red-text); border: 1px solid var(--red-border);
-      border-radius: var(--r-md); padding: 6px 12px; font-size: 11px; font-weight: 700;
-      cursor: pointer; white-space: nowrap; transition: all var(--t-base);
+    /* Metadata row — screenshot 2 */
+    .meta-row {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px;
     }
-    .btn-wipe-ram-red:hover { background: rgba(239,68,68,0.20); }
-
-    .decrypted-content-text {
-      font-family: var(--font-mono); font-size: 13px; line-height: 1.7;
-      background: rgba(255,255,255,0.02); border: 1px solid var(--border);
-      border-radius: var(--r-lg); padding: 14px; min-height: 100px; max-height: 320px;
-      overflow-y: auto; color: var(--text-1); white-space: pre-wrap; word-break: break-all;
-      outline: none;
+    .meta-card {
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass);
+      border-radius: var(--r-xl); padding: 14px;
+      display: flex; align-items: center; gap: 10px;
     }
+    .meta-card-icon { flex-shrink: 0; }
+    .meta-card-label { font-size: 11px; color: var(--t3); font-weight: 500; margin-bottom: 4px; }
+    .meta-card-val   { font-size: 14px; font-weight: 800; color: var(--t1); line-height: 1.2; }
+    .meta-card-sub   { font-size: 10.5px; color: var(--t3); margin-top: 2px; }
 
-    .svg-icon { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    .spinner { animation: spin 0.8s linear infinite; }
-
-    .destructive-warning-box {
-      display: flex; align-items: flex-start; gap: 8px;
-      font-size: 12px; color: var(--text-3); line-height: 1.5;
-      padding: 10px 12px; border-radius: var(--r-md);
-      background: var(--red-dim); border: 1px solid var(--red-border);
+    /* Time remaining bar — screenshot 2 */
+    .time-remaining-row {
+      display: flex; align-items: center; gap: 14px;
+      background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass);
+      border-radius: var(--r-xl); padding: 14px 18px; margin-bottom: 10px;
     }
+    .time-icon {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--cyan-d); border: 1px solid var(--border-cyan);
+      color: var(--cyan-l); display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; animation: glow-pulse 3s ease-in-out infinite;
+    }
+    .time-label { font-size: 13px; font-weight: 700; color: var(--t1); margin-bottom: 6px; }
+    .time-bar-wrap { flex: 1; }
+    .time-bar-track { height: 7px; background: rgba(255,255,255,0.07); border-radius: 999px; overflow: hidden; }
+    .time-bar-fill  {
+      height: 100%; border-radius: 999px;
+      background: linear-gradient(90deg, var(--purple) 0%, var(--cyan) 100%);
+      box-shadow: 0 0 10px var(--cyan);
+      transition: width 1s linear;
+    }
+    .countdown-display {
+      font-family: var(--mono); font-size: 28px; font-weight: 800; color: var(--t1);
+      display: flex; align-items: flex-end; gap: 4px; flex-shrink: 0;
+    }
+    .countdown-seg { display: flex; flex-direction: column; align-items: center; }
+    .countdown-num { font-size: 32px; line-height: 1; }
+    .countdown-lbl { font-size: 10px; color: var(--t3); font-weight: 500; font-family: var(--font); }
+    .countdown-sep { color: var(--purple-l); font-size: 28px; margin-bottom: 14px; }
 
-    .passphrase-hint-banner { font-size: 12px; color: var(--accent-light); }
+    /* Destroy vault row — screenshot 2 bottom */
+    .destroy-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px; border-radius: var(--r-xl);
+      background: rgba(244,67,54,0.07); border: 1px solid rgba(244,67,54,0.25);
+      cursor: pointer; transition: all var(--t-base); margin-bottom: 8px;
+    }
+    .destroy-row:hover { background: rgba(244,67,54,0.14); border-color: rgba(244,67,54,0.45); }
+    .destroy-row-left { display: flex; align-items: center; gap: 12px; }
+    .destroy-icon-box {
+      width: 34px; height: 34px; border-radius: var(--r-md);
+      background: rgba(244,67,54,0.15); border: 1px solid rgba(244,67,54,0.35);
+      color: #FF6B6B; display: flex; align-items: center; justify-content: center;
+    }
+    .destroy-title { font-size: 14px; font-weight: 700; color: #FF6B6B; }
+    .destroy-sub   { font-size: 11.5px; color: var(--t3); margin-top: 2px; }
+
+    /* Create another link */
+    .create-another {
+      text-align: center; margin-top: 16px;
+    }
+    .create-another a {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--cyan-l); font-size: 14px; font-weight: 600;
+      text-decoration: none; padding: 8px 16px; border-radius: var(--r-pill);
+      transition: background var(--t-base);
+    }
+    .create-another a:hover { background: var(--cyan-d); }
+
+    /* Passphrase with eye */
+    .passphrase-wrap { position: relative; }
+    .passphrase-wrap .input { padding-right: 44px; }
+    .pass-eye-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--t3); padding: 4px; }
+    .pass-eye-btn:hover { color: var(--t1); }
 
     @media (max-width: 900px) {
-      .create-page-wrap { grid-template-columns: 1fr; }
-      .create-right-rail { display: none; }
+      .create-page-outer { grid-template-columns: 1fr; }
+      .ap-sidebar { display: none; }
+      .meta-row { grid-template-columns: 1fr 1fr; }
+      .config-grid-3 { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 600px) {
-      .share-platform-row { grid-template-columns: repeat(4,1fr); }
-      .settings-grid-3col { grid-template-columns: 1fr 1fr; }
+      .stepper-row { grid-template-columns: repeat(3, 1fr); }
+      .share-platforms { grid-template-columns: repeat(3, 1fr); }
+      .meta-row { grid-template-columns: 1fr 1fr; }
+      .config-grid-3 { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body id="top">
 
-  <!-- NAVBAR -->
-  <header class="navbar">
-    <div class="nav-container">
-      <a href="/" class="nav-brand" title="Ephemeral Secret Vault">
-        <div class="nav-brand-icon">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-        </div>
-        <span class="brand-name"><span class="brand-ephemeral">Ephemeral</span><span class="brand-vault">Secret Vault</span></span>
-      </a>
-      <nav class="nav-links-row" aria-label="Main navigation">
-        <a href="/" class="active">Home</a>
-        <a href="/security">Security</a>
-        <a href="/extension">Extension</a>
-        <a href="/how-it-works">How It Works</a>
-        <a href="/dashboard">Dashboard</a>
-      </nav>
-      <div class="nav-actions">
-        <span class="nav-badge"><span class="dot"></span>AES-256-GCM</span>
-        <button type="button" class="btn-icon-plain" id="theme-toggle" aria-label="Toggle theme">
-          <svg id="theme-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-        </button>
-        <a href="/create" class="btn-nav-cta">Create Vault →</a>
-        <button type="button" class="mobile-nav-toggle" id="mobile-toggle" aria-label="Open menu">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-        </button>
+<!-- ═══ NAVBAR ═══════════════════════════════════════════════════ -->
+<header class="navbar">
+  <div class="nav-container">
+    <a href="/" class="nav-brand">
+      <div class="nav-brand-icon">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
       </div>
+      <span class="brand-name"><span class="brand-ephemeral">Ephemeral</span>&nbsp;<span class="brand-vault">Secret Vault</span></span>
+    </a>
+    <nav class="nav-links-row">
+      <a href="/" class="active">Home</a>
+      <a href="/security">Security</a>
+      <a href="/extension">Extension</a>
+      <a href="/how-it-works">How It Works</a>
+      <a href="/dashboard">Dashboard</a>
+    </nav>
+    <div class="nav-actions">
+      <span class="nav-badge"><span class="dot"></span>AES-256-GCM</span>
+      <button class="btn-icon-plain" id="theme-toggle" aria-label="Toggle theme">
+        <svg id="theme-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </button>
+      <a href="/create" class="btn-nav-cta">Create Vault →</a>
+      <button class="mobile-nav-toggle" id="mobile-toggle" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
     </div>
-  </header>
-
-  <div class="mobile-menu-drawer" id="mobile-drawer">
-    <a href="/" class="active">Home</a>
-    <a href="/security">Security</a>
-    <a href="/extension">Extension</a>
-    <a href="/how-it-works">How It Works</a>
-    <a href="/dashboard">Dashboard</a>
   </div>
+</header>
+<div class="mobile-menu-drawer" id="mobile-drawer">
+  <a href="/" class="active">Home</a><a href="/security">Security</a>
+  <a href="/extension">Extension</a><a href="/how-it-works">How It Works</a><a href="/dashboard">Dashboard</a>
+</div>
 
-  <!-- MAIN -->
-  <main>
-    <div class="create-page-wrap">
+<!-- ═══ MAIN ══════════════════════════════════════════════════════ -->
+<main>
+<div class="create-page-outer">
 
-      <!-- LEFT: Main creation card -->
-      <div>
-        <div class="card" id="main-creation-card">
+  <!-- LEFT: Form card -->
+  <div>
+    <div class="card" id="main-creation-card">
 
-          <!-- Stepper -->
-          <div class="stepper-header-row" id="stepper-header-row">
-            <div class="step-node-item active" id="step-node-1">
-              <div class="step-node-badge" id="step-badge-1">1</div>
-              <div>
-                <div class="step-node-title">Content</div>
-                <div class="step-node-sub" id="step-sub-1">Add your secret</div>
-              </div>
-            </div>
-            <div class="step-node-item" id="step-node-2">
-              <div class="step-node-badge" id="step-badge-2">2</div>
-              <div>
-                <div class="step-node-title">Settings</div>
-                <div class="step-node-sub" id="step-sub-2">Configure access</div>
-              </div>
-            </div>
-            <div class="step-node-item" id="step-node-3">
-              <div class="step-node-badge" id="step-badge-3">3</div>
-              <div>
-                <div class="step-node-title">Generate</div>
-                <div class="step-node-sub" id="step-sub-3">Create secure link</div>
-              </div>
+      <!-- ── STEPPER ── -->
+      <div class="stepper-row" id="stepper-header-row">
+        <div class="step-col completed" id="step-node-1">
+          <div class="step-circle" id="step-badge-1">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </div>
+          <div>
+            <div class="step-title">Content</div>
+            <div class="step-sub" id="step-sub-1">Add your secret</div>
+          </div>
+        </div>
+        <div class="step-col active" id="step-node-2">
+          <div class="step-circle" id="step-badge-2">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </div>
+          <div>
+            <div class="step-title">Settings</div>
+            <div class="step-sub" id="step-sub-2">Configure access</div>
+          </div>
+        </div>
+        <div class="step-col" id="step-node-3">
+          <div class="step-circle" id="step-badge-3">3</div>
+          <div>
+            <div class="step-title">Generate</div>
+            <div class="step-sub" id="step-sub-3">Create secure link</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CREATION FORM ── -->
+      <form id="create-form" aria-label="Create secure secret">
+
+        <!-- Mode tabs -->
+        <div class="mode-tabs" role="tablist">
+          <button type="button" class="mode-tab active" id="tab-text" role="tab" aria-selected="true">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line></svg>
+            Secret Text / Credentials
+          </button>
+          <button type="button" class="mode-tab" id="tab-file" role="tab" aria-selected="false">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            Upload File
+          </button>
+        </div>
+
+        <!-- Text section -->
+        <div id="text-section" class="form-group">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <label class="form-label" style="margin:0;">SECRET CONTENT</label>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span id="byte-counter" style="font-size:11px;color:var(--t3);font-family:var(--mono);">0 / 10,000 bytes</span>
+              <button type="button" id="btn-clear-secret" class="textarea-action-btn">
+                <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                Clear
+              </button>
+              <button type="button" id="btn-fullscreen-editor" class="textarea-action-btn">
+                <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+                Fullscreen
+              </button>
             </div>
           </div>
+          <div class="secret-area-wrap">
+            <textarea id="secret-input" name="secret" class="secret-textarea-new"
+              placeholder="Paste sensitive credentials, API keys, passwords, certificates, or notes here..."
+              rows="6" spellcheck="false" maxlength="10240"></textarea>
+            <div id="paste-indicator" class="paste-indicator hidden" style="position:absolute;bottom:10px;right:12px;">📋 Pasted</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:6px;font-size:11.5px;color:var(--t3);">
+            <span class="status-dot" id="secret-status-dot" style="width:5px;height:5px;background:var(--t4);border-radius:50%;display:inline-block;"></span>
+            <span id="secret-status-text">Ready for secure input</span>
+            <span id="secret-type-badge"></span>
+          </div>
+        </div>
 
-          <!-- Form -->
-          <form id="create-form" aria-label="Create a secure secret or upload a confidential file">
+        <!-- File section -->
+        <div id="file-dropzone-group" class="form-group hidden">
+          <input type="file" id="file-input" class="hidden">
+          <div id="dropzone" class="dropzone-container" tabindex="0" role="button" aria-label="Drop file here">
+            <div class="dropzone-icon">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            </div>
+            <div style="font-size:15px;font-weight:700;color:var(--t1);margin-bottom:5px;">Drop your file here</div>
+            <div style="font-size:12px;color:var(--t3);margin-bottom:12px;">Code, certificates, PDFs, images — up to 15 MB</div>
+            <div class="btn btn-ghost btn-sm" style="pointer-events:none;">Browse Files</div>
+          </div>
+          <div id="file-preview-card" class="file-preview-card hidden">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div id="file-icon" style="color:var(--cyan-l);"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></div>
+              <img id="file-thumb" class="hidden" alt="Preview" style="width:32px;height:32px;border-radius:5px;object-fit:cover;">
+              <div><div id="file-name" style="font-size:13px;font-weight:700;color:var(--t1);">filename.ext</div><div style="font-size:11px;color:var(--t3);"><span id="file-size">0 KB</span> · <span id="file-type">binary</span></div></div>
+            </div>
+            <button type="button" id="btn-remove-file" class="btn-icon-plain" aria-label="Remove"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+          </div>
+        </div>
 
-            <!-- Mode tabs -->
-            <div class="tab-selection-pill-row" role="tablist">
-              <button type="button" class="tab-selection-btn active" id="tab-text" role="tab" aria-selected="true">
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                Secret Text / Credentials
+        <!-- Config 3-col -->
+        <div class="config-grid-3">
+          <!-- Expires After -->
+          <div>
+            <div class="config-item-label">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--cyan-l)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              EXPIRES AFTER
+            </div>
+            <div class="select-with-icon">
+              <div class="select-prefix-icon">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              </div>
+              <select id="ttl-select" name="ttl_seconds" class="select-new">
+                <option value="300">5 minutes</option>
+                <option value="3600" selected>1 hour</option>
+                <option value="86400">24 hours</option>
+                <option value="604800">7 days</option>
+                <option value="custom">Custom</option>
+              </select>
+              <svg class="select-arrow" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="select-helper" id="ttl-helper-text">Link expires in 1 hour</div>
+          </div>
+          <!-- Max Views -->
+          <div>
+            <div class="config-item-label">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--purple-l)" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              MAX VIEWS
+            </div>
+            <div class="select-with-icon">
+              <div class="select-prefix-icon">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              </div>
+              <select id="views-select" name="max_views" class="select-new">
+                <option value="1" selected>1 view</option>
+                <option value="2">2 views</option>
+                <option value="3">3 views</option>
+                <option value="5">5 views</option>
+                <option value="10">10 views</option>
+                <option value="25">25 views</option>
+                <option value="custom">Custom</option>
+              </select>
+              <svg class="select-arrow" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="select-helper" id="views-helper-text">Single-view secret</div>
+          </div>
+          <!-- Passphrase -->
+          <div>
+            <div class="config-item-label">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--pink)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              PASSPHRASE <span style="font-weight:400;opacity:0.6;font-size:10px;text-transform:none;letter-spacing:0;">(OPTIONAL)</span>
+            </div>
+            <div class="passphrase-wrap">
+              <input type="password" id="passphrase-input" name="passphrase"
+                class="input" placeholder="Optional (min 8 chars)" autocomplete="new-password" style="padding-left:40px;">
+              <div style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--pink);pointer-events:none;">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              </div>
+              <button type="button" id="btn-toggle-eye" class="pass-eye-btn" aria-label="Toggle visibility">
+                <svg id="eye-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
               </button>
-              <button type="button" class="tab-selection-btn" id="tab-file" role="tab" aria-selected="false">
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                Upload File
+            </div>
+            <div class="strength-indicator-bar" id="passphrase-strength-container">
+              <div class="strength-track-wrap"><div id="passphrase-strength-bar" class="strength-progress-fill"></div></div>
+              <span id="passphrase-strength-text" class="strength-status-text">Add an extra layer of protection</span>
+            </div>
+            <div id="passphrase-validation-feedback" class="field-error hidden"></div>
+          </div>
+        </div>
+
+        <!-- Hidden confirm passphrase + auto destruct -->
+        <div id="confirm-passphrase-group" class="form-group hidden" style="margin-top:10px;">
+          <label class="form-label">CONFIRM PASSPHRASE</label>
+          <div class="passphrase-wrap">
+            <input type="password" id="confirm-passphrase-input" class="input" placeholder="Repeat passphrase" autocomplete="new-password">
+          </div>
+          <div id="passphrase-mismatch-feedback" class="field-error hidden">Passphrases do not match</div>
+        </div>
+        <div id="auto-destruct-group" class="form-group hidden" style="margin-top:10px;">
+          <label class="form-label">AUTO-DESTRUCT AFTER FAILED ATTEMPTS</label>
+          <div class="select-wrapper">
+            <select id="auto-destruct-select" class="custom-select-input" name="auto_destruct_attempts">
+              <option value="">Disabled</option>
+              <option value="3">3 failed attempts</option>
+              <option value="5">5 failed attempts</option>
+              <option value="10">10 failed attempts</option>
+            </select>
+            <div class="select-arrow-icon">▾</div>
+          </div>
+        </div>
+
+        <!-- Custom datetime panel -->
+        <div id="custom-datetime-panel" class="custom-expand-panel hidden" style="margin-top:12px;">
+          <div class="custom-panel-inner">
+            <div class="custom-picker-title"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>CUSTOM EXPIRATION</div>
+            <div class="datetime-inputs-row">
+              <div class="datetime-col"><label class="sub-field-label">DATE</label><input type="date" id="custom-date-input" class="cyber-datetime-input"></div>
+              <div class="datetime-col"><label class="sub-field-label">TIME</label><div class="time-picker-row"><input type="time" id="custom-time-input" class="cyber-datetime-input"><div class="ampm-toggle-group"><button type="button" class="ampm-btn" id="btn-ampm-am">AM</button><button type="button" class="ampm-btn active" id="btn-ampm-pm">PM</button></div></div></div>
+              <div class="datetime-col"><label class="sub-field-label">TIMEZONE</label><select id="custom-timezone-select" class="cyber-datetime-input"><option value="Local" selected>Local</option><option value="UTC">UTC</option><option value="Asia/Kolkata">IST +5:30</option><option value="America/New_York">EST/EDT</option></select></div>
+            </div>
+            <div class="custom-datetime-preview" id="custom-datetime-preview"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><span id="custom-datetime-preview-text">Select a date and time</span></div>
+            <div id="custom-datetime-error" class="custom-inline-error hidden"></div>
+          </div>
+        </div>
+
+        <!-- Custom views panel -->
+        <div id="custom-views-panel" class="custom-expand-panel hidden" style="margin-top:12px;">
+          <div class="custom-panel-inner">
+            <div class="custom-picker-title"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>CUSTOM VIEW LIMIT</div>
+            <div class="custom-views-input-row">
+              <div class="custom-num-input-wrap"><label class="sub-field-label">MAX VIEWS</label><input type="number" id="custom-views-input" min="1" max="1000" value="25" class="cyber-num-input"></div>
+              <div class="view-limit-chips-wrap"><span class="sub-field-label">QUICK SELECT</span><div class="view-limit-chips"><button type="button" class="view-chip" data-views="1">1</button><button type="button" class="view-chip" data-views="5">5</button><button type="button" class="view-chip" data-views="10">10</button><button type="button" class="view-chip active" data-views="25">25</button><button type="button" class="view-chip" data-views="50">50</button><button type="button" class="view-chip" data-views="100">100</button></div></div>
+            </div>
+            <div class="custom-views-preview" id="custom-views-preview">Secret can be revealed up to 25 times.</div>
+            <div id="custom-views-error" class="custom-inline-error hidden"></div>
+          </div>
+        </div>
+
+        <!-- Summary hidden -->
+        <div style="display:none;"><span id="summary-expiration"></span><span id="summary-views"></span></div>
+
+        <!-- ZK toggle card — exact match screenshot 3 -->
+        <div class="zk-card">
+          <div class="zk-icon">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          </div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+              <span style="font-size:13.5px;font-weight:700;color:var(--t1);">Zero-Knowledge Client Encryption</span>
+              <span class="zk-badge">AES-256-GCM</span>
+            </div>
+            <div style="font-size:12px;color:var(--t3);line-height:1.55;">
+              Encrypted in your browser before sending. Decryption key lives only in the URL hash fragment
+              (#k=…). Server never sees your plaintext or key.
+            </div>
+          </div>
+          <label class="cyber-switch" title="Toggle Zero-Knowledge">
+            <input type="checkbox" id="zk-toggle" name="client_encrypted" checked>
+            <span class="cyber-slider"></span>
+          </label>
+        </div>
+
+        <!-- Security score — screenshot 3 -->
+        <div class="security-score-wrap">
+          <div class="score-header-row">
+            <span class="score-label">SECURITY CONFIGURATION SCORE</span>
+            <span class="score-val-strong" id="security-score-val">75% • STRONG</span>
+          </div>
+          <div class="score-bar-track"><div class="score-bar-fill" id="security-score-fill" style="width:75%;"></div></div>
+          <div class="score-checks">
+            <div class="score-check" id="score-item-zk">
+              <div class="score-check-dot"><svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+              Client-side encryption
+            </div>
+            <div class="score-check">
+              <div class="score-check-dot"><svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+              Auto-expiration
+            </div>
+            <div class="score-check">
+              <div class="score-check-dot"><svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+              Zero-knowledge
+            </div>
+            <div class="score-check" id="score-item-pass" style="opacity:0.45;">
+              <div class="score-check-dot" style="background:rgba(255,255,255,0.15);border:1px solid var(--border);"><svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+              Passphrase (optional)
+            </div>
+          </div>
+        </div>
+
+        <!-- Error banner -->
+        <div id="submit-error-banner" class="alert alert-danger hidden" role="alert" style="margin-bottom:14px;">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="alert-icon"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <span id="submit-error-message"></span>
+        </div>
+
+        <!-- SUBMIT BUTTON — gradient matching screenshot 3 -->
+        <button type="submit" id="submit-btn" class="submit-btn-gradient">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <span id="submit-btn-text">Encrypt &amp; Generate Secure Link →</span>
+        </button>
+
+        <!-- Trust strip -->
+        <div class="trust-row">
+          <div class="trust-row-item">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            Zero Plaintext Storage
+          </div>
+          <span class="trust-sep">|</span>
+          <div class="trust-row-item">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Time-Limited Secrets
+          </div>
+          <span class="trust-sep">|</span>
+          <div class="trust-row-item">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
+            Automatic Destruction
+          </div>
+        </div>
+      </form>
+
+      <!-- ══════════════════════════════════════════════════════════
+           RESULT SECTION — screenshot 2 exact layout
+      ══════════════════════════════════════════════════════════ -->
+      <section id="result-section" class="hidden result-outer" aria-label="Secret generated">
+
+        <!-- Stepper completed -->
+        <div class="stepper-row result-stepper">
+          <div class="step-col completed">
+            <div class="step-circle" style="background:linear-gradient(135deg,var(--purple),var(--cyan));border-color:var(--cyan);color:#fff;box-shadow:var(--glow-cyan);">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <div><div class="step-title" style="color:var(--t1);">Content</div><div class="step-sub">Secret added</div></div>
+          </div>
+          <div class="step-col completed">
+            <div class="step-circle" style="background:linear-gradient(135deg,var(--purple),var(--cyan));border-color:var(--cyan);color:#fff;box-shadow:var(--glow-cyan);">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <div><div class="step-title" style="color:var(--t1);">Settings</div><div class="step-sub">Access configured</div></div>
+          </div>
+          <div class="step-col active">
+            <div class="step-circle" style="background:linear-gradient(135deg,var(--purple),var(--cyan));border-color:var(--cyan);color:#fff;box-shadow:var(--glow-cyan);">3</div>
+            <div><div class="step-title" style="color:var(--t1);">Generated</div><div class="step-sub">Secure link ready</div></div>
+          </div>
+        </div>
+
+        <!-- Secure Access Link section -->
+        <div class="result-link-section">
+          <div class="result-link-header">
+            <div class="result-link-icon">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+            </div>
+            <div class="result-link-title">Secure Access Link</div>
+          </div>
+          <div class="result-link-sub">Share this link with the intended recipient. Only the link will be shared — not your secret.</div>
+          <div class="result-link-box">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <input type="text" id="link-output" class="result-link-text" readonly spellcheck="false" aria-label="Vault link">
+            <div class="result-link-actions">
+              <button type="button" id="copy-btn" class="result-copy-btn">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy Link
               </button>
+              <a id="open-link-btn" href="#" target="_blank" rel="noopener noreferrer" class="result-open-btn">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                Open
+              </a>
+              <a id="open-share-center-btn" href="#" class="result-open-btn">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                Share
+              </a>
             </div>
+          </div>
+        </div>
 
-            <!-- Text section -->
-            <div id="text-section" class="form-group">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
-                <label class="form-label" style="margin:0;">SECRET CONTENT</label>
-                <div style="display:flex;align-items:center;gap:10px;">
-                  <span id="byte-counter" style="font-size:11px;color:var(--text-3);font-family:var(--font-mono);">0 / 10,000 bytes</span>
-                  <button type="button" id="btn-clear-secret" style="background:none;border:none;color:var(--text-3);cursor:pointer;font-size:11px;display:flex;align-items:center;gap:3px;padding:2px 4px;border-radius:4px;" aria-label="Clear secret">
-                    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>Clear
-                  </button>
-                  <button type="button" id="btn-fullscreen-editor" style="background:none;border:none;color:var(--text-3);cursor:pointer;font-size:11px;display:flex;align-items:center;gap:3px;padding:2px 4px;border-radius:4px;" aria-label="Fullscreen editor">
-                    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>Fullscreen
-                  </button>
-                </div>
-              </div>
-              <div style="position:relative;">
-                <textarea id="secret-input" name="secret" class="secret-textarea" placeholder="Paste credentials, API keys, passwords, certificates, or sensitive notes here…" rows="6" spellcheck="false" maxlength="10240" aria-label="Secret content"></textarea>
-                <div id="paste-indicator" class="paste-indicator hidden" style="position:absolute;bottom:10px;right:10px;">📋 Pasted</div>
-              </div>
-              <div class="secret-status-bar">
-                <span class="dot" id="secret-status-dot" style="width:5px;height:5px;border-radius:50%;background:var(--text-4);display:inline-block;"></span>
-                <span id="secret-status-text" style="font-size:11px;color:var(--text-3);">Ready for secure input</span>
-                <span id="secret-type-badge"></span>
-              </div>
+        <!-- Share Securely row -->
+        <div class="share-section">
+          <div class="share-header">
+            <div style="width:28px;height:28px;border-radius:50%;background:var(--cyan-d);border:1px solid var(--border-cyan);color:var(--cyan-l);display:flex;align-items:center;justify-content:center;">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
             </div>
-
-            <!-- File dropzone -->
-            <div id="file-dropzone-group" class="form-group hidden">
-              <input type="file" id="file-input" class="hidden" aria-label="Upload file">
-              <div id="dropzone" class="dropzone-container" tabindex="0" role="button" aria-label="Drop file here or click to select">
-                <div class="dropzone-icon">
-                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                </div>
-                <div style="font-size:14px;font-weight:700;color:var(--text-1);margin-bottom:4px;">Drop a confidential file here</div>
-                <div style="font-size:12px;color:var(--text-3);">Code, documents, certificates, images — up to 15 MB</div>
-              </div>
-              <div id="file-preview-card" class="file-preview-card hidden">
-                <div style="display:flex;align-items:center;gap:10px;">
-                  <div id="file-icon" style="color:var(--accent-light);">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                  </div>
-                  <img id="file-thumb" class="hidden" alt="Preview" style="width:32px;height:32px;border-radius:4px;object-fit:cover;">
-                  <div>
-                    <div id="file-name" style="font-size:13px;font-weight:700;color:var(--text-1);">filename.ext</div>
-                    <div style="font-size:11px;color:var(--text-3);display:flex;gap:5px;"><span id="file-size">0 KB</span><span>·</span><span id="file-type">binary</span></div>
-                  </div>
-                </div>
-                <button type="button" id="btn-remove-file" class="btn-icon-plain" aria-label="Remove file">
-                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                </button>
-              </div>
-            </div>
-
-            <!-- Settings grid -->
-            <div class="settings-grid-3col" style="margin-top:20px;">
-              <!-- Expires After -->
-              <div class="config-field">
-                <label for="ttl-select" class="form-label">EXPIRES AFTER</label>
-                <div class="select-wrapper">
-                  <select id="ttl-select" name="ttl_seconds" class="custom-select-input">
-                    <option value="300">5 minutes</option>
-                    <option value="3600" selected>1 hour</option>
-                    <option value="86400">24 hours</option>
-                    <option value="604800">7 days</option>
-                    <option value="custom">Custom Date &amp; Time</option>
-                  </select>
-                  <div class="select-arrow-icon">▾</div>
-                </div>
-                <div class="config-helper-text" id="ttl-helper-text">Link expires in 1 hour</div>
-              </div>
-              <!-- Max Views -->
-              <div class="config-field">
-                <label for="views-select" class="form-label">MAX VIEWS</label>
-                <div class="select-wrapper">
-                  <select id="views-select" name="max_views" class="custom-select-input">
-                    <option value="1" selected>1 view</option>
-                    <option value="2">2 views</option>
-                    <option value="3">3 views</option>
-                    <option value="5">5 views</option>
-                    <option value="10">10 views</option>
-                    <option value="25">25 views</option>
-                    <option value="50">50 views</option>
-                    <option value="100">100 views</option>
-                    <option value="custom">Custom</option>
-                  </select>
-                  <div class="select-arrow-icon">▾</div>
-                </div>
-                <div class="config-helper-text" id="views-helper-text">Single-view secret</div>
-              </div>
-              <!-- Passphrase -->
-              <div class="config-field">
-                <label for="passphrase-input" class="form-label">PASSPHRASE (OPTIONAL)</label>
-                <div class="passphrase-input-wrap">
-                  <input type="password" id="passphrase-input" name="passphrase" class="text-input-field" placeholder="Min 8 chars" autocomplete="new-password" minlength="8">
-                  <button type="button" id="btn-toggle-eye" class="btn-eye-toggle" aria-label="Toggle passphrase visibility">
-                    <svg id="eye-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                  </button>
-                </div>
-                <div class="strength-indicator-bar" id="passphrase-strength-container">
-                  <div class="strength-track-wrap"><div id="passphrase-strength-bar" class="strength-progress-fill"></div></div>
-                  <span id="passphrase-strength-text" class="strength-status-text">Optional</span>
-                </div>
-                <div id="passphrase-validation-feedback" class="field-error hidden"></div>
-              </div>
-            </div>
-
-            <!-- Confirm passphrase (shown when passphrase entered) -->
-            <div id="confirm-passphrase-group" class="form-group hidden" style="margin-top:12px;">
-              <label for="confirm-passphrase-input" class="form-label">CONFIRM PASSPHRASE</label>
-              <div class="passphrase-input-wrap">
-                <input type="password" id="confirm-passphrase-input" class="text-input-field" placeholder="Repeat passphrase" autocomplete="new-password">
-              </div>
-              <div id="passphrase-mismatch-feedback" class="field-error hidden">Passphrases do not match</div>
-            </div>
-
-            <!-- Auto-destruct (shown when passphrase entered) -->
-            <div id="auto-destruct-group" class="form-group hidden" style="margin-top:12px;">
-              <label for="auto-destruct-select" class="form-label">AUTO-DESTRUCT AFTER (FAILED ATTEMPTS)</label>
-              <div class="select-wrapper">
-                <select id="auto-destruct-select" class="custom-select-input" name="auto_destruct_attempts">
-                  <option value="">Disabled</option>
-                  <option value="3">3 failed attempts</option>
-                  <option value="5">5 failed attempts</option>
-                  <option value="10">10 failed attempts</option>
-                </select>
-                <div class="select-arrow-icon">▾</div>
-              </div>
-            </div>
-
-            <!-- Custom datetime -->
-            <div id="custom-datetime-panel" class="custom-expand-panel hidden" style="margin-top:12px;">
-              <div class="custom-panel-inner">
-                <div class="custom-picker-title">
-                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                  CUSTOM EXPIRATION DATE & TIME
-                </div>
-                <div class="datetime-inputs-row">
-                  <div class="datetime-col">
-                    <label for="custom-date-input" class="sub-field-label">DATE</label>
-                    <input type="date" id="custom-date-input" class="cyber-datetime-input">
-                  </div>
-                  <div class="datetime-col">
-                    <label for="custom-time-input" class="sub-field-label">TIME</label>
-                    <div class="time-picker-row">
-                      <input type="time" id="custom-time-input" class="cyber-datetime-input">
-                      <div class="ampm-toggle-group">
-                        <button type="button" class="ampm-btn" id="btn-ampm-am">AM</button>
-                        <button type="button" class="ampm-btn active" id="btn-ampm-pm">PM</button>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="datetime-col">
-                    <label for="custom-timezone-select" class="sub-field-label">TIMEZONE</label>
-                    <select id="custom-timezone-select" class="cyber-datetime-input">
-                      <option value="Local" selected>Local Time</option>
-                      <option value="UTC">UTC</option>
-                      <option value="Asia/Kolkata">IST +5:30</option>
-                      <option value="America/New_York">EST/EDT</option>
-                      <option value="Europe/London">GMT/BST</option>
-                      <option value="Asia/Tokyo">JST +9:00</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="custom-datetime-preview" id="custom-datetime-preview">
-                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                  <span id="custom-datetime-preview-text">Select a date and time</span>
-                </div>
-                <div id="custom-datetime-error" class="custom-inline-error hidden"></div>
-              </div>
-            </div>
-
-            <!-- Custom views -->
-            <div id="custom-views-panel" class="custom-expand-panel hidden" style="margin-top:12px;">
-              <div class="custom-panel-inner">
-                <div class="custom-picker-title">
-                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                  CUSTOM VIEW LIMIT
-                </div>
-                <div class="custom-views-input-row">
-                  <div class="custom-num-input-wrap">
-                    <label for="custom-views-input" class="sub-field-label">MAX VIEWS</label>
-                    <input type="number" id="custom-views-input" min="1" max="1000" value="25" class="cyber-num-input">
-                  </div>
-                  <div class="view-limit-chips-wrap">
-                    <span class="sub-field-label">QUICK SELECT</span>
-                    <div class="view-limit-chips">
-                      <button type="button" class="view-chip" data-views="1">1</button>
-                      <button type="button" class="view-chip" data-views="5">5</button>
-                      <button type="button" class="view-chip" data-views="10">10</button>
-                      <button type="button" class="view-chip active" data-views="25">25</button>
-                      <button type="button" class="view-chip" data-views="50">50</button>
-                      <button type="button" class="view-chip" data-views="100">100</button>
-                      <button type="button" class="view-chip" data-views="500">500</button>
-                      <button type="button" class="view-chip" data-views="1000">1000</button>
-                    </div>
-                  </div>
-                </div>
-                <div class="custom-views-preview" id="custom-views-preview">Secret can be revealed up to 25 times.</div>
-                <div id="custom-views-error" class="custom-inline-error hidden"></div>
-              </div>
-            </div>
-
-            <!-- Summary row (for screen readers / stepper) -->
-            <div style="display:none;"><span id="summary-expiration"></span><span id="summary-views"></span></div>
-
-            <!-- ZK toggle -->
-            <div class="zk-mode-card" style="margin-top:20px;">
-              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
-                <div style="display:flex;align-items:center;gap:12px;">
-                  <div style="width:36px;height:36px;border-radius:var(--r-md);background:var(--accent-dim);border:1px solid var(--border-accent);display:flex;align-items:center;justify-content:center;color:var(--accent-light);flex-shrink:0;">
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                  </div>
-                  <div>
-                    <div style="font-size:13px;font-weight:700;color:var(--text-1);display:flex;align-items:center;gap:8px;">
-                      Zero-Knowledge Client Encryption
-                      <span class="badge badge-accent" style="font-size:10px;">AES-256-GCM</span>
-                    </div>
-                    <div style="font-size:11px;color:var(--text-3);margin-top:2px;line-height:1.5;">Encrypted in your browser — server never sees your plaintext or key. Key lives only in the URL hash (#k=…).</div>
-                  </div>
-                </div>
-                <label class="cyber-switch" title="Toggle Zero-Knowledge">
-                  <input type="checkbox" id="zk-toggle" name="client_encrypted" checked>
-                  <span class="cyber-slider"></span>
-                </label>
-              </div>
-              <div id="zk-active-notice" class="zk-active-notice" style="display:none;">
-                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                Zero-knowledge mode active — decryption key never leaves your browser
-              </div>
-            </div>
-
-            <!-- Security score -->
-            <div class="security-score-card-box">
-              <div class="score-card-header">
-                <span class="section-label" style="margin:0;">SECURITY SCORE</span>
-                <span class="score-badge-val" id="security-score-val">75% · STRONG</span>
-              </div>
-              <div class="score-progress-track"><div class="score-progress-bar-fill" id="security-score-fill" style="width:75%;"></div></div>
-              <div class="score-checks-row">
-                <span class="score-check-item" id="score-item-zk">
-                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                  Client-side encryption
-                </span>
-                <span class="score-check-item">
-                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                  Auto-expiration
-                </span>
-                <span class="score-check-item" id="score-item-pass">
-                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" style="opacity:0.4;"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                  Passphrase gate
-                </span>
-              </div>
-            </div>
-
-            <!-- Error banner -->
-            <div id="submit-error-banner" class="alert alert-danger hidden" role="alert" style="margin-top:14px;">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-              <span id="submit-error-message"></span>
-            </div>
-
-            <!-- Submit -->
-            <button type="submit" id="submit-btn" class="btn-cta btn btn-lg btn-w-full" style="margin-top:16px;">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-              <span id="submit-btn-text">Encrypt &amp; Generate Secure Link →</span>
+            <div class="share-title">Share Securely</div>
+          </div>
+          <div class="share-sub">Send this secure link through your preferred platform. Only the vault link will be shared.</div>
+          <div class="share-platforms">
+            <button type="button" class="share-btn" id="btn-share-whatsapp" title="WhatsApp">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 2C6.48 2 2 6.48 2 12C2 13.85 2.5 15.57 3.37 17.06L2 22L7.1 20.67C8.54 21.51 10.22 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2Z" fill="#25D366"/><path d="M17.5 14.33C17.2 14.18 15.74 13.46 15.47 13.36C15.2 13.26 15.01 13.21 14.81 13.51C14.62 13.8 14.07 14.45 13.9 14.65C13.73 14.84 13.56 14.87 13.26 14.72C12.97 14.57 12.02 14.26 10.9 13.26C10.02 12.48 9.43 11.52 9.26 11.23C9.09 10.93 9.24 10.78 9.39 10.63C9.52 10.5 9.68 10.29 9.83 10.12C9.97 9.95 10.02 9.83 10.12 9.63C10.22 9.44 10.17 9.27 10.1 9.12C10.02 8.97 9.44 7.54 9.2 6.96C8.97 6.4 8.73 6.47 8.56 6.46H8.02C7.83 6.46 7.51 6.53 7.24 6.82C6.98 7.12 6.22 7.82 6.22 9.26C6.22 10.7 7.27 12.09 7.41 12.28C7.56 12.48 9.48 15.43 12.42 16.7C13.12 17 13.67 17.18 14.1 17.32C14.8 17.54 15.44 17.51 15.95 17.43C16.51 17.35 17.68 16.72 17.92 16.04C18.17 15.37 18.17 14.79 18.09 14.67C18.02 14.54 17.82 14.47 17.5 14.33Z" fill="white"/></svg>
+              WhatsApp
             </button>
-
-            <!-- Trust strip -->
-            <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-top:14px;font-size:11px;color:var(--text-4);flex-wrap:wrap;">
-              <span>🗄️ Zero Plaintext Storage</span>
-              <span style="opacity:0.3;">|</span>
-              <span>🕒 Time-Limited Secrets</span>
-              <span style="opacity:0.3;">|</span>
-              <span>🔥 Automatic Destruction</span>
-            </div>
-
-          </form>
-
-          <!-- RESULT SECTION -->
-          <section id="result-section" class="hidden" aria-label="Secret generated">
-
-            <!-- Success header -->
-            <div style="text-align:center;margin-bottom:20px;">
-              <div style="width:52px;height:52px;border-radius:50%;background:var(--green-dim);border:1px solid var(--green-border);color:var(--green-text);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              </div>
-              <h2 style="font-size:18px;font-weight:800;color:var(--text-1);letter-spacing:-0.02em;margin-bottom:4px;">Vault Created Successfully</h2>
-              <p style="font-size:12px;color:var(--text-3);">Share this link with the recipient — only the link, never the secret itself.</p>
-            </div>
-
-            <!-- Vault ID (masked) -->
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
-              <span style="font-size:11px;color:var(--text-3);">Vault ID:</span>
-              <span id="result-vault-id" style="font-family:var(--font-mono);font-size:11px;color:var(--text-2);">••••••••••••</span>
-              <button type="button" id="btn-unmask-vault-id" style="background:none;border:none;color:var(--text-3);cursor:pointer;font-size:11px;padding:2px 4px;" aria-label="Show vault ID">Show</button>
-              <span id="result-zk-badge" class="badge badge-accent" style="display:none;">ZK</span>
-            </div>
-
-            <!-- Link display -->
-            <div style="margin-bottom:16px;">
-              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-3);margin-bottom:6px;">SECURE ACCESS LINK</div>
-              <div class="result-link-row">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent-light);flex-shrink:0;"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                <input type="text" id="link-output" style="flex:1;background:none;border:none;outline:none;color:var(--accent-light);font-family:var(--font-mono);font-size:12px;min-width:0;" readonly spellcheck="false">
-                <button type="button" id="copy-btn" class="btn-copy-gradient">
-                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                  Copy
-                </button>
-                <a id="open-link-btn" href="#" target="_blank" class="btn-open-outline" rel="noopener noreferrer">
-                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                  Open
-                </a>
-                <a id="open-share-center-btn" href="#" class="btn-open-outline">
-                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-                  Share
-                </a>
-              </div>
-            </div>
-
-            <!-- Vault metadata -->
-            <div class="result-meta-strip">
-              <div class="result-meta-item">
-                <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                <span id="expires-display">—</span>
-              </div>
-              <div class="result-meta-item">
-                <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                <span id="views-display">—</span>
-              </div>
-              <div id="result-integrity-fingerprint" class="result-meta-item hidden">
-                <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                <span id="fingerprint-text" style="font-family:var(--font-mono);"></span>
-              </div>
-            </div>
-
-            <!-- Share platforms -->
-            <div style="margin-top:18px;">
-              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-3);margin-bottom:8px;">SHARE SECURELY VIA</div>
-              <div class="share-platform-row">
-                <button type="button" class="share-plat-btn" id="btn-share-whatsapp" title="WhatsApp">
-                  <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 2C6.48 2 2 6.48 2 12C2 13.85 2.5 15.57 3.37 17.06L2 22L7.1 20.67C8.54 21.51 10.22 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2Z" fill="#25D366"/><path d="M17.5 14.33C17.2 14.18 15.74 13.46 15.47 13.36C15.2 13.26 15.01 13.21 14.81 13.51C14.62 13.8 14.07 14.45 13.9 14.65C13.73 14.84 13.56 14.87 13.26 14.72C12.97 14.57 12.02 14.26 10.9 13.26C10.02 12.48 9.43 11.52 9.26 11.23C9.09 10.93 9.24 10.78 9.39 10.63C9.52 10.5 9.68 10.29 9.83 10.12C9.97 9.95 10.02 9.83 10.12 9.63C10.22 9.44 10.17 9.27 10.1 9.12C10.02 8.97 9.44 7.54 9.2 6.96C8.97 6.4 8.73 6.47 8.56 6.46H8.02C7.83 6.46 7.51 6.53 7.24 6.82C6.98 7.12 6.22 7.82 6.22 9.26C6.22 10.7 7.27 12.09 7.41 12.28C7.56 12.48 9.48 15.43 12.42 16.7C13.12 17 13.67 17.18 14.1 17.32C14.8 17.54 15.44 17.51 15.95 17.43C16.51 17.35 17.68 16.72 17.92 16.04C18.17 15.37 18.17 14.79 18.09 14.67C18.02 14.54 17.82 14.47 17.5 14.33Z" fill="white"/></svg>
-                  WhatsApp
-                </button>
-                <button type="button" class="share-plat-btn" id="btn-share-email" title="Email">
-                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                  Email
-                </button>
-                <button type="button" class="share-plat-btn" id="btn-share-telegram" title="Telegram">
-                  <svg viewBox="0 0 24 24" width="20" height="20" fill="#26A5E4"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"></path></svg>
-                  Telegram
-                </button>
-                <button type="button" class="share-plat-btn" id="btn-share-slack" title="Slack">
-                  <svg viewBox="0 0 24 24" width="20" height="20"><rect x="3" y="10" width="4" height="4" rx="2" fill="#E01E5A"/><rect x="8" y="10" width="8" height="4" rx="2" fill="#36C5F0"/><rect x="17" y="10" width="4" height="4" rx="2" fill="#2EB67D"/><rect x="10" y="3" width="4" height="4" rx="2" fill="#ECB22E"/><rect x="10" y="8" width="4" height="8" rx="2" fill="#E01E5A"/><rect x="10" y="17" width="4" height="4" rx="2" fill="#36C5F0"/></svg>
-                  Slack
-                </button>
-                <button type="button" class="share-plat-btn" id="btn-share-discord" title="Discord">
-                  <svg viewBox="0 0 24 24" width="20" height="20" fill="#5865F2"><path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09-.01-.02-.04-.03-.07-.03-1.5.26-2.93.71-4.27 1.33-.01 0-.02.01-.03.02-2.72 4.07-3.47 8.03-3.1 11.95 0 .02.01.04.03.05 1.8 1.32 3.53 2.12 5.24 2.65.03.01.06 0 .07-.02.4-.55.76-1.13 1.07-1.74.02-.04 0-.08-.04-.09-.57-.22-1.11-.48-1.64-.78-.04-.02-.04-.08-.01-.11.11-.08.22-.17.33-.25.02-.02.05-.02.07-.01 3.44 1.57 7.15 1.57 10.55 0 .02-.01.05-.01.07.01.11.09.22.17.33.26.04.03.04.08-.01.11-.52.31-1.07.56-1.64.78-.04.01-.05.06-.04.09.32.61.68 1.19 1.07 1.74.01.02.05.03.08.02 1.72-.53 3.45-1.33 5.25-2.65.02-.01.03-.03.03-.05.44-4.53-.73-8.46-3.1-11.95-.01-.01-.02-.02-.04-.02z"/></svg>
-                  Discord
-                </button>
-                <button type="button" class="share-plat-btn" id="btn-share-teams" title="Teams">
-                  <svg viewBox="0 0 24 24" width="20" height="20"><path d="M19.5 7.5A2.5 2.5 0 1 0 17 5a2.5 2.5 0 0 0 2.5 2.5zM22 14v-3.5a2.5 2.5 0 0 0-5 0V14z" fill="#6264A7"/><path d="M13 6A3.5 3.5 0 1 0 9.5 2.5 3.5 3.5 0 0 0 13 6zM15 17v-6a3.5 3.5 0 0 0-7 0v6z" fill="#464EB8"/></svg>
-                  Teams
-                </button>
-                <button type="button" class="share-plat-btn" id="btn-share-sms" title="SMS">
-                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                  SMS
-                </button>
-              </div>
-            </div>
-
-            <!-- QR + extras row -->
-            <div style="display:flex;align-items:center;gap:8px;margin-top:16px;flex-wrap:wrap;">
-              <button type="button" id="btn-toggle-qr" class="btn-secondary-clean" style="font-size:12px;height:34px;padding:0 12px;">
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                QR Code
-              </button>
-              <button type="button" id="btn-download-html-vault" class="btn-secondary-clean" style="font-size:12px;height:34px;padding:0 12px;">
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline></svg>
-                Offline Vault
-              </button>
-              <button type="button" id="btn-emergency-destroy" class="btn-danger btn" style="font-size:12px;height:34px;padding:0 12px;">
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                Emergency Destroy
-              </button>
-            </div>
-
-            <!-- QR code container -->
-            <div id="qr-container" class="qr-container hidden">
-              <div class="qr-frame" id="qr-frame-holder">
-                <div class="qr-frame"></div>
-              </div>
-              <div style="display:flex;gap:8px;margin-top:10px;">
-                <button type="button" id="btn-download-qr-png" class="btn-secondary-clean" style="font-size:11px;height:30px;padding:0 10px;">PNG</button>
-                <button type="button" id="btn-download-qr-svg" class="btn-secondary-clean" style="font-size:11px;height:30px;padding:0 10px;">SVG</button>
-              </div>
-            </div>
-
-            <!-- Reset -->
-            <div style="text-align:center;margin-top:24px;padding-top:20px;border-top:1px solid var(--border-subtle);">
-              <button type="button" id="reset-btn" class="btn-ghost btn" style="font-size:13px;">
-                ← Create Another Secret
-              </button>
-            </div>
-
-          </section><!-- /result-section -->
-
-        </div><!-- /card -->
-      </div><!-- /left -->
-
-      <!-- RIGHT RAIL: Info sidebar -->
-      <aside class="create-right-rail" aria-label="Security information">
-
-        <!-- Encryption info card -->
-        <div class="card card-sm">
-          <div class="card-hd">
-            <span class="card-hd-title">Encryption Details</span>
-            <span class="badge badge-accent">Live</span>
+            <button type="button" class="share-btn" id="btn-share-email" title="Email">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              Email
+            </button>
+            <button type="button" class="share-btn" id="btn-share-slack" title="Slack">
+              <svg viewBox="0 0 24 24" width="24" height="24"><rect x="3" y="10" width="4" height="4" rx="2" fill="#E01E5A"/><rect x="8" y="10" width="8" height="4" rx="2" fill="#36C5F0"/><rect x="17" y="10" width="4" height="4" rx="2" fill="#2EB67D"/><rect x="10" y="3" width="4" height="4" rx="2" fill="#ECB22E"/><rect x="10" y="8" width="4" height="8" rx="2" fill="#E01E5A"/></svg>
+              Slack
+            </button>
+            <button type="button" class="share-btn" id="btn-share-teams" title="Teams">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19.5 7.5A2.5 2.5 0 1 0 17 5a2.5 2.5 0 0 0 2.5 2.5z" fill="#6264A7"/><path d="M13 6A3.5 3.5 0 1 0 9.5 2.5 3.5 3.5 0 0 0 13 6zM15 17v-6a3.5 3.5 0 0 0-7 0v6z" fill="#464EB8"/><rect x="2" y="8" width="8" height="9" rx="2" fill="#505AC9"/></svg>
+              Teams
+            </button>
+            <button type="button" class="share-btn" id="btn-share-discord" title="Discord">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="#5865F2"><path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09-.01-.02-.04-.03-.07-.03-1.5.26-2.93.71-4.27 1.33-.01 0-.02.01-.03.02-2.72 4.07-3.47 8.03-3.1 11.95 0 .02.01.04.03.05 1.8 1.32 3.53 2.12 5.24 2.65.03.01.06 0 .07-.02.4-.55.76-1.13 1.07-1.74.02-.04 0-.08-.04-.09-.57-.22-1.11-.48-1.64-.78-.04-.02-.04-.08-.01-.11.11-.08.22-.17.33-.25.02-.02.05-.02.07-.01 3.44 1.57 7.15 1.57 10.55 0 .02-.01.05-.01.07.01.11.09.22.17.33.26.04.03.04.08-.01.11-.52.31-1.07.56-1.64.78-.04.01-.05.06-.04.09.32.61.68 1.19 1.07 1.74.01.02.05.03.08.02 1.72-.53 3.45-1.33 5.25-2.65.02-.01.03-.03.03-.05.44-4.53-.73-8.46-3.1-11.95z"/></svg>
+              Discord
+            </button>
+            <button type="button" id="btn-toggle-qr" class="share-btn" title="QR Code">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+              QR Code
+            </button>
           </div>
-          <div style="display:flex;flex-direction:column;gap:10px;">
-            <div class="summary-row" style="border:none;padding:6px 0;">
-              <span class="summary-label">Algorithm</span>
-              <span class="summary-value">AES-256-GCM</span>
+          <!-- QR container -->
+          <div id="qr-container" class="hidden" style="display:flex;justify-content:center;padding:16px 0;">
+            <div style="background:#fff;padding:8px;border-radius:var(--r-md);" id="qr-frame-holder"><div class="qr-frame"></div></div>
+          </div>
+        </div>
+
+        <!-- Metadata 4-col — screenshot 2 -->
+        <div class="meta-row">
+          <div class="meta-card">
+            <div class="meta-card-icon" style="color:var(--purple-l);">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
             </div>
-            <div class="summary-row" style="border:none;padding:6px 0;">
-              <span class="summary-label">IV Length</span>
-              <span class="summary-value">96-bit random</span>
+            <div>
+              <div class="meta-card-label">Expiration</div>
+              <div class="meta-card-val" id="expires-display">—</div>
+              <div class="meta-card-sub">Time remaining</div>
             </div>
-            <div class="summary-row" style="border:none;padding:6px 0;border-top:1px solid var(--border-subtle);">
-              <span class="summary-label">Expires</span>
-              <span class="summary-value" id="sidebar-expiry">1 hour</span>
+          </div>
+          <div class="meta-card">
+            <div class="meta-card-icon" style="color:var(--cyan-l);">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
             </div>
-            <div class="summary-row" style="border:none;padding:6px 0;">
-              <span class="summary-label">Max Views</span>
-              <span class="summary-value" id="sidebar-views">1 view</span>
+            <div>
+              <div class="meta-card-label">View Limit</div>
+              <div class="meta-card-val" id="views-display">1 view</div>
+              <div class="meta-card-sub">Single-use secret</div>
+            </div>
+          </div>
+          <div class="meta-card">
+            <div class="meta-card-icon" style="color:var(--purple-l);">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            </div>
+            <div>
+              <div class="meta-card-label">Security</div>
+              <div class="meta-card-val">AES-256-GCM</div>
+              <div class="meta-card-sub">End-to-end encryption</div>
+            </div>
+          </div>
+          <div class="meta-card">
+            <div class="meta-card-icon" style="color:var(--green);">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <div>
+              <div class="meta-card-label">Status</div>
+              <div class="meta-card-val" style="color:var(--green);">Active</div>
+              <div class="meta-card-sub">Vault is accessible</div>
             </div>
           </div>
         </div>
 
-        <!-- How it works -->
-        <div class="card card-sm">
-          <div class="card-hd">
-            <span class="card-hd-title">How It Works</span>
+        <!-- Time remaining bar — screenshot 2 -->
+        <div class="time-remaining-row">
+          <div class="time-icon">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
           </div>
-          <div style="display:flex;flex-direction:column;gap:10px;">
-            <div style="display:flex;gap:10px;align-items:flex-start;font-size:12px;color:var(--text-2);">
-              <div style="width:20px;height:20px;border-radius:50%;background:var(--brand-dim);border:1px solid var(--border-brand);color:var(--brand-light);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">1</div>
-              Paste your secret and configure expiry
+          <div class="time-bar-wrap">
+            <div class="time-label">Time Remaining</div>
+            <div class="time-bar-track">
+              <div id="timer-progress-fill" class="time-bar-fill" style="width:100%;"></div>
             </div>
-            <div style="display:flex;gap:10px;align-items:flex-start;font-size:12px;color:var(--text-2);">
-              <div style="width:20px;height:20px;border-radius:50%;background:var(--brand-dim);border:1px solid var(--border-brand);color:var(--brand-light);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">2</div>
-              Secret is encrypted before leaving your browser
-            </div>
-            <div style="display:flex;gap:10px;align-items:flex-start;font-size:12px;color:var(--text-2);">
-              <div style="width:20px;height:20px;border-radius:50%;background:var(--brand-dim);border:1px solid var(--border-brand);color:var(--brand-light);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">3</div>
-              Share the generated link — not the secret
-            </div>
-            <div style="display:flex;gap:10px;align-items:flex-start;font-size:12px;color:var(--text-2);">
-              <div style="width:20px;height:20px;border-radius:50%;background:var(--brand-dim);border:1px solid var(--border-brand);color:var(--brand-light);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">4</div>
-              Secret is destroyed automatically after viewing
-            </div>
+          </div>
+          <div class="countdown-display">
+            <div class="countdown-seg"><span class="countdown-num" id="countdown-hours">00</span><span class="countdown-lbl">Hours</span></div>
+            <span class="countdown-sep">:</span>
+            <div class="countdown-seg"><span class="countdown-num" id="countdown-mins">59</span><span class="countdown-lbl">Minutes</span></div>
+            <span class="countdown-sep">:</span>
+            <div class="countdown-seg"><span class="countdown-num" id="countdown-secs">00</span><span class="countdown-lbl">Seconds</span></div>
           </div>
         </div>
 
-        <!-- Quick links -->
-        <div class="card card-sm">
-          <div style="display:flex;flex-direction:column;gap:6px;">
-            <a href="/file" style="display:flex;align-items:center;gap:8px;padding:8px;border-radius:var(--r-md);color:var(--text-2);font-size:12px;font-weight:500;transition:all var(--t-base);" class="hover-link">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline></svg>
-              Upload a File Vault →
-            </a>
-            <a href="/dashboard" style="display:flex;align-items:center;gap:8px;padding:8px;border-radius:var(--r-md);color:var(--text-2);font-size:12px;font-weight:500;transition:all var(--t-base);" class="hover-link">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-              View Dashboard →
-            </a>
-            <a href="/extension" style="display:flex;align-items:center;gap:8px;padding:8px;border-radius:var(--r-md);color:var(--text-2);font-size:12px;font-weight:500;transition:all var(--t-base);" class="hover-link">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4"></circle></svg>
-              Browser Extension →
-            </a>
+        <!-- Destroy vault row — screenshot 2 bottom -->
+        <div class="destroy-row" id="btn-emergency-destroy" role="button" tabindex="0" aria-label="Destroy this vault permanently">
+          <div class="destroy-row-left">
+            <div class="destroy-icon-box">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </div>
+            <div>
+              <div class="destroy-title">Destroy Vault</div>
+              <div class="destroy-sub">Permanently disable access to this secure link</div>
+            </div>
           </div>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#FF6B6B" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
         </div>
 
-      </aside>
+        <!-- Hidden compat elements for app.js -->
+        <div style="display:none;" aria-hidden="true">
+          <span id="result-vault-id"></span>
+          <button id="btn-unmask-vault-id"></button>
+          <span id="result-zk-badge"></span>
+          <span id="result-integrity-fingerprint"></span>
+          <span id="fingerprint-text"></span>
+          <button id="btn-download-html-vault"></button>
+          <button id="btn-download-qr-png"></button>
+          <button id="btn-download-qr-svg"></button>
+          <span id="burn-status-alert"></span>
+          <span id="burn-status-title"></span>
+          <span id="burn-status-desc"></span>
+          <span id="burn-timestamp-badge"></span>
+        </div>
 
-    </div><!-- /create-page-wrap -->
-  </main>
+        <!-- Create another -->
+        <div class="create-another">
+          <a href="#" id="reset-btn">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            + Create Another Secret →
+          </a>
+        </div>
 
-  <!-- Toast -->
-  <div id="toast" role="alert" aria-live="polite">
-    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-    <span id="toast-message"></span>
-  </div>
+      </section><!-- /result-section -->
 
-  <!-- Hidden elements required by view.js compatibility -->
-  <div style="display:none;" aria-hidden="true">
-    <span id="hero-header"></span>
-    <span id="trust-strip"></span>
-    <span id="nav-create-btn"></span>
-    <span id="modal-how-it-works"></span>
-    <span id="modal-security"></span>
-    <span id="modal-faq"></span>
-    <span id="nav-btn-how-it-works"></span>
-    <span id="nav-btn-security"></span>
-    <span id="nav-btn-faq"></span>
-  </div>
+    </div><!-- /main-creation-card -->
+  </div><!-- /left -->
 
-  <script src="/js/app.js"></script>
-  <script src="/shared/qrcode.min.js" onerror="console.warn('QR lib not found')"></script>
-  <script>
-    // Theme
-    const themeToggle = document.getElementById('theme-toggle');
-    const themeIcon = document.getElementById('theme-icon');
-    if (localStorage.getItem('vault_theme') === 'light') document.body.classList.add('light-theme');
-    function setThemeIcon(isLight) {
-      themeIcon.innerHTML = isLight
-        ? '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>'
-        : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+  <!-- RIGHT: Access Policy sidebar — screenshot 3 -->
+  <aside class="ap-sidebar">
+    <div class="access-policy-card">
+      <div class="ap-header">
+        <div class="ap-icon">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </div>
+        <div>
+          <div class="ap-title">Access Policy</div>
+          <div class="ap-sub">Control how your secret can be accessed</div>
+        </div>
+      </div>
+
+      <div class="ap-row">
+        <div class="ap-row-left">
+          <div class="ap-row-icon" style="background:rgba(124,58,237,0.15);color:var(--purple-l);">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          </div>
+          <span class="ap-row-title">Expiration Time</span>
+        </div>
+        <div class="ap-row-right">
+          <select id="ap-ttl" class="ap-select">
+            <option value="3600" selected>1 hour</option>
+            <option value="300">5 min</option>
+            <option value="86400">24 hrs</option>
+            <option value="604800">7 days</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="ap-row">
+        <div class="ap-row-left">
+          <div class="ap-row-icon" style="background:rgba(0,212,255,0.12);color:var(--cyan-l);">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          </div>
+          <span class="ap-row-title">Maximum Views</span>
+        </div>
+        <div class="ap-row-right">
+          <select id="ap-views" class="ap-select">
+            <option value="1" selected>1 view</option>
+            <option value="3">3 views</option>
+            <option value="5">5 views</option>
+            <option value="10">10 views</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="ap-row">
+        <div class="ap-row-left">
+          <div class="ap-row-icon" style="background:rgba(244,67,54,0.12);color:#FF6B6B;">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
+          </div>
+          <span class="ap-row-title">Burn after first reveal</span>
+        </div>
+        <div class="ap-row-right">
+          <label class="cyber-switch"><input type="checkbox" id="ap-burn-first" checked><span class="cyber-slider"></span></label>
+        </div>
+      </div>
+
+      <div class="ap-row">
+        <div class="ap-row-left">
+          <div class="ap-row-icon" style="background:rgba(124,58,237,0.12);color:var(--purple-l);">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><circle cx="12" cy="16" r="1"></circle><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          </div>
+          <span class="ap-row-title">Require passphrase</span>
+        </div>
+        <div class="ap-row-right">
+          <label class="cyber-switch"><input type="checkbox" id="ap-passphrase"><span class="cyber-slider"></span></label>
+        </div>
+      </div>
+
+      <div class="ap-row">
+        <div class="ap-row-left">
+          <div class="ap-row-icon" style="background:rgba(0,212,255,0.10);color:var(--cyan-l);">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline></svg>
+          </div>
+          <span class="ap-row-title">Disable download <span style="font-size:10px;color:var(--t3);">(for files)</span></span>
+        </div>
+        <div class="ap-row-right">
+          <label class="cyber-switch"><input type="checkbox" id="ap-no-download"><span class="cyber-slider"></span></label>
+        </div>
+      </div>
+
+      <div class="ap-row">
+        <div class="ap-row-left">
+          <div class="ap-row-icon" style="background:rgba(255,214,0,0.10);color:var(--yellow);">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          </div>
+          <span class="ap-row-title">Disable copy</span>
+        </div>
+        <div class="ap-row-right">
+          <label class="cyber-switch"><input type="checkbox" id="ap-no-copy"><span class="cyber-slider"></span></label>
+        </div>
+      </div>
+
+      <div class="ap-row">
+        <div class="ap-row-left">
+          <div class="ap-row-icon" style="background:rgba(0,230,118,0.10);color:var(--green);">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+          </div>
+          <span class="ap-row-title">Notify me when revealed</span>
+        </div>
+        <div class="ap-row-right">
+          <label class="cyber-switch"><input type="checkbox" id="ap-notify"><span class="cyber-slider"></span></label>
+        </div>
+      </div>
+
+    </div><!-- /access-policy-card -->
+  </aside>
+
+</div><!-- /create-page-outer -->
+</main>
+
+<!-- Toast -->
+<div id="toast" role="alert" aria-live="polite">
+  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+  <span id="toast-message"></span>
+</div>
+
+<!-- Hidden compat stubs for app.js -->
+<div style="display:none;" aria-hidden="true">
+  <span id="hero-header"></span><span id="trust-strip"></span>
+  <span id="nav-create-btn"></span>
+  <span id="modal-how-it-works"></span><span id="modal-security"></span><span id="modal-faq"></span>
+  <span id="nav-btn-how-it-works"></span><span id="nav-btn-security"></span><span id="nav-btn-faq"></span>
+  <span id="btn-share-sms"></span><span id="btn-share-telegram"></span>
+  <span id="btn-share-whatsapp-result"></span>
+  <span id="zk-active-notice"></span>
+</div>
+
+<script src="/js/app.js"></script>
+<script src="/shared/qrcode.min.js" onerror=""></script>
+<script>
+  // Theme
+  const T=document.getElementById('theme-toggle'),TI=document.getElementById('theme-icon');
+  if(localStorage.getItem('vault_theme')==='light') document.body.classList.add('light-theme');
+  function setTI(l){TI.innerHTML=l?'<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>':'<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';}
+  setTI(document.body.classList.contains('light-theme'));
+  T.addEventListener('click',()=>{const l=document.body.classList.toggle('light-theme');localStorage.setItem('vault_theme',l?'light':'dark');setTI(l);});
+  document.getElementById('mobile-toggle').addEventListener('click',()=>document.getElementById('mobile-drawer').classList.toggle('open'));
+
+  // Sync AP sidebar selects with main form
+  document.getElementById('ap-ttl')?.addEventListener('change',e=>{
+    const s=document.getElementById('ttl-select');if(s){s.value=e.target.value;s.dispatchEvent(new Event('change'));}
+  });
+  document.getElementById('ap-views')?.addEventListener('change',e=>{
+    const s=document.getElementById('views-select');if(s){s.value=e.target.value;s.dispatchEvent(new Event('change'));}
+  });
+  document.getElementById('ap-passphrase')?.addEventListener('change',e=>{
+    const p=document.getElementById('passphrase-input');
+    if(p){p.closest('.config-item-label')?.parentElement?.classList.toggle('ring',e.target.checked);}
+  });
+
+  // Countdown timer from result section
+  let countdownInterval=null;
+  function startCountdown(expiresAt){
+    if(countdownInterval) clearInterval(countdownInterval);
+    const hEl=document.getElementById('countdown-hours');
+    const mEl=document.getElementById('countdown-mins');
+    const sEl=document.getElementById('countdown-secs');
+    const bar=document.getElementById('timer-progress-fill');
+    const total=expiresAt-Date.now();
+    function tick(){
+      const rem=Math.max(0,expiresAt-Date.now());
+      const h=Math.floor(rem/3600000);
+      const m=Math.floor((rem%3600000)/60000);
+      const s=Math.floor((rem%60000)/1000);
+      if(hEl) hEl.textContent=String(h).padStart(2,'0');
+      if(mEl) mEl.textContent=String(m).padStart(2,'0');
+      if(sEl) sEl.textContent=String(s).padStart(2,'0');
+      if(bar) bar.style.width=(rem/total*100)+'%';
+      if(rem<=0) clearInterval(countdownInterval);
     }
-    setThemeIcon(document.body.classList.contains('light-theme'));
-    themeToggle.addEventListener('click', () => {
-      const isLight = document.body.classList.toggle('light-theme');
-      localStorage.setItem('vault_theme', isLight ? 'light' : 'dark');
-      setThemeIcon(isLight);
-    });
-    // Mobile nav
-    document.getElementById('mobile-toggle').addEventListener('click', () => {
-      document.getElementById('mobile-drawer').classList.toggle('open');
-    });
-    // Sidebar live update helpers (called by app.js)
-    const sidebarExpiry = document.getElementById('sidebar-expiry');
-    const sidebarViews = document.getElementById('sidebar-views');
-    document.getElementById('ttl-select')?.addEventListener('change', e => {
-      const opts = { '300':'5 minutes','3600':'1 hour','86400':'24 hours','604800':'7 days','custom':'Custom' };
-      if (sidebarExpiry) sidebarExpiry.textContent = opts[e.target.value] || e.target.value;
-    });
-    document.getElementById('views-select')?.addEventListener('change', e => {
-      if (sidebarViews) sidebarViews.textContent = e.target.value === 'custom' ? 'Custom' : e.target.value + ' view' + (e.target.value === '1' ? '' : 's');
-    });
-    // QR container reference for app.js
-    window.qrContainer = document.getElementById('qr-container');
-    window.qrFrame = document.querySelector('.qr-frame');
-    // Hover links
-    document.querySelectorAll('.hover-link').forEach(a => {
-      a.addEventListener('mouseenter', () => { a.style.background = 'var(--surface-hover)'; a.style.color = 'var(--text-1)'; });
-      a.addEventListener('mouseleave', () => { a.style.background = ''; a.style.color = ''; });
-    });
-  </script>
+    tick();
+    countdownInterval=setInterval(tick,1000);
+  }
+
+  // Hook into app.js result display
+  const origResult=window.showResultSection;
+  window.addEventListener('vault-created',(e)=>{
+    if(e.detail?.expires_at) startCountdown(new Date(e.detail.expires_at).getTime());
+  });
+
+  // Emergency destroy key event
+  document.getElementById('btn-emergency-destroy')?.addEventListener('keydown',e=>{
+    if(e.key==='Enter'||e.key===' '){e.target.click();}
+  });
+</script>
 </body>
 </html>

@@ -4,202 +4,236 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow, noarchive">
-  <meta name="referrer" content="no-referrer">
   <title>Secret Destroyed — Ephemeral Secret Vault</title>
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="stylesheet" href="/css/style.css">
   <style>
-    /* Destroyed page — deep crimson ambient */
-    body::before {
-      background:
-        radial-gradient(ellipse 70% 50% at 50% -10%, rgba(239,68,68,0.12) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 40% at 50% 80%, rgba(127,16,39,0.10) 0%, transparent 60%) !important;
+    /* Full-bleed dark red background matching screenshot 5 */
+    body {
+      background: #0A0000 !important;
+      background-image:
+        radial-gradient(ellipse 80% 60% at 50% -5%, rgba(180,0,0,0.35) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 50% at 50% 80%, rgba(100,0,0,0.20) 0%, transparent 60%),
+        url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23FF0000' fill-opacity='0.015'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") !important;
+    }
+    body::before { display: none !important; }
+
+    /* Red ambient glow particles */
+    .particle { position: fixed; border-radius: 50%; background: rgba(220,30,30,0.70); pointer-events: none; z-index: 0; animation: rise linear infinite; opacity: 0; }
+    @keyframes rise { 0%{opacity:0;transform:translateY(0)} 10%{opacity:0.6} 90%{opacity:0.4} 100%{opacity:0;transform:translateY(-110vh) translateX(20px)} }
+
+    /* Navbar red tint */
+    .navbar { border-bottom-color: rgba(220,30,30,0.20) !important; background: rgba(8,0,0,0.92) !important; }
+
+    /* ── Scene: shattered documents floating ── */
+    .destroyed-scene {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .shard {
+      position: absolute; border-radius: 4px;
+      background: rgba(140,0,0,0.25); border: 1px solid rgba(200,0,0,0.30);
+      box-shadow: 0 0 12px rgba(220,30,30,0.20);
+      animation: shard-float linear infinite;
+    }
+    @keyframes shard-float {
+      0%  { transform: translateY(0) rotate(var(--r)) scale(1); opacity: 0; }
+      10% { opacity: 0.6; }
+      90% { opacity: 0.4; }
+      100% { transform: translateY(-120vh) rotate(calc(var(--r) + 120deg)) scale(0.7); opacity: 0; }
     }
 
-    .destroyed-icon-ring {
-      width: 96px; height: 96px; border-radius: 50%;
-      background: rgba(239,68,68,0.10); border: 1px solid rgba(239,68,68,0.30);
+    /* ── Main card ── */
+    .destroyed-card-wrap {
+      position: relative; z-index: 2;
+      min-height: calc(100vh - 60px);
       display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 28px; color: var(--red-text);
-      box-shadow: 0 0 48px rgba(239,68,68,0.20), 0 0 96px rgba(239,68,68,0.08);
-      animation: float-y 4s ease-in-out infinite;
+      padding: 48px 24px 80px;
     }
 
-    /* Floating crimson particles */
-    .particle {
-      position: fixed; border-radius: 50%;
-      background: #EF4444; pointer-events: none; z-index: 0;
-      animation: rise-up linear infinite; opacity: 0;
+    .destroyed-card {
+      width: 100%; max-width: 600px;
+      background: rgba(15,3,3,0.88);
+      border: 1px solid rgba(200,0,0,0.25);
+      border-radius: 24px; padding: 40px;
+      backdrop-filter: blur(24px);
+      box-shadow: 0 0 80px rgba(180,0,0,0.18), 0 8px 60px rgba(0,0,0,0.80), 0 0 0 1px rgba(255,255,255,0.04);
+      text-align: center;
     }
-    @keyframes rise-up {
-      0%   { opacity: 0;   transform: translateY(0) scale(1); }
-      15%  { opacity: 0.5; }
-      85%  { opacity: 0.4; }
-      100% { opacity: 0;   transform: translateY(-100vh) scale(0.5); }
+
+    /* Unavailable badge — screenshot 5 */
+    .unavail-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 6px 16px; border-radius: 999px;
+      background: rgba(220,30,30,0.15); border: 1px solid rgba(220,30,30,0.40);
+      color: #FF6B6B; font-size: 13px; font-weight: 700;
+      letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 22px;
+    }
+    .unavail-dot {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: #CC0000; color: #fff; font-size: 12px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* Title */
+    .destroyed-title {
+      font-size: clamp(32px, 5vw, 48px); font-weight: 900;
+      letter-spacing: -0.04em; line-height: 1.1; margin-bottom: 14px;
+    }
+    .destroyed-title .word-white { color: #FFFFFF; }
+    .destroyed-title .word-red   { color: #EF4444; margin-left: 6px; }
+
+    /* Subtitle */
+    .destroyed-sub { font-size: 14.5px; color: rgba(180,160,160,0.85); line-height: 1.7; margin-bottom: 28px; max-width: 440px; margin-left: auto; margin-right: auto; }
+
+    /* Info box */
+    .destroyed-info {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px; padding: 20px 22px; margin-bottom: 28px; text-align: left;
+    }
+    .destroyed-info-title { font-size: 14px; font-weight: 700; color: #FFF; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .destroyed-info-icon  { width: 32px; height: 32px; border-radius: 8px; background: rgba(220,30,30,0.15); border: 1px solid rgba(220,30,30,0.30); color: #FF6B6B; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .destroyed-info-body  { font-size: 13px; color: rgba(180,160,160,0.80); line-height: 1.65; }
+
+    /* CTAs */
+    .destroyed-cta-primary {
+      width: 100%; height: 52px;
+      background: linear-gradient(135deg, #CC0000, #FF3333);
+      border: none; border-radius: 18px; color: #fff;
+      font-size: 15px; font-weight: 800; cursor: pointer;
+      box-shadow: 0 0 30px rgba(200,0,0,0.45);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: box-shadow 0.2s, transform 0.15s; margin-bottom: 8px;
+      text-decoration: none;
+    }
+    .destroyed-cta-primary:hover { box-shadow: 0 0 48px rgba(200,0,0,0.65); transform: translateY(-1px); }
+
+    .destroyed-cta-secondary {
+      width: 100%; height: 46px;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 16px; color: rgba(180,160,160,0.80); font-size: 14px; font-weight: 600;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px;
+      transition: all 0.2s; text-decoration: none;
+    }
+    .destroyed-cta-secondary:hover { background: rgba(255,255,255,0.07); color: #fff; }
+
+    /* Red glow around card edge */
+    .destroyed-card::before {
+      content: ''; position: absolute; inset: -1px; border-radius: 25px;
+      background: linear-gradient(135deg, rgba(200,0,0,0.15), transparent, rgba(180,0,0,0.10));
+      pointer-events: none; z-index: -1;
     }
   </style>
 </head>
-<body id="top">
-  <!-- Floating particles -->
-  <div class="particle" style="width:3px;height:3px;left:12%;bottom:0;animation-duration:9s;animation-delay:0s;"></div>
-  <div class="particle" style="width:2px;height:2px;left:30%;bottom:0;animation-duration:12s;animation-delay:2s;"></div>
-  <div class="particle" style="width:4px;height:4px;left:60%;bottom:0;animation-duration:10s;animation-delay:1s;"></div>
-  <div class="particle" style="width:2px;height:2px;left:78%;bottom:0;animation-duration:14s;animation-delay:3.5s;"></div>
-  <div class="particle" style="width:3px;height:3px;left:50%;bottom:0;animation-duration:11s;animation-delay:5s;"></div>
+<body>
+  <!-- Floating shards -->
+  <div class="destroyed-scene" aria-hidden="true">
+    <div class="shard" style="width:60px;height:80px;top:10%;left:5%;animation-duration:12s;animation-delay:0s;--r:-20deg;"></div>
+    <div class="shard" style="width:45px;height:60px;top:20%;right:8%;animation-duration:15s;animation-delay:2s;--r:35deg;"></div>
+    <div class="shard" style="width:80px;height:100px;top:5%;right:20%;animation-duration:10s;animation-delay:4s;--r:-45deg;"></div>
+    <div class="shard" style="width:50px;height:70px;top:30%;left:2%;animation-duration:13s;animation-delay:1s;--r:15deg;"></div>
+    <div class="shard" style="width:35px;height:50px;bottom:30%;right:5%;animation-duration:11s;animation-delay:3s;--r:-30deg;"></div>
+    <div class="shard" style="width:65px;height:90px;bottom:20%;left:10%;animation-duration:14s;animation-delay:5s;--r:50deg;"></div>
+    <div class="particle" style="width:3px;height:3px;left:15%;bottom:0;animation-duration:9s;animation-delay:0;"></div>
+    <div class="particle" style="width:2px;height:2px;left:40%;bottom:0;animation-duration:12s;animation-delay:2s;"></div>
+    <div class="particle" style="width:3px;height:3px;left:70%;bottom:0;animation-duration:10s;animation-delay:1s;"></div>
+    <div class="particle" style="width:2px;height:2px;left:85%;bottom:0;animation-duration:14s;animation-delay:3.5s;"></div>
+  </div>
 
-  <!-- NAVBAR -->
-  <header class="navbar" style="border-bottom-color:rgba(239,68,68,0.15);">
+  <!-- Navbar (red tint) -->
+  <header class="navbar">
     <div class="nav-container">
       <a href="/" class="nav-brand">
-        <div class="nav-brand-icon" style="background:rgba(239,68,68,0.15);border-color:rgba(239,68,68,0.30);">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--red-text)" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <div class="nav-brand-icon" style="background:rgba(180,0,0,0.25);border-color:rgba(200,0,0,0.35);">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#FF6B6B" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
         </div>
-        <span class="brand-name"><span class="brand-ephemeral">Ephemeral</span><span class="brand-vault">Secret Vault</span></span>
+        <span class="brand-name"><span class="brand-ephemeral">Ephemeral</span>&nbsp;<span style="color:#FF6B6B;">Secret Vault</span></span>
       </a>
+      <nav class="nav-links-row">
+        <a href="/">Home</a><a href="/create">Product</a><a href="/security">Security</a>
+        <a href="/extension">Extension</a><a href="/how-it-works">How It Works</a>
+      </nav>
       <div class="nav-actions">
-        <span class="status-pill status-danger">
-          <span class="status-dot" style="background:var(--red);box-shadow:0 0 6px var(--red);"></span>
-          Destroyed
-        </span>
-        <button type="button" class="btn-icon-plain" id="theme-toggle" aria-label="Toggle theme">
+        <span class="status-pill status-danger"><span class="status-dot" style="background:#EF4444;box-shadow:0 0 6px #EF4444;"></span>Destroyed</span>
+        <button class="btn-icon-plain" id="theme-toggle" aria-label="Toggle theme">
           <svg id="theme-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
         </button>
-        <button type="button" class="mobile-nav-toggle" id="mobile-toggle" aria-label="Open menu">
+        <button class="mobile-nav-toggle" id="mobile-toggle" aria-label="Open menu">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
         </button>
       </div>
     </div>
   </header>
-
-  <div class="mobile-menu-drawer" id="mobile-drawer">
-    <a href="/">Home</a><a href="/create">Create Secret</a><a href="/dashboard">Dashboard</a>
+  <div class="mobile-menu-drawer" id="mobile-drawer" style="background:rgba(8,0,0,0.98);border-bottom-color:rgba(200,0,0,0.20);">
+    <a href="/">Home</a><a href="/create">Product</a><a href="/security">Security</a>
   </div>
 
-  <!-- MAIN -->
-  <main class="viewport-layout" style="padding-top:64px;position:relative;z-index:1;">
-    <div class="centered-column" style="max-width:520px;">
+  <!-- Main content -->
+  <div class="destroyed-card-wrap" style="position:relative;z-index:2;">
+    <div class="destroyed-card">
 
-      <div style="text-align:center;">
-
-        <!-- Badge -->
-        <div style="display:inline-flex;align-items:center;gap:7px;padding:5px 14px;border-radius:var(--r-pill);background:rgba(239,68,68,0.10);border:1px solid rgba(239,68,68,0.28);color:var(--red-text);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:24px;">
-          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
-          <span id="destroyed-badge-label">Secret Destroyed</span>
-        </div>
-
-        <!-- Destroyed icon -->
-        <div class="destroyed-icon-ring">
-          <svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5">
-            <polyline points="3 6 5 6 21 6"></polyline>
-            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            <line x1="10" y1="11" x2="10" y2="17"></line>
-            <line x1="14" y1="11" x2="14" y2="17"></line>
-          </svg>
-        </div>
-
-        <!-- Headline -->
-        <h1 style="font-size:clamp(28px,5vw,42px);font-weight:800;letter-spacing:-0.04em;line-height:1.1;margin-bottom:14px;">
-          <span style="color:var(--text-1);">Your Secret Has</span><br>
-          <span style="color:var(--red-text);">Been Destroyed</span>
-        </h1>
-
-        <p style="font-size:14px;color:var(--text-3);line-height:1.7;max-width:420px;margin:0 auto 32px;">
-          This vault has been permanently purged from the server. All encrypted data, ciphertext, and metadata have been irreversibly deleted — no recovery is possible.
-        </p>
-
-        <!-- Status card -->
-        <div class="card" style="text-align:left;margin-bottom:28px;border-color:rgba(239,68,68,0.20);">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border-subtle);">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--red-text)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            <span style="font-size:12px;font-weight:700;color:var(--text-1);">Destruction Record</span>
-          </div>
-          <div class="state-meta-row" style="padding:8px 0;border-bottom:1px solid var(--border-subtle);font-size:13px;display:flex;align-items:center;justify-content:space-between;">
-            <span style="color:var(--text-3);">Status</span>
-            <span class="badge badge-revoked" id="destruction-status">Permanently Destroyed</span>
-          </div>
-          <div class="state-meta-row" style="padding:8px 0;border-bottom:1px solid var(--border-subtle);font-size:13px;display:flex;align-items:center;justify-content:space-between;">
-            <span style="color:var(--text-3);">Access</span>
-            <span style="font-family:var(--font-mono);font-size:12px;color:var(--red-text);">Closed Permanently</span>
-          </div>
-          <div class="state-meta-row" style="padding:8px 0;border-bottom:1px solid var(--border-subtle);font-size:13px;display:flex;align-items:center;justify-content:space-between;">
-            <span style="color:var(--text-3);">Reason</span>
-            <span style="font-family:var(--font-mono);font-size:12px;color:var(--text-2);" id="destruction-reason">Vault Destroyed</span>
-          </div>
-          <div class="state-meta-row" style="padding:8px 0;border-bottom:1px solid var(--border-subtle);font-size:13px;display:flex;align-items:center;justify-content:space-between;">
-            <span style="color:var(--text-3);">Recovery</span>
-            <span style="font-family:var(--font-mono);font-size:12px;color:var(--text-2);">Impossible</span>
-          </div>
-          <div class="state-meta-row" style="padding:8px 0;font-size:13px;display:flex;align-items:center;justify-content:space-between;">
-            <span style="color:var(--text-3);">Timestamp</span>
-            <span style="font-family:var(--font-mono);font-size:12px;color:var(--text-2);" id="destruction-timestamp">—</span>
-          </div>
-        </div>
-
-        <!-- Info banner -->
-        <div class="alert alert-info" style="text-align:left;margin-bottom:28px;">
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" class="alert-icon"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-          <div style="font-size:12px;line-height:1.6;">Ephemeral Secret Vault operates on a zero-trace architecture. No secret content, encryption key, or metadata is ever retained after destruction.</div>
-        </div>
-
-        <!-- CTAs -->
-        <div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
-          <a href="/create" class="btn-hero-primary-pill" style="height:46px;padding:0 24px;font-size:14px;">
-            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            Create a New Secret
-          </a>
-          <a href="/" class="btn-hero-glass-pill" style="height:46px;padding:0 20px;font-size:14px;">Return Home</a>
-        </div>
-
+      <!-- Unavailable badge — exact screenshot 5 -->
+      <div class="unavail-badge">
+        <div class="unavail-dot">!</div>
+        <span id="destroyed-badge-label">Unavailable</span>
       </div>
+
+      <!-- Headline -->
+      <h1 class="destroyed-title">
+        <span class="word-white">Secret</span>
+        <span class="word-red" id="destroyed-headline-word">Not Found</span>
+      </h1>
+
+      <!-- Subtitle -->
+      <p class="destroyed-sub" id="destroyed-subtitle-text">
+        This secure link does not exist, has expired, or was already removed from storage.
+      </p>
+
+      <!-- Zero-Trace info box — exact screenshot 5 -->
+      <div class="destroyed-info">
+        <div class="destroyed-info-title">
+          <div class="destroyed-info-icon">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+          </div>
+          Zero-Trace Disposal
+        </div>
+        <div class="destroyed-info-body">
+          Secrets in Ephemeral Secret Vault are designed to vanish. Once burned or expired, all
+          traces are physically overwritten in the database and RAM memory is zeroed.
+          Recovery is mathematically impossible.
+        </div>
+      </div>
+
+      <!-- CTAs — exact screenshot 5 -->
+      <a href="/create" class="destroyed-cta-primary">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        + Create a New Secret →
+      </a>
+      <a href="/" class="destroyed-cta-secondary">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        ← Return to Home
+      </a>
+
     </div>
-  </main>
+  </div>
 
   <script>
-    // Parse query params for dynamic state
-    const params = new URLSearchParams(window.location.search);
-    const type   = params.get('type') || '';
-    const reason = params.get('reason') || '';
+    // Parse query params for dynamic text
+    const p = new URLSearchParams(window.location.search);
+    const type = p.get('type') || '';
+    const headlineWords = { file:'File Burned', link:'Link Expired', onetime:'Secret Consumed', manual:'Vault Destroyed', burned:'Destroyed' };
+    const subs = { expired:'This vault has exceeded its configured TTL and was automatically purged.', file:'This file vault has been permanently destroyed.', onetime:'This one-time secret has been consumed and permanently shredded.', manual:'This vault was manually destroyed by the creator.' };
+    const hw = document.getElementById('destroyed-headline-word');
+    const sb = document.getElementById('destroyed-subtitle-text');
+    const bl = document.getElementById('destroyed-badge-label');
+    if(headlineWords[type]) hw.textContent = headlineWords[type];
+    if(subs[type]||subs[p.get('reason')]) sb.textContent = subs[type]||subs[p.get('reason')];
+    if(bl && type) bl.textContent = type==='expired'?'Expired':'Destroyed';
 
-    const labels = {
-      file:    'File Burned',
-      link:    'Secure Link Expired',
-      onetime: 'One-Time Secret Consumed',
-      manual:  'Vault Manually Destroyed',
-    };
-    const reasons = {
-      expired:     'TTL Exceeded',
-      onetime:     'Single-use limit reached',
-      manual:      'Manually destroyed by creator',
-      admin:       'Revoked by administrator',
-    };
-
-    const badgeEl    = document.getElementById('destroyed-badge-label');
-    const reasonEl   = document.getElementById('destruction-reason');
-    const statusEl   = document.getElementById('destruction-status');
-    const tsEl       = document.getElementById('destruction-timestamp');
-
-    if (badgeEl && labels[type])   badgeEl.textContent  = labels[type];
-    if (reasonEl && reasons[reason]) reasonEl.textContent = reasons[reason];
-    if (tsEl) tsEl.textContent = new Date().toLocaleString();
-
-    // Theme
-    const themeToggle = document.getElementById('theme-toggle');
-    const themeIcon   = document.getElementById('theme-icon');
-    if (localStorage.getItem('vault_theme') === 'light') document.body.classList.add('light-theme');
-    function setThemeIcon(l) {
-      themeIcon.innerHTML = l
-        ? '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>'
-        : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
-    }
-    setThemeIcon(document.body.classList.contains('light-theme'));
-    themeToggle?.addEventListener('click', () => {
-      const isLight = document.body.classList.toggle('light-theme');
-      localStorage.setItem('vault_theme', isLight ? 'light' : 'dark');
-      setThemeIcon(isLight);
-    });
-    document.getElementById('mobile-toggle')?.addEventListener('click', () => {
-      document.getElementById('mobile-drawer').classList.toggle('open');
-    });
+    const T=document.getElementById('theme-toggle'),TI=document.getElementById('theme-icon');
+    function setTI(l){TI.innerHTML=l?'<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line>':'<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';}
+    setTI(false);
+    T.addEventListener('click',()=>{const l=document.body.classList.toggle('light-theme');localStorage.setItem('vault_theme',l?'light':'dark');setTI(l);});
+    document.getElementById('mobile-toggle').addEventListener('click',()=>document.getElementById('mobile-drawer').classList.toggle('open'));
   </script>
 </body>
 </html>

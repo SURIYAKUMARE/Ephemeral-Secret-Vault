@@ -4,166 +4,105 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow, noarchive">
-  <meta name="referrer" content="no-referrer">
   <title>Vault Expired — Ephemeral Secret Vault</title>
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="stylesheet" href="/css/style.css">
   <style>
+    /* Deep space + pink/purple expired theme matching screenshots */
     body::before {
       background:
-        radial-gradient(ellipse 70% 50% at 50% -10%, rgba(245,158,11,0.10) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 40% at 50% 80%, rgba(180,120,0,0.07) 0%, transparent 60%) !important;
+        radial-gradient(ellipse 70% 50% at 50% -8%, rgba(224,64,251,0.18) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 50% 90%, rgba(124,58,237,0.12) 0%, transparent 55%) !important;
     }
 
-    .expired-icon-ring {
-      width: 96px; height: 96px; border-radius: 50%;
-      background: rgba(245,158,11,0.10); border: 1px solid rgba(245,158,11,0.28);
+    .expired-card-wrap {
+      min-height: calc(100vh - 60px);
       display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 28px; color: var(--yellow-text);
-      box-shadow: 0 0 48px rgba(245,158,11,0.18);
-      animation: float-y 4s ease-in-out infinite;
+      padding: 48px 24px 80px;
     }
-
-    @keyframes hourglass-spin {
-      0%, 100% { transform: rotate(0deg); }
-      45%       { transform: rotate(0deg); }
-      50%       { transform: rotate(180deg); }
-      95%       { transform: rotate(180deg); }
+    .expired-card {
+      width: 100%; max-width: 560px;
+      background: var(--bg-card); border: 1px solid var(--border-glass);
+      border-radius: var(--r-2xl); padding: 40px; text-align: center;
+      backdrop-filter: blur(24px); box-shadow: var(--shadow-card);
     }
-    .hourglass-anim { animation: hourglass-spin 4s ease-in-out infinite; }
+    .unavail-badge-purple {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 5px 16px; border-radius: 999px;
+      background: rgba(224,64,251,0.10); border: 1px solid rgba(224,64,251,0.28);
+      color: var(--pink); font-size: 12px; font-weight: 700;
+      letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 20px;
+    }
+    .expired-hourglass {
+      font-size: 56px; display: block; margin: 0 auto 20px;
+      animation: float-y 3.5s ease-in-out infinite;
+    }
+    .expired-title { font-size: 36px; font-weight: 900; letter-spacing: -0.04em; color: var(--t1); margin-bottom: 8px; }
+    .expired-title .accent { color: var(--pink); }
+    .expired-desc { font-size: 14px; color: var(--t2); line-height: 1.7; margin-bottom: 10px; max-width: 400px; margin-left: auto; margin-right: auto; }
+    .expired-note {
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass);
+      border-radius: var(--r-xl); padding: 14px 18px; margin-bottom: 24px; text-align: left;
+      font-size: 13px; color: var(--t2); line-height: 1.65;
+    }
+    .expired-cta {
+      width: 100%; height: 52px;
+      background: var(--grad-btn); border: none; border-radius: var(--r-2xl);
+      color: #fff; font-size: 15px; font-weight: 800; cursor: pointer;
+      box-shadow: var(--shadow-btn); display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: all 0.2s; text-decoration: none; margin-bottom: 8px;
+    }
+    .expired-cta:hover { box-shadow: 0 0 40px rgba(124,58,237,0.65); transform: translateY(-1px); }
   </style>
 </head>
 <body id="top">
-
-  <!-- NAVBAR -->
-  <header class="navbar" style="border-bottom-color:rgba(245,158,11,0.15);">
+  <header class="navbar">
     <div class="nav-container">
       <a href="/" class="nav-brand">
-        <div class="nav-brand-icon" style="background:rgba(245,158,11,0.12);border-color:rgba(245,158,11,0.28);">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--yellow-text)" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-        </div>
-        <span class="brand-name"><span class="brand-ephemeral">Ephemeral</span><span class="brand-vault">Secret Vault</span></span>
+        <div class="nav-brand-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+        <span class="brand-name"><span class="brand-ephemeral">Ephemeral</span>&nbsp;<span class="brand-vault">Secret Vault</span></span>
       </a>
-      <nav class="nav-links-row" aria-label="Main navigation">
-        <a href="/create">Product</a>
-        <a href="/security">Security</a>
-        <a href="/extension">Extension</a>
-        <a href="/how-it-works">How It Works</a>
-      </nav>
+      <nav class="nav-links-row"><a href="/create">Product</a><a href="/security">Security</a><a href="/extension">Extension</a><a href="/how-it-works">How It Works</a></nav>
       <div class="nav-actions">
-        <span class="status-pill status-warning">
-          <span class="status-dot" style="background:var(--yellow);"></span>
-          Expired
-        </span>
-        <button type="button" class="btn-icon-plain" id="theme-toggle" aria-label="Toggle theme">
-          <svg id="theme-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-        </button>
+        <span class="status-pill status-warning"><span class="status-dot" style="background:var(--yellow);"></span>Expired</span>
+        <button class="btn-icon-plain" id="theme-toggle"><svg id="theme-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg></button>
         <a href="/create" class="btn-nav-cta">Create Vault →</a>
-        <button type="button" class="mobile-nav-toggle" id="mobile-toggle" aria-label="Open menu">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-        </button>
+        <button class="mobile-nav-toggle" id="mobile-toggle"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
       </div>
     </div>
   </header>
+  <div class="mobile-menu-drawer" id="mobile-drawer"><a href="/">Home</a><a href="/create">Product</a></div>
 
-  <div class="mobile-menu-drawer" id="mobile-drawer">
-    <a href="/">Home</a><a href="/create">Product</a><a href="/security">Security</a>
-    <a href="/extension">Extension</a><a href="/how-it-works">How It Works</a>
+  <div class="expired-card-wrap">
+    <div class="expired-card">
+      <div class="unavail-badge-purple">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        SECRET UNAVAILABLE
+      </div>
+      <span class="expired-hourglass" aria-hidden="true">⌛</span>
+      <h1 class="expired-title">Secret <span class="accent">Expired</span></h1>
+      <p class="expired-desc">This secure link is no longer available.</p>
+      <div class="expired-note">
+        The expiration timeframe set for this secret has passed, and the content was securely purged from active storage. This is expected behavior — Ephemeral Secret Vault stores no plaintext and retains no expired records.
+      </div>
+      <a href="/create" class="expired-cta">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        + Create a New Secret →
+      </a>
+      <a href="/" style="display:flex;align-items:center;justify-content:center;gap:6px;color:var(--t3);font-size:13.5px;font-weight:600;padding:10px;border-radius:var(--r-xl);transition:color 0.2s;" onmouseover="this.style.color='var(--t1)'" onmouseout="this.style.color='var(--t3)'">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        Return to Home
+      </a>
+    </div>
   </div>
 
-  <!-- MAIN -->
-  <main class="viewport-layout" style="padding-top:64px;">
-    <div class="centered-column" style="max-width:520px;">
-      <div style="text-align:center;">
-
-        <!-- Badge -->
-        <div style="display:inline-flex;align-items:center;gap:7px;padding:5px 14px;border-radius:var(--r-pill);background:rgba(245,158,11,0.10);border:1px solid rgba(245,158,11,0.28);color:var(--yellow-text);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:24px;">
-          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-          Vault Lifecycle Terminated
-        </div>
-
-        <!-- Hourglass icon -->
-        <div class="expired-icon-ring">
-          <svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5" class="hourglass-anim">
-            <path d="M5 22h14"></path><path d="M5 2h14"></path>
-            <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"></path>
-            <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"></path>
-          </svg>
-        </div>
-
-        <!-- Headline -->
-        <h1 style="font-size:clamp(28px,5vw,42px);font-weight:800;letter-spacing:-0.04em;line-height:1.1;margin-bottom:14px;">
-          <span style="color:var(--text-1);">Vault Link</span><br>
-          <span style="color:var(--yellow-text);">Expired</span>
-        </h1>
-
-        <p style="font-size:14px;color:var(--text-3);line-height:1.7;max-width:420px;margin:0 auto 32px;">
-          This secure vault has exceeded its configured time-to-live (TTL). The encrypted content has been automatically purged from the server — no data remains.
-        </p>
-
-        <!-- Status card -->
-        <div class="card" style="text-align:left;margin-bottom:24px;border-color:rgba(245,158,11,0.18);">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border-subtle);">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--yellow-text)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            <span style="font-size:12px;font-weight:700;color:var(--text-1);">Expiry Record</span>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:2px;">
-            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-subtle);font-size:13px;">
-              <span style="color:var(--text-3);">Status</span>
-              <span class="badge badge-expired">TTL Exceeded</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-subtle);font-size:13px;">
-              <span style="color:var(--text-3);">Access</span>
-              <span style="font-family:var(--font-mono);font-size:12px;color:var(--yellow-text);">Permanently Closed</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-subtle);font-size:13px;">
-              <span style="color:var(--text-3);">Data Retained</span>
-              <span style="font-family:var(--font-mono);font-size:12px;color:var(--green-text);">None</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:13px;">
-              <span style="color:var(--text-3);">Recovery</span>
-              <span style="font-family:var(--font-mono);font-size:12px;color:var(--text-2);">Not possible</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Info banner -->
-        <div class="alert alert-warning" style="text-align:left;margin-bottom:28px;">
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" class="alert-icon"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-          <div style="font-size:12px;line-height:1.6;">Vault data is swept by a background process that purges all records whose TTL has elapsed. Zero plaintext or ciphertext is retained after expiry.</div>
-        </div>
-
-        <!-- CTAs -->
-        <div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
-          <a href="/create" class="btn-hero-primary-pill" style="height:46px;padding:0 24px;font-size:14px;">
-            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            Create a New Secret
-          </a>
-          <a href="/" class="btn-hero-glass-pill" style="height:46px;padding:0 20px;font-size:14px;">Return Home</a>
-        </div>
-
-      </div>
-    </div>
-  </main>
-
   <script>
-    const themeToggle = document.getElementById('theme-toggle');
-    const themeIcon   = document.getElementById('theme-icon');
-    if (localStorage.getItem('vault_theme') === 'light') document.body.classList.add('light-theme');
-    function setThemeIcon(l) {
-      themeIcon.innerHTML = l
-        ? '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>'
-        : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
-    }
-    setThemeIcon(document.body.classList.contains('light-theme'));
-    themeToggle?.addEventListener('click', () => {
-      const isLight = document.body.classList.toggle('light-theme');
-      localStorage.setItem('vault_theme', isLight ? 'light' : 'dark');
-      setThemeIcon(isLight);
-    });
-    document.getElementById('mobile-toggle')?.addEventListener('click', () => {
-      document.getElementById('mobile-drawer').classList.toggle('open');
-    });
+    const T=document.getElementById('theme-toggle'),TI=document.getElementById('theme-icon');
+    if(localStorage.getItem('vault_theme')==='light') document.body.classList.add('light-theme');
+    function setTI(l){TI.innerHTML=l?'<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line>':'<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';}
+    setTI(document.body.classList.contains('light-theme'));
+    T.addEventListener('click',()=>{const l=document.body.classList.toggle('light-theme');localStorage.setItem('vault_theme',l?'light':'dark');setTI(l);});
+    document.getElementById('mobile-toggle').addEventListener('click',()=>document.getElementById('mobile-drawer').classList.toggle('open'));
   </script>
 </body>
 </html>

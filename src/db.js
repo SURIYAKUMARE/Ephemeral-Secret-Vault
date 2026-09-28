@@ -51,6 +51,37 @@ function initDb(dbPath = process.env.DB_PATH || 'vault.db') {
     db.exec('ALTER TABLE secrets ADD COLUMN passphrase_salt TEXT;');
   }
 
+  // ─── WhatsApp Message Tracking Table (Migration v2) ──────────────────────
+  // Tracks messages dispatched via WhatsApp Business Cloud API.
+  // Statuses: scheduled | processing | sent | delivered | read |
+  //           deleted | failed | unsupported | expired | cancelled
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS whatsapp_messages (
+      id                          TEXT PRIMARY KEY,
+      secret_id                   TEXT NOT NULL,
+      whatsapp_message_id         TEXT,
+      recipient                   TEXT NOT NULL,
+      sent_at                     INTEGER,
+      delete_at                   INTEGER,
+      deletion_status             TEXT NOT NULL DEFAULT 'scheduled',
+      deletion_attempts           INTEGER NOT NULL DEFAULT 0,
+      last_deletion_attempt       INTEGER,
+      deleted_at                  INTEGER,
+      deletion_error              TEXT,
+      delivery_status             TEXT,
+      processing_locked_at        INTEGER,
+      processing_lock_id          TEXT,
+      vault_url                   TEXT NOT NULL,
+      created_at                  INTEGER NOT NULL,
+      cancelled_at                INTEGER,
+      cancel_reason               TEXT
+    );
+    CREATE INDEX IF NOT EXISTS idx_wa_secret_id   ON whatsapp_messages(secret_id);
+    CREATE INDEX IF NOT EXISTS idx_wa_status       ON whatsapp_messages(deletion_status);
+    CREATE INDEX IF NOT EXISTS idx_wa_delete_at    ON whatsapp_messages(delete_at);
+    CREATE INDEX IF NOT EXISTS idx_wa_wamid        ON whatsapp_messages(whatsapp_message_id);
+  `);
+
   dbInstance = db;
   return dbInstance;
 }
@@ -243,4 +274,251 @@ module.exports = {
   sweepExpired,
   walCheckpoint,
   closeDb
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// WHATSAPP MESSAGE DB HELPERS
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Creates a new whatsapp_messages tracking record.
+ */
+function createWhatsAppMessage({
+  id,
+  secret_id,
+  recipient,
+  delete_at,
+  vault_url,
+  created_at = Date.now()
+}) {
+  const db = getDb();
+  db.prepare(`
+    INSERT INTO whatsapp_messages
+      (id, secret_id, recipient, delete_at, deletion_status, vault_url, created_at)
+    VALUES (?, ?, ?, ?, 'scheduled', ?, ?)
+  `).run(id, secret_id, recipient, delete_at, vault_url, created_at);
+}
+
+/**
+ * Stores the WhatsApp message ID (wamid) returned by the Cloud API after send.
+ */
+function setWhatsAppMessageId(id, whatsapp_message_id) {
+  const db = getDb();
+  db.prepare(`
+    UPDATE whatsapp_messages
+    SET whatsapp_message_id = ?, sent_at = ?, deletion_status = 'sent'
+    WHERE id = ?
+  `).run(whatsapp_message_id, Date.now(), id);
+}
+
+/**
+ * Marks a message as failed-to-send.
+ */
+function setWhatsAppSendFailed(id, error) {
+  const db = getDb();
+  db.prepare(`
+    UPDATE whatsapp_messages
+    SET deletion_status = 'failed', deletion_error = ?
+    WHERE id = ?
+  `).run(String(error).slice(0, 1024), id);
+}
+
+/**
+ * Retrieves records whose delete_at has arrived and are not yet processed.
+ * Uses a processing lock to prevent duplicate agent execution.
+ */
+function claimDueWhatsAppMessages(lockId, now = Date.now(), limit = 50) {
+  const db = getDb();
+  const lockWindow = 5 * 60 * 1000; // 5-minute lock window
+
+  return db.transaction(() => {
+    // Release stale locks (older than 5 min)
+    db.prepare(`
+      UPDATE whatsapp_messages
+      SET processing_locked_at = NULL, processing_lock_id = NULL
+      WHERE processing_locked_at IS NOT NULL
+        AND processing_locked_at < ?
+        AND deletion_status IN ('sent', 'scheduled', 'failed')
+    `).run(now - lockWindow);
+
+    // Find and claim due messages (max_attempts = 5)
+    const rows = db.prepare(`
+      SELECT * FROM whatsapp_messages
+      WHERE delete_at <= ?
+        AND deletion_status IN ('sent', 'scheduled', 'failed')
+        AND deletion_attempts < 5
+        AND (processing_locked_at IS NULL OR processing_locked_at < ?)
+        AND cancelled_at IS NULL
+      ORDER BY delete_at ASC
+      LIMIT ?
+    `).all(now, now - lockWindow, limit);
+
+    if (rows.length === 0) return [];
+
+    const ids = rows.map(r => r.id);
+    const placeholders = ids.map(() => '?').join(',');
+    db.prepare(`
+      UPDATE whatsapp_messages
+      SET processing_locked_at = ?, processing_lock_id = ?, deletion_status = 'processing'
+      WHERE id IN (${placeholders})
+    `).run(now, lockId, ...ids);
+
+    return rows;
+  })();
+}
+
+/**
+ * Marks deletion as unsupported (API does not support deleting sent messages).
+ */
+function markWhatsAppDeletionUnsupported(id, reason) {
+  const db = getDb();
+  db.prepare(`
+    UPDATE whatsapp_messages
+    SET deletion_status = 'unsupported',
+        deletion_error = ?,
+        processing_locked_at = NULL,
+        processing_lock_id = NULL
+    WHERE id = ?
+  `).run(String(reason).slice(0, 512), id);
+}
+
+/**
+ * Marks deletion as confirmed-deleted (only call when API confirms).
+ */
+function markWhatsAppDeletionDeleted(id) {
+  const db = getDb();
+  db.prepare(`
+    UPDATE whatsapp_messages
+    SET deletion_status = 'deleted',
+        deleted_at = ?,
+        deletion_error = NULL,
+        processing_locked_at = NULL,
+        processing_lock_id = NULL
+    WHERE id = ?
+  `).run(Date.now(), id);
+}
+
+/**
+ * Records a failed deletion attempt with retry scheduling.
+ */
+function recordWhatsAppDeletionAttempt(id, error) {
+  const db = getDb();
+  db.prepare(`
+    UPDATE whatsapp_messages
+    SET deletion_attempts = deletion_attempts + 1,
+        last_deletion_attempt = ?,
+        deletion_error = ?,
+        deletion_status = CASE
+          WHEN deletion_attempts + 1 >= 5 THEN 'failed'
+          ELSE 'sent'
+        END,
+        processing_locked_at = NULL,
+        processing_lock_id = NULL
+    WHERE id = ?
+  `).run(Date.now(), String(error).slice(0, 1024), id);
+}
+
+/**
+ * Marks a scheduled deletion as expired (secret already burned or TTL elapsed).
+ */
+function markWhatsAppDeletionExpired(id) {
+  const db = getDb();
+  db.prepare(`
+    UPDATE whatsapp_messages
+    SET deletion_status = 'expired',
+        processing_locked_at = NULL,
+        processing_lock_id = NULL
+    WHERE id = ?
+  `).run(id);
+}
+
+/**
+ * Cancels a scheduled deletion.
+ */
+function cancelWhatsAppDeletion(id, reason) {
+  const db = getDb();
+  db.prepare(`
+    UPDATE whatsapp_messages
+    SET deletion_status = 'cancelled',
+        cancelled_at = ?,
+        cancel_reason = ?,
+        processing_locked_at = NULL,
+        processing_lock_id = NULL
+    WHERE id = ? AND deletion_status NOT IN ('deleted', 'unsupported')
+  `).run(Date.now(), String(reason || '').slice(0, 256), id);
+}
+
+/**
+ * Updates delivery status from webhook event.
+ */
+function updateWhatsAppDeliveryStatus(whatsapp_message_id, delivery_status) {
+  const db = getDb();
+  db.prepare(`
+    UPDATE whatsapp_messages
+    SET delivery_status = ?
+    WHERE whatsapp_message_id = ?
+  `).run(delivery_status, whatsapp_message_id);
+}
+
+/**
+ * Gets a single WhatsApp message record by internal ID.
+ */
+function getWhatsAppMessage(id) {
+  const db = getDb();
+  return db.prepare('SELECT * FROM whatsapp_messages WHERE id = ?').get(id);
+}
+
+/**
+ * Gets a WhatsApp message record by secret_id.
+ */
+function getWhatsAppMessageBySecretId(secret_id) {
+  const db = getDb();
+  return db.prepare(
+    'SELECT * FROM whatsapp_messages WHERE secret_id = ? ORDER BY created_at DESC LIMIT 1'
+  ).get(secret_id);
+}
+
+/**
+ * Admin: paginated list of all WhatsApp message records.
+ */
+function listWhatsAppMessages({ limit = 50, offset = 0, status = null } = {}) {
+  const db = getDb();
+  if (status) {
+    return db.prepare(
+      'SELECT * FROM whatsapp_messages WHERE deletion_status = ? ORDER BY created_at DESC LIMIT ? OFFSET ?'
+    ).all(status, limit, offset);
+  }
+  return db.prepare(
+    'SELECT * FROM whatsapp_messages ORDER BY created_at DESC LIMIT ? OFFSET ?'
+  ).all(limit, offset);
+}
+
+/**
+ * Admin: counts grouped by status.
+ */
+function countWhatsAppMessagesByStatus() {
+  const db = getDb();
+  return db.prepare(`
+    SELECT deletion_status, COUNT(*) as count
+    FROM whatsapp_messages
+    GROUP BY deletion_status
+  `).all();
+}
+
+module.exports = {
+  ...module.exports,
+  createWhatsAppMessage,
+  setWhatsAppMessageId,
+  setWhatsAppSendFailed,
+  claimDueWhatsAppMessages,
+  markWhatsAppDeletionUnsupported,
+  markWhatsAppDeletionDeleted,
+  recordWhatsAppDeletionAttempt,
+  markWhatsAppDeletionExpired,
+  cancelWhatsAppDeletion,
+  updateWhatsAppDeliveryStatus,
+  getWhatsAppMessage,
+  getWhatsAppMessageBySecretId,
+  listWhatsAppMessages,
+  countWhatsAppMessagesByStatus
 };

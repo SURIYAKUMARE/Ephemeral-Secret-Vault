@@ -3,12 +3,32 @@
   "functions": {
     "api/index.js": {
       "includeFiles": "public/**"
+    },
+    "api/cron/whatsapp-cleanup.js": {
+      "maxDuration": 60
+    },
+    "api/webhooks/whatsapp.js": {
+      "maxDuration": 10
     }
   },
   "rewrites": [
     {
+      "source": "/api/cron/whatsapp-cleanup",
+      "destination": "/api/cron/whatsapp-cleanup"
+    },
+    {
+      "source": "/api/webhooks/whatsapp",
+      "destination": "/api/webhooks/whatsapp"
+    },
+    {
       "source": "/(.*)",
       "destination": "/api/index.js"
+    }
+  ],
+  "crons": [
+    {
+      "path":     "/api/cron/whatsapp-cleanup",
+      "schedule": "*/5 * * * *"
     }
   ]
 }
