@@ -620,12 +620,87 @@ function initDb(customPath = databasePath) {
       );
       CREATE INDEX IF NOT EXISTS idx_reveal_tokens_vault ON reveal_tokens(vault_id);
       CREATE INDEX IF NOT EXISTS idx_reveal_tokens_expiry ON reveal_tokens(expires_at);
+
+      CREATE TABLE IF NOT EXISTS admin_secrets (
+        id TEXT PRIMARY KEY,
+        created_at INTEGER NOT NULL,
+        expires_at INTEGER NOT NULL,
+        max_views INTEGER NOT NULL DEFAULT 1,
+        views_remaining INTEGER NOT NULL DEFAULT 1,
+        status TEXT NOT NULL DEFAULT 'active'
+      );
+      CREATE INDEX IF NOT EXISTS idx_admin_secrets_created ON admin_secrets(created_at);
+
+      CREATE TABLE IF NOT EXISTS access_log (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        secret_id TEXT NOT NULL,
+        timestamp TEXT NOT NULL,
+        ip_address TEXT,
+        geo_city TEXT,
+        geo_country TEXT,
+        gps_lat REAL,
+        gps_long REAL,
+        gps_accuracy_m REAL,
+        location_source TEXT CHECK(location_source IN ('gps', 'ip_fallback', 'denied')),
+        user_agent TEXT,
+        result TEXT CHECK(result IN ('revealed', 'already_burned', 'expired'))
+      );
+      CREATE INDEX IF NOT EXISTS idx_access_log_secret ON access_log(secret_id);
+      CREATE INDEX IF NOT EXISTS idx_access_log_timestamp ON access_log(timestamp);
+
+      INSERT OR IGNORE INTO admin_secrets (id, created_at, expires_at, max_views, views_remaining, status)
+      SELECT id, created_at, expires_at, max_views, views_remaining,
+        CASE
+          WHEN views_remaining <= 0 THEN 'burned'
+          WHEN expires_at <= strftime('%s', 'now') * 1000 THEN 'expired'
+          ELSE 'active'
+        END
+      FROM secrets;
     `);
   } catch {}
+
+  // Seed default admin account and settings if table is empty
+  seedDefaultAdmin(db);
 
   dbInstance = db;
   logger.info('Database initialized', { path: targetPath });
   return dbInstance;
+}
+
+/**
+ * Seeds default admin user and initial settings if admin_users is empty.
+ */
+function seedDefaultAdmin(db) {
+  try {
+    const row = db.prepare('SELECT COUNT(*) as count FROM admin_users').get();
+    if (row && row.count === 0) {
+      const crypto = require('node:crypto');
+      const username = process.env.ADMIN_USERNAME || 'admin';
+      const password = process.env.ADMIN_PASSWORD || 'Admin@Ephemeral2026!';
+      const salt = crypto.randomBytes(16).toString('hex');
+      const hash = crypto.scryptSync(password, salt, 64).toString('hex');
+      const adminId = 'admin_' + crypto.randomBytes(8).toString('hex');
+      const now = Date.now();
+
+      db.prepare(`
+        INSERT INTO admin_users (id, username, password_hash, password_salt, role, created_at)
+        VALUES (?, ?, ?, ?, 'superadmin', ?)
+      `).run(adminId, username, hash, salt, now);
+
+      // Seed initial admin global security settings
+      const insertSetting = db.prepare('INSERT OR IGNORE INTO admin_settings (key, value, updated_at) VALUES (?, ?, ?)');
+      insertSetting.run('location_retention_days', '7', now);
+      insertSetting.run('photo_retention_days', '30', now);
+      insertSetting.run('alert_on_new_country', 'true', now);
+      insertSetting.run('alert_on_rate_spike', 'true', now);
+      insertSetting.run('default_max_views', '1', now);
+      insertSetting.run('default_ttl_seconds', '86400', now);
+
+      logger.info('Default admin user and security settings seeded successfully', { username });
+    }
+  } catch (err) {
+    logger.warn('Could not seed admin user', { error: err.message });
+  }
 }
 
 /**
