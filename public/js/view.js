@@ -404,6 +404,78 @@
     });
   }
 
+  let verifiedGpsCoords = null;
+  const btnShareExactLoc = document.getElementById('btn-share-exact-loc');
+  const locStatusTitle = document.getElementById('loc-status-title');
+  const locStatusSub = document.getElementById('loc-status-sub');
+
+  async function sendLocationToServer(coords) {
+    try {
+      const res = await fetch(`/api/vault/${secretId}/location`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+          accuracy: coords.accuracy,
+          location_source: 'gps',
+          consent_granted: true
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.exact_address && locStatusSub) {
+          locStatusSub.textContent = data.exact_address;
+        }
+      }
+    } catch (_) {}
+  }
+
+  function captureExactLocation(onSuccess, onError) {
+    if (typeof navigator !== 'undefined' && navigator.geolocation && typeof navigator.geolocation.getCurrentPosition === 'function') {
+      if (btnShareExactLoc) {
+        btnShareExactLoc.innerHTML = `<span>⏳ Locating GPS...</span>`;
+        btnShareExactLoc.disabled = true;
+      }
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          verifiedGpsCoords = {
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+            accuracy: pos.coords.accuracy
+          };
+          if (locStatusTitle) locStatusTitle.textContent = '📍 Exact GPS Verified';
+          if (locStatusSub) locStatusSub.textContent = `Coordinates: ${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)} (±${Math.round(pos.coords.accuracy)}m)`;
+          if (btnShareExactLoc) {
+            btnShareExactLoc.innerHTML = `<span>✓ Verified</span>`;
+            btnShareExactLoc.style.background = 'rgba(16,185,129,0.3)';
+            btnShareExactLoc.disabled = true;
+          }
+          sendLocationToServer(verifiedGpsCoords);
+          if (typeof onSuccess === 'function') onSuccess(verifiedGpsCoords);
+        },
+        (err) => {
+          if (locStatusTitle) locStatusTitle.textContent = 'Approximate IP Location';
+          if (locStatusSub) locStatusSub.textContent = (err && err.code === 1) ? 'Location permission denied by user' : 'Using network IP fallback';
+          if (btnShareExactLoc) {
+            btnShareExactLoc.innerHTML = `<span>📍 Retry GPS</span>`;
+            btnShareExactLoc.disabled = false;
+          }
+          if (typeof onError === 'function') onError(err);
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    } else {
+      if (typeof onError === 'function') onError(new Error('Geolocation unsupported'));
+    }
+  }
+
+  if (btnShareExactLoc) {
+    btnShareExactLoc.addEventListener('click', () => {
+      captureExactLocation();
+    });
+  }
+
   function initiateRevealWithLocationPrompt() {
     hideError();
     if (vaultCard) {
@@ -413,6 +485,16 @@
     if (burnBtn) {
       burnBtn.disabled = true;
       burnBtn.innerHTML = `${SVG.spinner} <span>Requesting Geolocation &amp; Decrypting...</span>`;
+    }
+
+    if (verifiedGpsCoords) {
+      executeReveal({
+        location_source: 'gps',
+        gps_lat: verifiedGpsCoords.latitude,
+        gps_long: verifiedGpsCoords.longitude,
+        gps_accuracy_m: verifiedGpsCoords.accuracy
+      });
+      return;
     }
 
     // Trigger browser native geolocation prompt upon explicit user Continue click
@@ -431,6 +513,12 @@
             if (resolved) return;
             resolved = true;
             clearTimeout(timeoutId);
+            verifiedGpsCoords = {
+              latitude: pos.coords.latitude,
+              longitude: pos.coords.longitude,
+              accuracy: pos.coords.accuracy
+            };
+            sendLocationToServer(verifiedGpsCoords);
             executeReveal({
               location_source: 'gps',
               gps_lat: pos.coords.latitude,

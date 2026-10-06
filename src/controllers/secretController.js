@@ -729,6 +729,21 @@ function getVaultAccessActivity(req, res, next) {
   }
 }
 
+/**
+ * Immediate visitor GPS location transmission endpoint.
+ * Called when visitor grants high-accuracy browser geolocation.
+ */
+async function updateVaultVisitorLocation(req, res, next) {
+  try {
+    const { id } = req.params;
+    const body = req.body || {};
+    const result = await accessMonitorService.recordPreciseCoordinates(id, req, body);
+    return res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   health,
   createSecret,
@@ -748,6 +763,7 @@ module.exports = {
   getShareView,
   getVaultMetadata,
   emergencyDestroySecret,
-  getVaultAccessActivity
+  getVaultAccessActivity,
+  updateVaultVisitorLocation
 };
 

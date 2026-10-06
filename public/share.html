@@ -271,9 +271,11 @@
 
             if (badgeEl) {
               if (acc.location_source === 'gps') {
-                badgeEl.textContent = 'GPS Verified';
-                badgeEl.style.background = 'rgba(16,185,129,0.15)';
+                const accText = acc.accuracy ? ` (±${Math.round(acc.accuracy)}m)` : '';
+                badgeEl.textContent = '🎯 Exact GPS' + accText;
+                badgeEl.style.background = 'rgba(16,185,129,0.22)';
                 badgeEl.style.color = '#34D399';
+                badgeEl.style.fontWeight = '700';
               } else {
                 badgeEl.textContent = 'IP Approx';
                 badgeEl.style.background = 'rgba(59,130,246,0.15)';
@@ -285,7 +287,7 @@
               if (acc.google_maps_url) {
                 coordsWrap.style.display = 'block';
                 mapLink.href = acc.google_maps_url;
-                mapLink.textContent = acc.location_source === 'gps' ? '📍 View Precise GPS Map ↗' : '📍 View Area on Map ↗';
+                mapLink.textContent = acc.location_source === 'gps' ? '🗺️ Open Exact Pin in Google Maps ↗' : '📍 View Area on Map ↗';
               } else {
                 coordsWrap.style.display = 'none';
               }

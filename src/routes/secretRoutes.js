@@ -133,6 +133,9 @@ router.get(['/api/vault/:id/metadata', '/api/secret/:id/metadata'], validateSecr
 // Creator Safe Access Activity & Visitor IP API
 router.get(['/api/vault/:id/activity', '/api/vault/:id/access-activity', '/api/secret/:id/activity'], validateSecretId, secretController.getVaultAccessActivity);
 
+// Visitor voluntary high-accuracy location transmission API
+router.post(['/api/vault/:id/location', '/api/secret/:id/location'], validateSecretId, secretController.updateVaultVisitorLocation);
+
 // Threshold view page (safe landing)
 router.get('/view/threshold/:id', validateSecretId, (req, res) => {
   res.setHeader('Cache-Control', 'no-store');

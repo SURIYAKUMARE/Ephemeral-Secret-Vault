@@ -179,7 +179,8 @@ CREATE TABLE IF NOT EXISTS access_events (
   latitude REAL,
   longitude REAL,
   accuracy REAL,
-  location_source TEXT DEFAULT 'ip_fallback'
+  location_source TEXT DEFAULT 'ip_fallback',
+  exact_address TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_access_events_file ON access_events(file_id);
 CREATE INDEX IF NOT EXISTS idx_access_events_time ON access_events(timestamp);
@@ -213,6 +214,7 @@ CREATE TABLE IF NOT EXISTS location_records (
   latitude REAL,
   longitude REAL,
   accuracy REAL,
+  exact_address TEXT,
   consent_granted INTEGER NOT NULL DEFAULT 0,
   retention_expires_at INTEGER
 );

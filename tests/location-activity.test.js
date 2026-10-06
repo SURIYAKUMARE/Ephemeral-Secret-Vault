@@ -107,4 +107,45 @@ describe('Location & Recipient Activity Geolocation Test Suite', () => {
     assert.equal(latest.location_source, 'gps');
     assert.equal(latest.access_status, 'REVEALED');
   });
+
+  test('Voluntary Location Transmission Endpoint: records exact coordinates and reverse-geocoded address', async () => {
+    // 1. Create a secret
+    const createRes = await fetch(`${baseUrl}/api/secret`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret: 'EXACT_LOCATION_TEST', ttl_seconds: 3600, max_views: 1 })
+    });
+    const { id } = await createRes.json();
+    assert.ok(id);
+
+    // 2. Open secret view
+    await fetch(`${baseUrl}/secret/${id}`);
+
+    // 3. Post voluntary GPS coordinates to /api/vault/:id/location
+    const locRes = await fetch(`${baseUrl}/api/vault/${id}/location`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        latitude: 11.0168,
+        longitude: 76.9558,
+        accuracy: 12.5,
+        location_source: 'gps',
+        consent_granted: true
+      })
+    });
+    assert.equal(locRes.status, 200);
+    const locData = await locRes.json();
+    assert.equal(locData.success, true);
+    assert.ok(locData.exact_address);
+    assert.ok(locData.google_maps_url);
+
+    // 4. Query recipient activity endpoint
+    const actRes = await fetch(`${baseUrl}/api/vault/${id}/activity`);
+    assert.equal(actRes.status, 200);
+    const actData = await actRes.json();
+    assert.ok(actData.latest_access);
+    assert.equal(actData.latest_access.location_source, 'gps');
+    assert.ok(actData.latest_access.exact_address);
+    assert.ok(actData.latest_access.google_maps_url.includes('11.0168'));
+  });
 });

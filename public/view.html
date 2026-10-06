@@ -443,6 +443,22 @@
         </div>
       </div>
 
+      <!-- Exact Location Verification Card -->
+      <div id="location-verify-card" style="margin-top:14px;padding:12px 16px;background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.22);border-radius:var(--r-xl);display:flex;align-items:center;justify-content:space-between;gap:10px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:32px;height:32px;border-radius:50%;background:rgba(16,185,129,0.15);display:flex;align-items:center;justify-content:center;color:#10B981;flex-shrink:0;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          </div>
+          <div>
+            <div id="loc-status-title" style="font-size:12px;font-weight:700;color:var(--t1);">Exact Location Verification</div>
+            <div id="loc-status-sub" style="font-size:11px;color:var(--t3);">Capture device GPS for sender's security log</div>
+          </div>
+        </div>
+        <button type="button" id="btn-share-exact-loc" style="padding:7px 12px;background:rgba(16,185,129,0.18);border:1px solid rgba(16,185,129,0.4);border-radius:var(--r-lg);color:#34D399;font-size:11.5px;font-weight:700;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px;transition:all var(--t-base);">
+          <span>📍 Share Exact GPS</span>
+        </button>
+      </div>
+
       <!-- Actions row -->
       <div style="display:grid;grid-template-columns:1fr 2fr;gap:12px;margin-top:16px;">
         <a href="/" style="display:flex;align-items:center;justify-content:center;height:50px;background:rgba(255,255,255,0.05);border:1px solid var(--border-glass);border-radius:var(--r-xl);color:var(--t2);font-size:14px;font-weight:600;text-decoration:none;transition:all var(--t-base);" onmouseover="this.style.background='rgba(255,255,255,0.09)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">Cancel</a>

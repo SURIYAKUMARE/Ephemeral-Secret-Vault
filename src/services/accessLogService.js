@@ -1,5 +1,6 @@
 const { getDb } = require('../database/db');
 const { resolveIpLocation } = require('./geoIpService');
+const { reverseGeocode } = require('./reverseGeoService');
 const logger = require('../utils/logger');
 
 /**
@@ -70,6 +71,19 @@ function recordAccessLog(params = {}, requestHeaders = {}) {
       user_agent,
       safeResult
     );
+
+    // If exact GPS coordinates provided, reverse geocode to refine geo_city & geo_country
+    if (lat !== null && long !== null) {
+      reverseGeocode(lat, long).then((geo) => {
+        if (geo && geo.city) {
+          try {
+            const udb = getDb();
+            udb.prepare('UPDATE access_log SET geo_city = ?, geo_country = ? WHERE id = ?')
+              .run(geo.city, geo.country, info.lastInsertRowid);
+          } catch (_) {}
+        }
+      }).catch(() => {});
+    }
 
     // Update admin_secrets status if burned or expired
     if (safeResult === 'revealed') {

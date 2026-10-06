@@ -631,6 +631,8 @@ function initDb(customPath = databasePath) {
   try { db.exec('ALTER TABLE access_events ADD COLUMN longitude REAL;'); } catch {}
   try { db.exec('ALTER TABLE access_events ADD COLUMN accuracy REAL;'); } catch {}
   try { db.exec("ALTER TABLE access_events ADD COLUMN location_source TEXT DEFAULT 'ip_fallback';"); } catch {}
+  try { db.exec('ALTER TABLE access_events ADD COLUMN exact_address TEXT;'); } catch {}
+  try { db.exec('ALTER TABLE location_records ADD COLUMN exact_address TEXT;'); } catch {}
   try {
     db.exec(`
       CREATE TABLE IF NOT EXISTS reveal_tokens (

@@ -319,12 +319,12 @@
             if (data && data.latest_access) {
               const a = data.latest_access;
               const locStr = a.location_display || [a.city, a.region, a.country].filter(Boolean).join(', ') || 'Unknown';
-              const isGps = a.location_source === 'gps';
+              const accBadge = isGps && a.accuracy ? ` (±${Math.round(a.accuracy)}m)` : '';
               const badgeHtml = isGps
-                ? '<span style="display:inline-block;padding:1px 6px;border-radius:4px;background:rgba(16,185,129,0.15);color:#34D399;font-size:10px;font-weight:700;margin-top:2px;">📍 GPS Verified</span>'
+                ? `<span style="display:inline-block;padding:1px 6px;border-radius:4px;background:rgba(16,185,129,0.22);color:#34D399;font-size:10px;font-weight:700;margin-top:2px;">🎯 Exact GPS${accBadge}</span>`
                 : '<span style="display:inline-block;padding:1px 6px;border-radius:4px;background:rgba(59,130,246,0.15);color:#60A5FA;font-size:10px;font-weight:600;margin-top:2px;">🌐 IP Approx</span>';
               const mapLinkHtml = a.google_maps_url
-                ? `<a href="${a.google_maps_url}" target="_blank" rel="noopener noreferrer" style="color:#22D3EE;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:4px;font-size:11px;">📍 Open in Google Maps ↗</a>`
+                ? `<a href="${a.google_maps_url}" target="_blank" rel="noopener noreferrer" style="color:#22D3EE;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:4px;font-size:11px;">🗺️ Open Exact Pin in Google Maps ↗</a>`
                 : '';
 
               content.innerHTML = `
