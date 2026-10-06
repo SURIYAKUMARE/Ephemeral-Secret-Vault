@@ -532,21 +532,33 @@ function initDb(customPath = databasePath) {
     return dbInstance;
   }
 
-  const isMemory = customPath === ':memory:';
-  let targetPath = isMemory
-    ? ':memory:'
-    : (path.isAbsolute(customPath) ? customPath : path.resolve(process.cwd(), customPath));
+  const isServerless = Boolean(
+    isVercel ||
+    process.env.VERCEL ||
+    process.env.VERCEL_ENV ||
+    process.env.AWS_LAMBDA_FUNCTION_NAME ||
+    process.env.NOW_REGION ||
+    (typeof process.cwd === 'function' && process.cwd().startsWith('/var/task'))
+  );
 
-  // If running on Vercel or read-only filesystem, ensure safe path
-  if (!isMemory) {
+  const isMemory = customPath === ':memory:';
+  let targetPath;
+  if (isMemory) {
+    targetPath = ':memory:';
+  } else if (isServerless || (typeof customPath === 'string' && customPath.startsWith('/var/task'))) {
+    targetPath = path.join('/tmp', 'vault.db');
+  } else {
+    targetPath = path.isAbsolute(customPath) ? customPath : path.resolve(process.cwd(), customPath);
+  }
+
+  // Ensure parent directory exists
+  if (!isMemory && targetPath !== ':memory:') {
     const parentDir = path.dirname(targetPath);
     try {
       if (!fs.existsSync(parentDir)) {
         fs.mkdirSync(parentDir, { recursive: true });
       }
-    } catch (err) {
-      // Read-only filesystem (e.g. Vercel Lambda /var/task)
-      logger.warn(`Filesystem read-only for ${parentDir}. Redirecting to /tmp/vault.db`);
+    } catch (_) {
       targetPath = path.join('/tmp', 'vault.db');
     }
   }
@@ -554,8 +566,10 @@ function initDb(customPath = databasePath) {
   let db;
   try {
     db = new DatabaseModule(targetPath);
+    // Verify write readiness
+    db.exec('CREATE TABLE IF NOT EXISTS _health (id INT PRIMARY KEY); DROP TABLE IF EXISTS _health;');
   } catch (err) {
-    logger.warn(`Failed to open SQLite at ${targetPath}: ${err.message}. Retrying with in-memory SQLite.`);
+    logger.warn(`Failed to open writable SQLite at ${targetPath}: ${err.message}. Retrying with in-memory SQLite.`);
     try {
       db = new DatabaseModule(':memory:');
     } catch {
@@ -565,10 +579,15 @@ function initDb(customPath = databasePath) {
   }
 
   try {
-    db.pragma('journal_mode = WAL');
-    db.pragma('synchronous = NORMAL');
+    if (isServerless) {
+      db.pragma('journal_mode = DELETE');
+      db.pragma('synchronous = NORMAL');
+    } else {
+      db.pragma('journal_mode = WAL');
+      db.pragma('synchronous = NORMAL');
+    }
     db.pragma('secure_delete = ON');
-  } catch {}
+  } catch (_) {}
 
   // Load and execute schema
   const schemaPath = path.join(__dirname, 'schema.sql');

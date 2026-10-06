@@ -53,11 +53,9 @@ function validateAndGetMasterKey(key) {
 }
 
 // Ensure writable path on Vercel serverless (/tmp)
-const defaultDbPath = isVercel
+const databasePath = isVercel
   ? path.join('/tmp', 'vault.db')
-  : path.join(process.cwd(), 'data', 'vault.db');
-
-const databasePath = process.env.DATABASE_PATH || process.env.DB_PATH || defaultDbPath;
+  : (process.env.DATABASE_PATH || process.env.DB_PATH || path.join(process.cwd(), 'data', 'vault.db'));
 
 let defaultBaseUrl = `http://localhost:${port}`;
 if (process.env.VERCEL_URL) {
