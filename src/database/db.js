@@ -25,6 +25,9 @@ class InMemoryVaultDb {
     this.canaryRecords = new Map();
     this.policyRecords = new Map();
     this.revealTokenRecords = new Map();
+    this.accessEvents = [];
+    this.locationRecords = [];
+    this.accessLogs = [];
   }
 
   pragma(cmd) {
@@ -486,6 +489,140 @@ class InMemoryVaultDb {
             created_at: rec.created_at,
             has_passphrase: rec.passphrase_hash !== null ? 1 : 0
           };
+        }
+      };
+    }
+
+    // INSERT INTO access_events
+    if (/^INSERT INTO access_events/i.test(cleanSql)) {
+      return {
+        run(...args) {
+          const [
+            id, file_id, timestamp, ip_address, country, region, city, isp_asn,
+            browser, os, device_type, user_agent, referrer, access_status, session_id,
+            previous_access_count, risk_level, risk_reason, has_verification, has_location,
+            latitude, longitude, accuracy, location_source, exact_address
+          ] = args;
+          self.accessEvents.unshift({
+            id, file_id, timestamp, ip_address, country, region, city, isp_asn,
+            browser, os, device_type, user_agent, referrer, access_status, session_id,
+            previous_access_count, risk_level, risk_reason, has_verification, has_location,
+            latitude, longitude, accuracy, location_source, exact_address
+          });
+          return { changes: 1 };
+        }
+      };
+    }
+
+    // SELECT FROM access_events
+    if (/SELECT .+ FROM access_events/i.test(cleanSql)) {
+      return {
+        all(fileId) {
+          return self.accessEvents
+            .filter(e => e.file_id === fileId)
+            .sort((a, b) => b.timestamp - a.timestamp)
+            .slice(0, 20);
+        },
+        get(fileId, ip) {
+          if (ip) {
+            return self.accessEvents.find(e => e.file_id === fileId && e.ip_address === ip) || null;
+          }
+          return self.accessEvents.find(e => e.file_id === fileId) || null;
+        }
+      };
+    }
+
+    // UPDATE access_events
+    if (/UPDATE access_events/i.test(cleanSql)) {
+      return {
+        run(...args) {
+          const eventId = args[args.length - 1];
+          const ev = self.accessEvents.find(e => e.id === eventId);
+          if (ev) {
+            if (/exact_address/i.test(cleanSql)) {
+              ev.latitude = args[0];
+              ev.longitude = args[1];
+              ev.accuracy = args[2];
+              ev.exact_address = args[3];
+              ev.location_source = 'gps';
+              ev.has_location = 1;
+            }
+            return { changes: 1 };
+          }
+          return { changes: 0 };
+        }
+      };
+    }
+
+    // INSERT INTO location_records
+    if (/^INSERT INTO location_records/i.test(cleanSql)) {
+      return {
+        run(...args) {
+          const [id, event_id, file_id, timestamp, source, ip_country, ip_region, ip_city, latitude, longitude, accuracy, exact_address, consent_granted, retention_expires_at] = args;
+          self.locationRecords.unshift({
+            id, event_id, file_id, timestamp, source, ip_country, ip_region, ip_city,
+            latitude, longitude, accuracy, exact_address, consent_granted, retention_expires_at
+          });
+          return { changes: 1 };
+        }
+      };
+    }
+
+    // SELECT FROM location_records
+    if (/SELECT .+ FROM location_records/i.test(cleanSql)) {
+      return {
+        all(fileId) {
+          return self.locationRecords.filter(l => l.file_id === fileId).slice(0, 20);
+        },
+        get(fileId) {
+          return self.locationRecords.find(l => l.file_id === fileId) || null;
+        }
+      };
+    }
+
+    // INSERT INTO access_log
+    if (/^INSERT INTO access_log/i.test(cleanSql)) {
+      return {
+        run(...args) {
+          const [secret_id, timestamp, ip_address, geo_city, geo_country, gps_lat, gps_long, gps_accuracy_m, location_source, user_agent, result] = args;
+          const newId = self.accessLogs.length + 1;
+          self.accessLogs.unshift({
+            id: newId, secret_id, timestamp, ip_address, geo_city, geo_country,
+            gps_lat, gps_long, gps_accuracy_m, location_source, user_agent, result
+          });
+          return { changes: 1, lastInsertRowid: newId };
+        }
+      };
+    }
+
+    // SELECT FROM access_log
+    if (/SELECT .+ FROM access_log/i.test(cleanSql)) {
+      return {
+        all(secretId) {
+          return self.accessLogs.filter(l => l.secret_id === secretId).slice(0, 20);
+        },
+        get(secretId) {
+          return self.accessLogs.find(l => l.secret_id === secretId) || null;
+        }
+      };
+    }
+
+    // UPDATE access_log
+    if (/UPDATE access_log/i.test(cleanSql)) {
+      return {
+        run(...args) {
+          const secretId = args[args.length - 1];
+          const log = self.accessLogs.find(l => l.secret_id === secretId);
+          if (log) {
+            if (/gps_lat/i.test(cleanSql)) {
+              log.gps_lat = args[0];
+              log.gps_long = args[1];
+              log.gps_accuracy_m = args[2];
+              log.location_source = 'gps';
+            }
+            return { changes: 1 };
+          }
+          return { changes: 0 };
         }
       };
     }
