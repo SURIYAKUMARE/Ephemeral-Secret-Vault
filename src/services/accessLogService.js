@@ -1,40 +1,6 @@
-const geoip = require('geoip-lite');
 const { getDb } = require('../database/db');
+const { resolveIpLocation } = require('./geoIpService');
 const logger = require('../utils/logger');
-
-/**
- * Resolves approximate IP-based location (city and country).
- * Privacy notice: Strictly approximate IP geolocation, never claimed as GPS.
- */
-function resolveIpLocation(ip) {
-  if (!ip) return { city: 'Unknown', country: 'Unknown' };
-  const cleanIp = String(ip).split(',')[0].trim();
-
-  // Loopback / Private LAN addresses
-  if (
-    cleanIp === '127.0.0.1' ||
-    cleanIp === '::1' ||
-    cleanIp.startsWith('192.168.') ||
-    cleanIp.startsWith('10.') ||
-    cleanIp.startsWith('172.16.')
-  ) {
-    return { city: 'Local Network', country: 'Localhost' };
-  }
-
-  try {
-    const geo = geoip.lookup(cleanIp);
-    if (geo) {
-      return {
-        city: geo.city || 'Unknown',
-        country: geo.country || 'Unknown'
-      };
-    }
-  } catch (err) {
-    logger.warn('GeoIP lookup error', { error: err.message, ip: cleanIp });
-  }
-
-  return { city: 'Unknown', country: 'Unknown' };
-}
 
 /**
  * Records an entry into the access_log table.
@@ -50,7 +16,7 @@ function resolveIpLocation(ip) {
  * @param {'revealed'|'already_burned'|'expired'} [params.result='revealed']
  * @returns {object|null} Inserted log record
  */
-function recordAccessLog(params = {}) {
+function recordAccessLog(params = {}, requestHeaders = {}) {
   const {
     secret_id,
     ip_address = '127.0.0.1',
@@ -59,7 +25,8 @@ function recordAccessLog(params = {}) {
     gps_long = null,
     gps_accuracy_m = null,
     location_source = 'ip_fallback',
-    result = 'revealed'
+    result = 'revealed',
+    headers = requestHeaders
   } = params;
 
   if (!secret_id) return null;
@@ -67,8 +34,8 @@ function recordAccessLog(params = {}) {
   const db = getDb();
   const timestamp = new Date().toISOString(); // UTC ISO string
 
-  // Resolve approximate city & country from IP
-  const { city, country } = resolveIpLocation(ip_address);
+  // Resolve approximate city & country from IP with headers
+  const { city, country } = resolveIpLocation(ip_address, headers);
 
   // Validate ENUMs
   const validLocationSources = ['gps', 'ip_fallback', 'denied'];

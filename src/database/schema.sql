@@ -175,7 +175,11 @@ CREATE TABLE IF NOT EXISTS access_events (
   risk_level TEXT NOT NULL DEFAULT 'LOW',
   risk_reason TEXT,
   has_verification INTEGER NOT NULL DEFAULT 0,
-  has_location INTEGER NOT NULL DEFAULT 0
+  has_location INTEGER NOT NULL DEFAULT 0,
+  latitude REAL,
+  longitude REAL,
+  accuracy REAL,
+  location_source TEXT DEFAULT 'ip_fallback'
 );
 CREATE INDEX IF NOT EXISTS idx_access_events_file ON access_events(file_id);
 CREATE INDEX IF NOT EXISTS idx_access_events_time ON access_events(timestamp);

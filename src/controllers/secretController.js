@@ -53,7 +53,7 @@ function logAccessAttempt(req, id, resultType) {
       gps_accuracy_m: typeof gps_accuracy_m === 'number' ? gps_accuracy_m : null,
       location_source: resolvedSource,
       result: resultType
-    });
+    }, req.headers || {});
   } catch (_) {}
 }
 
@@ -316,7 +316,7 @@ async function burnSecret(req, res, next) {
     // Successfully revealed
     logAccessAttempt(req, id, 'revealed');
     try {
-      accessMonitorService.recordAccessEvent(id, req, 'REVEALED');
+      accessMonitorService.recordAccessEvent(id, req, 'REVEALED', req.body || {});
     } catch (_) {}
 
     if (result.is_duress) {
@@ -453,7 +453,7 @@ async function revealSecret(req, res, next) {
     // Successfully revealed
     logAccessAttempt(req, id, 'revealed');
     try {
-      accessMonitorService.recordAccessEvent(id, req, 'REVEALED');
+      accessMonitorService.recordAccessEvent(id, req, 'REVEALED', req.body || {});
     } catch (_) {}
 
     if (result.is_duress) {

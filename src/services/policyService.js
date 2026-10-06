@@ -108,6 +108,7 @@ function validatePolicyAccess(policy, req) {
   // 2. Country Allow-list validation
   if (Array.isArray(policy.allowed_countries) && policy.allowed_countries.length > 0) {
     const rawCountry = req.headers['cf-ipcountry'] ||
+      req.headers['x-vercel-ip-country'] ||
       req.headers['x-country-code'] ||
       req.headers['x-geo-country'] ||
       '';

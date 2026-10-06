@@ -627,6 +627,10 @@ function initDb(customPath = databasePath) {
   try { db.exec('ALTER TABLE secrets ADD COLUMN duress_hash TEXT;'); } catch {}
   try { db.exec('ALTER TABLE secrets ADD COLUMN duress_salt TEXT;'); } catch {}
   try { db.exec('ALTER TABLE secrets ADD COLUMN cover_secret TEXT;'); } catch {}
+  try { db.exec('ALTER TABLE access_events ADD COLUMN latitude REAL;'); } catch {}
+  try { db.exec('ALTER TABLE access_events ADD COLUMN longitude REAL;'); } catch {}
+  try { db.exec('ALTER TABLE access_events ADD COLUMN accuracy REAL;'); } catch {}
+  try { db.exec("ALTER TABLE access_events ADD COLUMN location_source TEXT DEFAULT 'ip_fallback';"); } catch {}
   try {
     db.exec(`
       CREATE TABLE IF NOT EXISTS reveal_tokens (

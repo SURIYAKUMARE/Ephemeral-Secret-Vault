@@ -106,8 +106,16 @@
                   <div id="tracker-ip" style="font-family:var(--font-mono);font-size:13px;font-weight:700;color:#22D3EE;margin-top:2px;">—</div>
                 </div>
                 <div style="background:rgba(0,0,0,0.35);padding:8px 10px;border-radius:8px;border:1px solid var(--border);">
-                  <div style="font-size:10px;color:var(--text-4);text-transform:uppercase;font-weight:700;">Location</div>
-                  <div id="tracker-geo" style="font-size:12px;font-weight:600;color:var(--text-1);margin-top:2px;">—</div>
+                  <div style="font-size:10px;color:var(--text-4);text-transform:uppercase;font-weight:700;display:flex;align-items:center;justify-content:space-between;">
+                    <span>Location</span>
+                    <span id="tracker-geo-badge" style="font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(59,130,246,0.15);color:#60A5FA;">IP Approx</span>
+                  </div>
+                  <div id="tracker-geo" style="font-size:12px;font-weight:600;color:var(--text-1);margin-top:2px;line-height:1.35;">—</div>
+                  <div id="tracker-coords-wrap" style="display:none;margin-top:4px;">
+                    <a id="tracker-map-link" href="#" target="_blank" rel="noopener noreferrer" style="font-size:11px;color:#22D3EE;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:4px;">
+                      📍 View on Google Maps ↗
+                    </a>
+                  </div>
                 </div>
                 <div style="background:rgba(0,0,0,0.35);padding:8px 10px;border-radius:8px;border:1px solid var(--border);">
                   <div style="font-size:10px;color:var(--text-4);text-transform:uppercase;font-weight:700;">Status</div>
@@ -118,9 +126,12 @@
                   <div id="tracker-time" style="font-size:11px;color:var(--text-2);margin-top:2px;">—</div>
                 </div>
               </div>
-              <div id="tracker-device" style="font-size:11px;color:var(--text-3);display:flex;align-items:center;gap:6px;">
-                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-                <span id="tracker-device-text">—</span>
+              <div id="tracker-device" style="font-size:11px;color:var(--text-3);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;">
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                  <span id="tracker-device-text">—</span>
+                </div>
+                <span id="tracker-network-text" style="font-size:10.5px;color:var(--text-4);"></span>
               </div>
             </div>
           </div>
@@ -251,7 +262,39 @@
             const pulse = document.getElementById('tracker-pulse');
 
             if (ipEl) ipEl.textContent = acc.ip_address || 'Unknown';
-            if (geoEl) geoEl.textContent = [acc.city, acc.country].filter(Boolean).join(', ') || 'Unknown';
+            if (geoEl) geoEl.textContent = acc.location_display || [acc.city, acc.region, acc.country].filter(Boolean).join(', ') || 'Unknown';
+
+            const badgeEl = document.getElementById('tracker-geo-badge');
+            const coordsWrap = document.getElementById('tracker-coords-wrap');
+            const mapLink = document.getElementById('tracker-map-link');
+            const netEl = document.getElementById('tracker-network-text');
+
+            if (badgeEl) {
+              if (acc.location_source === 'gps') {
+                badgeEl.textContent = 'GPS Verified';
+                badgeEl.style.background = 'rgba(16,185,129,0.15)';
+                badgeEl.style.color = '#34D399';
+              } else {
+                badgeEl.textContent = 'IP Approx';
+                badgeEl.style.background = 'rgba(59,130,246,0.15)';
+                badgeEl.style.color = '#60A5FA';
+              }
+            }
+
+            if (coordsWrap && mapLink) {
+              if (acc.google_maps_url) {
+                coordsWrap.style.display = 'block';
+                mapLink.href = acc.google_maps_url;
+                mapLink.textContent = acc.location_source === 'gps' ? '📍 View Precise GPS Map ↗' : '📍 View Area on Map ↗';
+              } else {
+                coordsWrap.style.display = 'none';
+              }
+            }
+
+            if (netEl) {
+              netEl.textContent = acc.isp_asn && acc.isp_asn !== 'Unknown' ? acc.isp_asn : '';
+            }
+
             if (statusEl) {
               statusEl.textContent = acc.access_status || 'OPENED';
               statusEl.style.color = acc.access_status === 'REVEALED' ? '#EF4444' : '#10B981';
