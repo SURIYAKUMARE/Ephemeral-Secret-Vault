@@ -15,9 +15,13 @@ const adminLoginLimiter = createRateLimiter({
 });
 
 // ─── Public Admin Auth Routes ────────────────────────────────────────────────
-router.get('/admin/login', adminController.getAdminLoginView);
-router.post('/api/admin/login', adminLoginLimiter, adminController.login);
-router.post('/api/admin/logout', adminController.logout);
+router.get(['/login', '/admin/login'], adminController.getAdminLoginView);
+router.post(['/api/login', '/api/admin/login'], adminLoginLimiter, adminController.login);
+router.post(['/api/logout', '/api/admin/logout'], adminController.logout);
+router.get('/logout', (req, res) => {
+  res.clearCookie('admin_token', { path: '/' });
+  return res.redirect('/admin/login');
+});
 
 // ─── Protected Admin Dashboard View ─────────────────────────────────────────
 router.get('/admin', requireAdminAuth, adminController.getAdminDashboardView);

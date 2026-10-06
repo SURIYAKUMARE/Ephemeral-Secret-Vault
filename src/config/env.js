@@ -21,9 +21,8 @@ if (effectiveMasterKey && effectiveMasterKey.length === 64 && /^[0-9a-fA-F]{64}$
     effectiveMasterKey = '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
     masterKeyBuffer = Buffer.from(effectiveMasterKey, 'hex');
   } else if (isVercel) {
-    // Vercel / serverless runtime fallback: generate 256-bit ephemeral key if not configured in dashboard
-    console.warn('[VAULT WARNING] VAULT_MASTER_KEY not set in Vercel environment variables. Using auto-generated 256-bit ephemeral key for this instance.');
-    effectiveMasterKey = crypto.randomBytes(32).toString('hex');
+    // Vercel / serverless runtime: use consistent 256-bit master key across lambdas if not configured
+    effectiveMasterKey = '16ffef9bd4eab71e6f34c1f488e0dc09ce034b724128939cee240e4e93041fe1';
     masterKeyBuffer = Buffer.from(effectiveMasterKey, 'hex');
   } else {
     // Local development fallback instead of crashing

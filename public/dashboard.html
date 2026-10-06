@@ -59,9 +59,11 @@
         <a href="/security">Security</a>
         <a href="/extension">Extension</a>
         <a href="/dashboard" class="active">Dashboard</a>
+        <a href="/admin">Admin Portal</a>
       </nav>
       <div class="nav-actions">
         <span class="nav-badge"><span class="dot"></span>AES-256-GCM</span>
+        <a href="/login" id="nav-dash-login-link" style="font-size:12.5px;font-weight:700;color:var(--text-2);text-decoration:none;padding:6px 12px;border-radius:var(--r-md);border:1px solid var(--border);transition:all var(--t-base);" onmouseover="this.style.color='#fff';this.style.borderColor='var(--brand)';" onmouseout="this.style.color='var(--text-2)';this.style.borderColor='var(--border)';">Sign In</a>
         <button type="button" class="btn-icon-plain" id="theme-toggle" aria-label="Toggle theme">
           <svg id="theme-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
         </button>
@@ -77,10 +79,44 @@
     <a href="/">Home</a><a href="/create">Product</a><a href="/file">File Vault</a>
     <a href="/security">Security</a><a href="/extension">Extension</a>
     <a href="/dashboard" class="active">Dashboard</a>
+    <a href="/admin">Admin Portal</a>
+    <a href="/login">Sign In</a>
   </div>
 
   <main>
     <div class="dash-wrap">
+
+      <!-- Admin Security Portal Banner & Quick Switch -->
+      <div id="admin-session-banner" style="margin-bottom:24px;padding:16px 20px;background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(139,92,246,0.06));border:1px solid rgba(139,92,246,0.30);border-radius:var(--r-xl);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#6366F1,#8B5CF6);display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0;box-shadow:0 0 16px rgba(139,92,246,0.35);">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          </div>
+          <div>
+            <div id="admin-banner-title" style="font-size:14px;font-weight:700;color:#F1F5F9;display:flex;align-items:center;gap:8px;">
+              <span>Security Administration Dashboard</span>
+              <span id="admin-status-badge" style="font-size:10px;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,0.08);color:var(--text-3);font-weight:600;">Guest Mode</span>
+            </div>
+            <div id="admin-banner-sub" style="font-size:12px;color:var(--text-3);margin-top:2px;">
+              Sign in to monitor recipient IP addresses, exact GPS coordinates, access logs, and live telemetry.
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <a id="btn-admin-login-link" href="/admin/login" style="height:36px;padding:0 16px;background:linear-gradient(135deg,#6366F1,#8B5CF6);border:none;border-radius:var(--r-lg);color:#fff;font-size:12.5px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;box-shadow:0 0 16px rgba(99,102,241,0.35);">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+            Sign In to Dashboard →
+          </a>
+          <a id="btn-admin-portal-link" href="/admin" style="display:none;height:36px;padding:0 16px;background:linear-gradient(135deg,#10B981,#059669);border:none;border-radius:var(--r-lg);color:#fff;font-size:12.5px;font-weight:700;cursor:pointer;text-decoration:none;align-items:center;gap:6px;box-shadow:0 0 16px rgba(16,185,129,0.35);">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            Open Admin Console
+          </a>
+          <button type="button" id="btn-dash-logout" style="display:none;height:36px;padding:0 14px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.35);border-radius:var(--r-lg);color:#FCA5A5;font-size:12px;font-weight:700;cursor:pointer;align-items:center;gap:6px;">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            Sign Out
+          </button>
+        </div>
+      </div>
 
       <!-- Header row -->
       <div class="dashboard-header">
@@ -408,6 +444,40 @@
         document.getElementById('mobile-drawer').classList.toggle('open');
       });
 
+      // Check admin authentication state
+      async function checkAdminSession() {
+        try {
+          const res = await fetch('/api/admin/dashboard');
+          if (res.ok) {
+            const loginLink = document.getElementById('btn-admin-login-link');
+            const portalLink = document.getElementById('btn-admin-portal-link');
+            const logoutBtn = document.getElementById('btn-dash-logout');
+            const badge = document.getElementById('admin-status-badge');
+            const sub = document.getElementById('admin-banner-sub');
+            if (loginLink) loginLink.style.display = 'none';
+            if (portalLink) portalLink.style.display = 'inline-flex';
+            if (logoutBtn) logoutBtn.style.display = 'inline-flex';
+            if (badge) {
+              badge.textContent = '🟢 Admin Authenticated';
+              badge.style.background = 'rgba(16,185,129,0.18)';
+              badge.style.color = '#34D399';
+            }
+            if (sub) sub.textContent = 'Signed in as Administrator. Full security telemetry, visitor IPs, exact GPS coordinates, and audit trail available.';
+          }
+        } catch (_) {}
+      }
+
+      document.getElementById('btn-dash-logout')?.addEventListener('click', async () => {
+        try {
+          await fetch('/api/admin/logout', { method: 'POST' });
+          showToast('Signed out successfully');
+          setTimeout(() => window.location.reload(), 500);
+        } catch (_) {
+          window.location.reload();
+        }
+      });
+
+      checkAdminSession();
       renderDashboard();
     })();
   </script>
