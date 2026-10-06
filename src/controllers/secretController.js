@@ -5,6 +5,7 @@ const deadmanService = require('../services/deadmanService');
 const receiptService = require('../services/receiptService');
 const canaryService = require('../services/canaryService');
 const revealTokenService = require('../services/revealTokenService');
+const accessLogService = require('../services/accessLogService');
 
 const publicDir = fs.existsSync(path.join(process.cwd(), 'public'))
   ? path.join(process.cwd(), 'public')
@@ -24,6 +25,37 @@ function getClientIp(req) {
   return req.headers['x-forwarded-for']
     ? req.headers['x-forwarded-for'].split(',')[0].trim()
     : (req.ip || (req.socket && req.socket.remoteAddress) || '127.0.0.1');
+}
+
+/**
+ * Helper to record consent-based access log.
+ */
+function logAccessAttempt(req, id, resultType) {
+  try {
+    const { gps_lat, gps_long, gps_accuracy_m, location_source } = req.body || {};
+    const ip = getClientIp(req);
+    const userAgent = req.headers['user-agent'] || 'Unknown';
+
+    let resolvedSource = location_source;
+    if (!resolvedSource) {
+      if (typeof gps_lat === 'number' && typeof gps_long === 'number') {
+        resolvedSource = 'gps';
+      } else {
+        resolvedSource = 'ip_fallback';
+      }
+    }
+
+    accessLogService.recordAccessLog({
+      secret_id: id,
+      ip_address: ip,
+      user_agent: userAgent,
+      gps_lat: typeof gps_lat === 'number' ? gps_lat : null,
+      gps_long: typeof gps_long === 'number' ? gps_long : null,
+      gps_accuracy_m: typeof gps_accuracy_m === 'number' ? gps_accuracy_m : null,
+      location_source: resolvedSource,
+      result: resultType
+    });
+  } catch (_) {}
 }
 
 /**
@@ -98,6 +130,12 @@ function getSecretView(req, res, next) {
     const meta = secretService.getSecretMetadata(id, Date.now(), req);
 
     if (!meta) {
+      try {
+        const detail = accessLogService.getSecretDetail(id);
+        if (detail && detail.secret) {
+          logAccessAttempt(req, id, detail.secret.status === 'expired' ? 'expired' : 'already_burned');
+        }
+      } catch (_) {}
       res.setHeader('Cache-Control', 'no-store');
       res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
       return res.status(404).sendFile(path.join(publicDir, '404.html'));
@@ -238,6 +276,10 @@ async function burnSecret(req, res, next) {
     const result = secretService.claimAndBurnSecret(id, passphrase, Date.now(), req);
 
     if (!result) {
+      try {
+        const detail = accessLogService.getSecretDetail(id);
+        logAccessAttempt(req, id, (detail && detail.secret && detail.secret.status === 'expired') ? 'expired' : 'already_burned');
+      } catch (_) {}
       return res.status(404).json({ error: 'Secret not found, expired, or already destroyed.' });
     }
 
@@ -246,6 +288,7 @@ async function burnSecret(req, res, next) {
     }
 
     if (result.destroyedTooManyAttempts) {
+      logAccessAttempt(req, id, 'already_burned');
       // 1500ms delay for 3rd failed attempt / destroyed state
       await new Promise(r => setTimeout(r, 1500));
       return res.status(410).json({ error: 'Secret permanently destroyed after too many failed attempts' });
@@ -262,6 +305,9 @@ async function burnSecret(req, res, next) {
         attempts_remaining: result.attempts_remaining
       });
     }
+
+    // Successfully revealed
+    logAccessAttempt(req, id, 'revealed');
 
     if (result.is_duress) {
       return res.status(200).json({
@@ -365,6 +411,10 @@ async function revealSecret(req, res, next) {
     const result = secretService.claimAndBurnSecret(id, passphrase, Date.now(), req);
 
     if (!result) {
+      try {
+        const detail = accessLogService.getSecretDetail(id);
+        logAccessAttempt(req, id, (detail && detail.secret && detail.secret.status === 'expired') ? 'expired' : 'already_burned');
+      } catch (_) {}
       return res.status(404).json({ error: 'Unable to reveal this secret.' });
     }
 
@@ -373,6 +423,7 @@ async function revealSecret(req, res, next) {
     }
 
     if (result.destroyedTooManyAttempts) {
+      logAccessAttempt(req, id, 'already_burned');
       await new Promise(r => setTimeout(r, 1500));
       return res.status(410).json({ error: 'Secret permanently destroyed after too many failed attempts' });
     }
@@ -388,6 +439,9 @@ async function revealSecret(req, res, next) {
         attempts_remaining: result.attempts_remaining
       });
     }
+
+    // Successfully revealed
+    logAccessAttempt(req, id, 'revealed');
 
     if (result.is_duress) {
       return res.status(200).json({

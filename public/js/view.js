@@ -52,6 +52,12 @@
   const slideRevealWidget = document.getElementById('slide-reveal-widget');
   const slideThumb = document.getElementById('slide-thumb');
 
+  // Consent Notice Modal Elements
+  const consentModal = document.getElementById('consent-modal');
+  const consentCancelBtn = document.getElementById('consent-cancel-btn');
+  const consentContinueBtn = document.getElementById('consent-continue-btn');
+  let viewerConsentGranted = false;
+
   // Passphrase Eye Toggle & Hint
   const btnToggleViewEye = document.getElementById('btn-toggle-view-eye');
   const viewEyeIcon = document.getElementById('view-eye-icon');
@@ -366,49 +372,144 @@
   }
 
   // ==========================================================================
+  // Consent-First Viewer Security Notice & Geolocation Flow (Section 1)
+  // ==========================================================================
+  function showConsentModal() {
+    if (consentModal) {
+      consentModal.classList.remove('hidden');
+      consentModal.style.display = 'flex';
+    }
+  }
+
+  function hideConsentModal() {
+    if (consentModal) {
+      consentModal.classList.add('hidden');
+      consentModal.style.display = 'none';
+    }
+  }
+
+  if (consentCancelBtn) {
+    consentCancelBtn.addEventListener('click', () => {
+      hideConsentModal();
+      if (burnBtn) burnBtn.disabled = false;
+      resetSlideThumb();
+    });
+  }
+
+  if (consentContinueBtn) {
+    consentContinueBtn.addEventListener('click', () => {
+      hideConsentModal();
+      viewerConsentGranted = true;
+      initiateRevealWithLocationPrompt();
+    });
+  }
+
+  function initiateRevealWithLocationPrompt() {
+    hideError();
+    if (vaultCard) {
+      vaultCard.classList.add('vault-disintegrating');
+      setTimeout(() => vaultCard.classList.remove('vault-disintegrating'), 500);
+    }
+    if (burnBtn) {
+      burnBtn.disabled = true;
+      burnBtn.innerHTML = `${SVG.spinner} <span>Requesting Geolocation &amp; Decrypting...</span>`;
+    }
+
+    // Trigger browser native geolocation prompt upon explicit user Continue click
+    if (typeof navigator !== 'undefined' && navigator.geolocation && typeof navigator.geolocation.getCurrentPosition === 'function') {
+      let resolved = false;
+      const timeoutId = setTimeout(() => {
+        if (!resolved) {
+          resolved = true;
+          executeReveal({ location_source: 'ip_fallback' });
+        }
+      }, 7000);
+
+      try {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            if (resolved) return;
+            resolved = true;
+            clearTimeout(timeoutId);
+            executeReveal({
+              location_source: 'gps',
+              gps_lat: pos.coords.latitude,
+              gps_long: pos.coords.longitude,
+              gps_accuracy_m: pos.coords.accuracy
+            });
+          },
+          (err) => {
+            if (resolved) return;
+            resolved = true;
+            clearTimeout(timeoutId);
+            // Silently fall back to IP-based approximate location only. No retries, no nagging.
+            executeReveal({
+              location_source: (err && err.code === 1) ? 'denied' : 'ip_fallback'
+            });
+          },
+          { enableHighAccuracy: true, timeout: 6000, maximumAge: 0 }
+        );
+      } catch (_) {
+        if (!resolved) {
+          resolved = true;
+          clearTimeout(timeoutId);
+          executeReveal({ location_source: 'ip_fallback' });
+        }
+      }
+    } else {
+      executeReveal({ location_source: 'ip_fallback' });
+    }
+  }
+
+  // ==========================================================================
   // Burn & Reveal Secret Execution
   // ==========================================================================
   if (burnBtn) {
-    burnBtn.addEventListener('click', async () => {
+    burnBtn.addEventListener('click', () => {
       hideError();
-      if (vaultCard) {
-        vaultCard.classList.add('vault-disintegrating');
-        setTimeout(() => vaultCard.classList.remove('vault-disintegrating'), 500);
+      if (!viewerConsentGranted) {
+        showConsentModal();
+        return;
       }
-      burnBtn.disabled = true;
-      burnBtn.innerHTML = `${SVG.spinner} <span>Decrypting &amp; Wiping Database Row...</span>`;
+      initiateRevealWithLocationPrompt();
+    });
+  }
 
-      const bodyPayload = {};
-      if (hasPassphrase || (passphraseInput && passphraseInput.value)) {
-        bodyPayload.passphrase = passphraseInput.value.trim();
-      }
+  async function executeReveal(locationData = {}) {
+    burnBtn.disabled = true;
+    burnBtn.innerHTML = `${SVG.spinner} <span>Decrypting &amp; Wiping Database Row...</span>`;
 
+    const bodyPayload = { ...locationData };
+    if (hasPassphrase || (passphraseInput && passphraseInput.value)) {
+      bodyPayload.passphrase = passphraseInput.value.trim();
+    }
+
+    try {
+      // Step 1: Request short-lived, single-use Reveal Authorization Token
+      let revealToken = null;
       try {
-        // Step 1: Request short-lived, single-use Reveal Authorization Token
-        let revealToken = null;
-        try {
-          const tokenRes = await fetch(`/api/vault/${secretId}/reveal/request`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-          });
-          if (tokenRes.ok) {
-            const tokenJson = await tokenRes.json();
-            revealToken = tokenJson.reveal_token;
-          }
-        } catch (e) {}
-
-        // Step 2: Authorized Reveal using Bearer Token
-        const revealHeaders = { 'Content-Type': 'application/json' };
-        if (revealToken) {
-          revealHeaders['Authorization'] = `Bearer ${revealToken}`;
-        }
-
-        const revealEndpoint = revealToken ? `/api/vault/${secretId}/reveal` : `/api/secret/${secretId}/burn`;
-        const response = await fetch(revealEndpoint, {
+        const tokenRes = await fetch(`/api/vault/${secretId}/reveal/request`, {
           method: 'POST',
-          headers: revealHeaders,
-          body: JSON.stringify(bodyPayload)
+          headers: { 'Content-Type': 'application/json' }
         });
+        if (tokenRes.ok) {
+          const tokenJson = await tokenRes.json();
+          revealToken = tokenJson.reveal_token;
+        }
+      } catch (e) {}
+
+      // Step 2: Authorized Reveal using Bearer Token
+      const revealHeaders = { 'Content-Type': 'application/json' };
+      if (revealToken) {
+        revealHeaders['Authorization'] = `Bearer ${revealToken}`;
+      }
+
+      const revealEndpoint = revealToken ? `/api/vault/${secretId}/reveal` : `/api/secret/${secretId}/burn`;
+      const response = await fetch(revealEndpoint, {
+        method: 'POST',
+        headers: revealHeaders,
+        body: JSON.stringify(bodyPayload)
+      });
 
         const data = await response.json();
 

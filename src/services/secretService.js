@@ -8,6 +8,7 @@ const receiptService = require('./receiptService');
 const auditService = require('./auditService');
 const canaryService = require('./canaryService');
 const deadmanService = require('./deadmanService');
+const accessLogService = require('./accessLogService');
 
 function parseCryptoBuffer(val) {
   if (Buffer.isBuffer(val)) return val;
@@ -127,6 +128,18 @@ function createSecret({
     duressSalt,
     cover_secret || null
   );
+
+  // Track secret metadata for admin access logs
+  accessLogService.trackCreatedSecret(id, now, expiresAt, maxViews);
+
+  // Track in file_metadata_records for admin dashboard file management
+  try {
+    db.prepare(`
+      INSERT OR IGNORE INTO file_metadata_records (
+        id, file_name, file_size, file_type, created_at, expires_at, max_views, views_remaining, access_count, status
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 'ACTIVE')
+    `).run(id, 'Secret Note', cipherBuf ? cipherBuf.length : 0, 'text/plain', now, expiresAt, maxViews, maxViews);
+  } catch (_) {}
 
   // Save security policies (client ZK, allowed IPs/countries)
   if (client_encrypted || (allowed_ips && allowed_ips.length > 0) || (allowed_countries && allowed_countries.length > 0)) {

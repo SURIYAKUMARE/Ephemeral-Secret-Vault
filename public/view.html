@@ -342,6 +342,7 @@
     <!-- Screen reader stubs -->
     <span class="sr-only">🔐 SECRET VAULT</span>
     <span class="sr-only">SECURE SECRET</span>
+    <span class="sr-only">This secret is protected. Encrypted with AES-256-GCM.</span>
 
     <!-- ════════════════════════════════════════════════
          STATE A: Pre-reveal splash
@@ -507,7 +508,7 @@
           </div>
         </div>
         <div class="modal-body">
-          <p id="consent-notice-text" style="font-size:13.5px;color:var(--t2);line-height:1.7;margin-bottom:22px;">Opening this secret will log your access for the sender's security records. We may also request your location — you can allow or deny this.</p>
+          <p id="consent-notice-text" style="font-size:13.5px;color:var(--t2);line-height:1.7;margin-bottom:22px;">Opening this secret will log your access (timestamp, device info) for the sender's security records. We'll also ask your browser for your precise location — you can allow or deny this.</p>
           <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;">
             <button type="button" id="consent-cancel-btn" class="btn btn-ghost">Cancel</button>
             <button type="button" id="consent-continue-btn" class="btn btn-cta">Continue</button>

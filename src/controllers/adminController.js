@@ -34,6 +34,8 @@ function broadcastSSE(eventType, data) {
 // Wire up eventBus → SSE broadcast
 eventBus.on('file_change', (data) => broadcastSSE('file_change', data));
 eventBus.on('access_event', (data) => broadcastSSE('access_event', data));
+eventBus.on('verification_update', (data) => broadcastSSE('verification', data));
+eventBus.on('alert', (data) => broadcastSSE('alert', data));
 
 // ─── Page Views ───────────────────────────────────────────────────────────────
 
@@ -65,7 +67,6 @@ function login(req, res) {
   const auth = authenticateAdmin(username, password, totp_code);
   if (!auth.success) {
     logger.warn('Failed admin login attempt', { username, ip: req.ip });
-    // Write FAILED_ADMIN_LOGIN audit log
     try {
       const db = getDb();
       const auditId = 'aud_' + crypto.randomBytes(8).toString('hex');
@@ -90,7 +91,6 @@ function login(req, res) {
     path: '/'
   });
 
-  // Write ADMIN_LOGIN audit log
   try {
     const db = getDb();
     const auditId = 'aud_' + crypto.randomBytes(8).toString('hex');
@@ -111,10 +111,8 @@ function login(req, res) {
 function logout(req, res) {
   const token = req.adminToken || parseCookies(req.headers.cookie).admin_token;
   if (token) {
-    // Get session info before invalidating for audit log
     const session = validateSession(token, req);
     invalidateSession(token);
-    // Write ADMIN_LOGOUT audit log
     try {
       const db = getDb();
       const auditId = 'aud_' + crypto.randomBytes(8).toString('hex');
@@ -148,7 +146,7 @@ function getDashboardStats(req, res) {
   }
 }
 
-/** Legacy /api/admin/stats  */
+/** Legacy /api/admin/stats */
 function getStats(req, res) {
   try {
     const secrets = accessLogService.getAllSecrets();
@@ -236,6 +234,27 @@ function deleteFile(req, res) {
   }
 }
 
+function updateFileControls(req, res) {
+  try {
+    const controls = req.body || {};
+    const result = adminFileService.updateFileControls(req.params.id, controls, req.admin);
+    if (!result.success) return res.status(404).json(result);
+    return res.json(result);
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to update controls.' });
+  }
+}
+
+function generateNewLink(req, res) {
+  try {
+    const result = adminFileService.generateNewLink(req.params.id, req.admin);
+    if (!result.success) return res.status(404).json(result);
+    return res.json(result);
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to generate link.' });
+  }
+}
+
 // ─── Legacy Secrets (backward compat) ─────────────────────────────────────────
 
 function getAllSecrets(req, res) {
@@ -308,7 +327,7 @@ function listVerifications(req, res) {
 }
 
 /**
- * Called by the viewer browser when they grant camera permission.
+ * Called by the viewer browser when camera verification is completed or denied.
  * Stores the captured image associated with the access event.
  */
 function submitVerification(req, res) {
@@ -322,10 +341,7 @@ function submitVerification(req, res) {
     const id = 'verif_' + crypto.randomBytes(10).toString('hex');
     const ts = Date.now();
 
-    // Validate camera_permission value
     const perm = (camera_permission === 'GRANTED' || camera_permission === 'granted') ? 'GRANTED' : 'DENIED';
-
-    // Limit image_data size (max 2MB base64)
     const safeImage = (typeof image_data === 'string' && image_data.length < 2 * 1024 * 1024) ? image_data : null;
 
     db.prepare(`
@@ -333,13 +349,17 @@ function submitVerification(req, res) {
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `).run(id, event_id, file_id, ts, perm, safeImage, JSON.stringify(device_info || {}));
 
+    if (perm === 'GRANTED') {
+      try { db.prepare('UPDATE access_events SET has_verification = 1 WHERE id = ?').run(event_id); } catch (_) {}
+    }
+
     // Audit log
     const auditId = 'aud_' + crypto.randomBytes(8).toString('hex');
-    const actionType = perm === 'GRANTED' ? 'CAMERA_PERMISSION_GRANTED' : 'CAMERA_PERMISSION_DENIED';
+    const actionType = perm === 'GRANTED' ? 'VERIFICATION_CAPTURED' : 'CAMERA_PERMISSION_DENIED';
     db.prepare(`
       INSERT INTO audit_logs (id, timestamp, file_id, event_id, action_type, result, details)
       VALUES (?, ?, ?, ?, ?, 'SUCCESS', ?)
-    `).run(auditId, ts, file_id, event_id, actionType, JSON.stringify({ camera_permission: perm }));
+    `).run(auditId, ts, file_id, event_id, actionType, JSON.stringify({ camera_permission: perm, has_image: Boolean(safeImage) }));
 
     // Broadcast to admin dashboard
     broadcastSSE('verification', { id, event_id, file_id, camera_permission: perm, timestamp: ts });
@@ -435,7 +455,6 @@ function listVaults(req, res) {
     const now = Date.now();
     const { search = '', status = 'all', limit = 100, offset = 0 } = req.query;
 
-    // Build a unified list from admin_secrets joined with access_log for IP
     let query = `
       SELECT
         s.id,
@@ -481,7 +500,6 @@ function listVaults(req, res) {
     query += ' ORDER BY s.created_at DESC LIMIT ? OFFSET ?';
     params.push(Number(limit), Number(offset));
 
-    // Also sync latest from secrets table
     try {
       db.prepare(`
         INSERT OR IGNORE INTO admin_secrets (id, created_at, expires_at, max_views, views_remaining, status)
@@ -491,12 +509,8 @@ function listVaults(req, res) {
 
     const rows = db.prepare(query).all(...params);
 
-    const total = db.prepare(`
-      SELECT COUNT(*) as count FROM admin_secrets
-      WHERE 1=1
-    `).get()?.count || 0;
+    const total = db.prepare('SELECT COUNT(*) as count FROM admin_secrets').get()?.count || 0;
 
-    // Compute live status, mask IP partially
     const vaults = rows.map(r => {
       let liveStatus = r.status || 'active';
       if (liveStatus === 'active') {
@@ -504,7 +518,6 @@ function listVaults(req, res) {
         else if (r.views_remaining <= 0) liveStatus = 'burned';
       }
 
-      // Partially mask IP for display (show first 2 octets)
       const maskIp = (ip) => {
         if (!ip) return null;
         const parts = String(ip).split('.');
@@ -521,7 +534,7 @@ function listVaults(req, res) {
         access_count: r.access_count || 0,
         status: liveStatus,
         creator_ip_masked: maskIp(r.creator_ip),
-        creator_ip_full: r.creator_ip,  // full IP only in detail view
+        creator_ip_full: r.creator_ip,
         creator_country: r.creator_country,
         creator_city: r.creator_city,
         creator_ua: r.creator_ua,
@@ -542,8 +555,6 @@ function listVaults(req, res) {
 
 /**
  * GET /api/admin/vaults/:id
- * Returns full vault metadata + full IPs + access log.
- * NEVER returns ciphertext.
  */
 function getVaultDetail(req, res) {
   try {
@@ -551,13 +562,12 @@ function getVaultDetail(req, res) {
     const { id } = req.params;
     const now = Date.now();
 
-    const secret = db.prepare(`
+    let secret = db.prepare(`
       SELECT id, created_at, expires_at, max_views, views_remaining, status
       FROM admin_secrets WHERE id = ?
     `).get(id);
 
     if (!secret) {
-      // Try secrets table
       const sec = db.prepare(`
         SELECT id, created_at, expires_at, max_views, views_remaining
         FROM secrets WHERE id = ?
@@ -606,8 +616,6 @@ function getVaultDetail(req, res) {
 
 /**
  * DELETE /api/admin/vaults/:id
- * Permanently burns a vault. Requires admin session.
- * Records ADMIN_BURN audit event. Never touches plaintext.
  */
 function burnVault(req, res) {
   try {
@@ -626,22 +634,19 @@ function burnVault(req, res) {
       db.prepare('DELETE FROM secrets WHERE id = ?').run(id);
     } catch (_) {}
 
-    // 2. Delete from threshold_secrets if present
     try { db.prepare('DELETE FROM threshold_secrets WHERE id = ?').run(id); } catch (_) {}
 
-    // 3. Mark admin_secrets as burned
     db.prepare(`
       UPDATE admin_secrets SET status = 'burned', views_remaining = 0 WHERE id = ?
     `).run(id);
 
-    // 4. Mark file_metadata as revoked/burned if present
     try {
       db.prepare(`
         UPDATE file_metadata_records SET status = 'BURNED', is_revoked = 1, revoked_at = ? WHERE id = ?
       `).run(now, id);
     } catch (_) {}
 
-    // 5. Write immutable ADMIN_BURN audit log
+    // Audit log
     const auditId = 'aud_' + crypto.randomBytes(8).toString('hex');
     db.prepare(`
       INSERT INTO audit_logs
@@ -660,9 +665,7 @@ function burnVault(req, res) {
       })
     );
 
-    // 6. Broadcast SSE
     broadcastSSE('file_change', { fileId: id, action: 'ADMIN_BURN', status: 'BURNED' });
-
     logger.info('Admin burned vault', { vault_id: id, admin: adminUser?.username, ip: adminIp });
 
     return res.json({
@@ -690,6 +693,8 @@ module.exports = {
   revokeFile,
   extendFileExpiry,
   deleteFile,
+  updateFileControls,
+  generateNewLink,
   getAllSecrets,
   getSecretDetail,
   burnSecretEarly,
@@ -702,7 +707,6 @@ module.exports = {
   getSettings,
   updateSettings,
   streamEvents,
-  // Vaults unified API
   listVaults,
   getVaultDetail,
   burnVault

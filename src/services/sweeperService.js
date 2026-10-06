@@ -27,6 +27,10 @@ function startSweeper(intervalMs = defaultInterval) {
       if (overdueTriggered > 0) {
         logger.warn(`[Sweeper] Triggered ${overdueTriggered} overdue dead man switch(es).`);
       }
+
+      // Auto-delete access_log rows older than retention period (default 30 days)
+      const { cleanupExpiredAccessLogs } = require('./accessLogService');
+      cleanupExpiredAccessLogs();
     } catch (err) {
       logger.error('[Sweeper] Error running sweep', { error: err.message });
     }

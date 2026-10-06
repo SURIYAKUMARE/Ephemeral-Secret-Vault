@@ -7,7 +7,7 @@ const { createRateLimiter } = require('../middleware/rateLimiter');
 
 const router = express.Router();
 
-// ─── Rate limiter: 10 login attempts per 15 minutes per IP ───────────────────
+// Rate limiter: 10 login attempts per 15 minutes per IP
 const adminLoginLimiter = createRateLimiter({
   windowMs: 15 * 60 * 1000,
   max: 10,
@@ -32,6 +32,8 @@ router.get('/api/admin/files/:id', requireAdminAuth, adminController.getFileDeta
 router.post('/api/admin/files/:id/toggle', requireAdminAuth, adminController.toggleFileStatus);
 router.post('/api/admin/files/:id/revoke', requireAdminAuth, adminController.revokeFile);
 router.post('/api/admin/files/:id/extend', requireAdminAuth, adminController.extendFileExpiry);
+router.post('/api/admin/files/:id/controls', requireAdminAuth, adminController.updateFileControls);
+router.post('/api/admin/files/:id/new-link', requireAdminAuth, adminController.generateNewLink);
 router.delete('/api/admin/files/:id', requireAdminAuth, adminController.deleteFile);
 
 // ─── Legacy Secrets Endpoints (backward compat) ───────────────────────────────
@@ -45,7 +47,7 @@ router.get('/api/admin/events/:id', requireAdminAuth, adminController.getAccessE
 
 // ─── Verifications ────────────────────────────────────────────────────────────
 router.get('/api/admin/verifications', requireAdminAuth, adminController.listVerifications);
-router.post('/api/admin/verifications', adminController.submitVerification); // Called by viewer (no admin auth)
+router.post('/api/admin/verifications', adminController.submitVerification); // Called by viewer/visitor
 
 // ─── Locations ────────────────────────────────────────────────────────────────
 router.get('/api/admin/locations', requireAdminAuth, adminController.listLocations);
@@ -61,8 +63,8 @@ router.post('/api/admin/settings', requireAdminAuth, adminController.updateSetti
 router.get('/api/admin/events-stream', requireAdminAuth, adminController.streamEvents);
 
 // ─── Vaults API (unified view: secrets + file_metadata + access_log) ─────────
-router.get('/api/admin/vaults',        requireAdminAuth, adminController.listVaults);
-router.get('/api/admin/vaults/:id',    requireAdminAuth, adminController.getVaultDetail);
+router.get('/api/admin/vaults', requireAdminAuth, adminController.listVaults);
+router.get('/api/admin/vaults/:id', requireAdminAuth, adminController.getVaultDetail);
 router.delete('/api/admin/vaults/:id', requireAdminAuth, adminController.burnVault);
 
 module.exports = router;

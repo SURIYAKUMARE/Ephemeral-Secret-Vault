@@ -77,11 +77,44 @@ function getDashboardStats() {
 
 /**
  * Lists all managed files with filtering, search, and pagination.
+/**
+ * Helper to ensure a file record exists in file_metadata_records (syncing from secrets if needed).
+ */
+function ensureFileMetadata(fileId) {
+  const db = getDb();
+  let file = db.prepare('SELECT * FROM file_metadata_records WHERE id = ?').get(fileId);
+  if (!file) {
+    const sec = db.prepare('SELECT * FROM secrets WHERE id = ?').get(fileId);
+    if (sec) {
+      db.prepare(`
+        INSERT OR IGNORE INTO file_metadata_records (
+          id, file_name, file_size, file_type, created_at, expires_at, max_views, views_remaining, access_count, status
+        ) VALUES (?, 'Secret Note', 0, 'text/plain', ?, ?, ?, ?, 0, 'ACTIVE')
+      `).run(fileId, sec.created_at, sec.expires_at, sec.max_views, sec.views_remaining);
+      file = db.prepare('SELECT * FROM file_metadata_records WHERE id = ?').get(fileId);
+    }
+  }
+  return file;
+}
+
+/**
+ * Lists all managed files with filtering, search, and pagination.
  */
 function listFiles(filters = {}) {
   const db = getDb();
   const now = Date.now();
   const { search, status, limit = 50, offset = 0 } = filters;
+
+  // Sync secrets into metadata
+  try {
+    db.prepare(`
+      INSERT OR IGNORE INTO file_metadata_records (
+        id, file_name, file_size, file_type, created_at, expires_at, max_views, views_remaining, access_count, status
+      )
+      SELECT id, 'Secret Note', 0, 'text/plain', created_at, expires_at, max_views, views_remaining, 0, 'ACTIVE'
+      FROM secrets;
+    `).run();
+  } catch (_) {}
 
   let query = 'SELECT * FROM file_metadata_records WHERE 1=1';
   const params = [];
@@ -94,10 +127,10 @@ function listFiles(filters = {}) {
   if (status && status !== 'all') {
     const s = status.toUpperCase();
     if (s === 'ACTIVE') {
-      query += ' AND status = "ACTIVE" AND is_revoked = 0 AND is_disabled = 0 AND expires_at > ? AND views_remaining > 0';
+      query += " AND status = 'ACTIVE' AND is_revoked = 0 AND is_disabled = 0 AND expires_at > ? AND views_remaining > 0";
       params.push(now);
     } else if (s === 'EXPIRED') {
-      query += ' AND (status = "EXPIRED" OR expires_at <= ?)';
+      query += " AND (status = 'EXPIRED' OR expires_at <= ?)";
       params.push(now);
     } else if (s === 'REVOKED') {
       query += ' AND is_revoked = 1';
@@ -137,7 +170,7 @@ function listFiles(filters = {}) {
 function getFileDetails(fileId) {
   const db = getDb();
   const now = Date.now();
-  const file = db.prepare('SELECT * FROM file_metadata_records WHERE id = ?').get(fileId);
+  const file = ensureFileMetadata(fileId);
   if (!file) return null;
 
   const accessEvents = db.prepare(`
@@ -177,7 +210,7 @@ function getFileDetails(fileId) {
  */
 function toggleFileStatus(fileId, adminUser) {
   const db = getDb();
-  const file = db.prepare('SELECT * FROM file_metadata_records WHERE id = ?').get(fileId);
+  const file = ensureFileMetadata(fileId);
   if (!file) return { success: false, error: 'File not found.' };
 
   const newDisabled = file.is_disabled === 1 ? 0 : 1;
@@ -204,11 +237,11 @@ function toggleFileStatus(fileId, adminUser) {
 function revokeFile(fileId, adminUser) {
   const db = getDb();
   const now = Date.now();
-  const file = db.prepare('SELECT * FROM file_metadata_records WHERE id = ?').get(fileId);
+  const file = ensureFileMetadata(fileId);
   if (!file) return { success: false, error: 'File not found.' };
 
   // Set revoked in metadata
-  db.prepare('UPDATE file_metadata_records SET is_revoked = 1, status = "REVOKED", revoked_at = ? WHERE id = ?').run(now, fileId);
+  db.prepare("UPDATE file_metadata_records SET is_revoked = 1, status = 'REVOKED', revoked_at = ? WHERE id = ?").run(now, fileId);
 
   // Securely delete from core secrets table (Zero-Trace)
   try {
@@ -223,7 +256,7 @@ function revokeFile(fileId, adminUser) {
   const auditId = 'aud_' + crypto.randomBytes(8).toString('hex');
   db.prepare(`
     INSERT INTO audit_logs (id, timestamp, admin_id, admin_username, file_id, action_type, result, details)
-    VALUES (?, ?, ?, ?, 'FILE_REVOKED', 'SUCCESS', ?)
+    VALUES (?, ?, ?, ?, ?, 'FILE_REVOKED', 'SUCCESS', ?)
   `).run(auditId, now, adminUser?.adminId || 'admin', adminUser?.username || 'admin', fileId, JSON.stringify({ revoked_at: now }));
 
   eventBus.emitFileChange({ fileId, action: 'FILE_REVOKED', status: 'REVOKED' });
@@ -236,14 +269,14 @@ function revokeFile(fileId, adminUser) {
  */
 function extendFileExpiry(fileId, extendSeconds = 3600, adminUser) {
   const db = getDb();
-  const file = db.prepare('SELECT * FROM file_metadata_records WHERE id = ?').get(fileId);
+  const file = ensureFileMetadata(fileId);
   if (!file) return { success: false, error: 'File not found.' };
 
   const addedMs = Number(extendSeconds) * 1000;
   const currentExpiry = Math.max(Date.now(), file.expires_at);
   const newExpiry = currentExpiry + addedMs;
 
-  db.prepare('UPDATE file_metadata_records SET expires_at = ?, status = "ACTIVE" WHERE id = ?').run(newExpiry, fileId);
+  db.prepare("UPDATE file_metadata_records SET expires_at = ?, status = 'ACTIVE' WHERE id = ?").run(newExpiry, fileId);
 
   try {
     db.prepare('UPDATE secrets SET expires_at = ? WHERE id = ?').run(newExpiry, fileId);
@@ -253,7 +286,7 @@ function extendFileExpiry(fileId, extendSeconds = 3600, adminUser) {
   const auditId = 'aud_' + crypto.randomBytes(8).toString('hex');
   db.prepare(`
     INSERT INTO audit_logs (id, timestamp, admin_id, admin_username, file_id, action_type, result, details)
-    VALUES (?, ?, ?, ?, 'FILE_EXTENDED', 'SUCCESS', ?)
+    VALUES (?, ?, ?, ?, ?, 'FILE_EXTENDED', 'SUCCESS', ?)
   `).run(auditId, Date.now(), adminUser?.adminId || 'admin', adminUser?.username || 'admin', fileId, JSON.stringify({ extendSeconds, newExpiry }));
 
   eventBus.emitFileChange({ fileId, action: 'FILE_EXTENDED', newExpiry });
@@ -282,7 +315,7 @@ function deleteFile(fileId, adminUser) {
   const auditId = 'aud_' + crypto.randomBytes(8).toString('hex');
   db.prepare(`
     INSERT INTO audit_logs (id, timestamp, admin_id, admin_username, file_id, action_type, result, details)
-    VALUES (?, ?, ?, ?, 'FILE_DELETED', 'SUCCESS', ?)
+    VALUES (?, ?, ?, ?, ?, 'FILE_DELETED', 'SUCCESS', ?)
   `).run(auditId, now, adminUser?.adminId || 'admin', adminUser?.username || 'admin', fileId, JSON.stringify({ deleted_at: now }));
 
   eventBus.emitFileChange({ fileId, action: 'FILE_DELETED' });
@@ -411,6 +444,90 @@ function updateSettings(settingsMap = {}, adminUser) {
   return { success: true, settings: getSettings() };
 }
 
+/**
+ * Updates access controls for a specific file.
+ */
+function updateFileControls(fileId, controls = {}, adminUser) {
+  const db = getDb();
+  const file = ensureFileMetadata(fileId);
+  if (!file) return { success: false, error: 'File not found.' };
+
+  const fields = [];
+  const params = [];
+
+  if (controls.max_views !== undefined) {
+    fields.push('max_views = ?');
+    params.push(parseInt(controls.max_views, 10) || 1);
+  }
+  if (controls.expires_at !== undefined) {
+    fields.push('expires_at = ?');
+    params.push(parseInt(controls.expires_at, 10) || file.expires_at);
+  }
+  if (controls.require_verification !== undefined) {
+    fields.push('require_verification = ?');
+    params.push(controls.require_verification ? 1 : 0);
+  }
+  if (controls.require_location !== undefined) {
+    fields.push('require_location = ?');
+    params.push(controls.require_location ? 1 : 0);
+  }
+  if (controls.disable_downloads !== undefined) {
+    fields.push('disable_downloads = ?');
+    params.push(controls.disable_downloads ? 1 : 0);
+  }
+  if (controls.disable_previews !== undefined) {
+    fields.push('disable_previews = ?');
+    params.push(controls.disable_previews ? 1 : 0);
+  }
+  if (controls.one_time_burn !== undefined) {
+    fields.push('one_time_burn = ?');
+    params.push(controls.one_time_burn ? 1 : 0);
+  }
+
+  if (fields.length > 0) {
+    params.push(fileId);
+    db.prepare(`UPDATE file_metadata_records SET ${fields.join(', ')} WHERE id = ?`).run(...params);
+  }
+
+  // Also sync expires_at to core secrets table if needed
+  if (controls.expires_at !== undefined) {
+    try {
+      db.prepare('UPDATE secrets SET expires_at = ? WHERE id = ?').run(parseInt(controls.expires_at, 10), fileId);
+    } catch (_) {}
+  }
+
+  // Audit log
+  const auditId = 'aud_' + crypto.randomBytes(8).toString('hex');
+  db.prepare(`
+    INSERT INTO audit_logs (id, timestamp, admin_id, admin_username, file_id, action_type, result, details)
+    VALUES (?, ?, ?, ?, ?, 'FILE_CONTROLS_UPDATED', 'SUCCESS', ?)
+  `).run(auditId, Date.now(), adminUser?.adminId || 'admin', adminUser?.username || 'admin', fileId, JSON.stringify(controls));
+
+  eventBus.emitFileChange({ fileId, action: 'FILE_CONTROLS_UPDATED', controls });
+
+  return { success: true, file: getFileDetails(fileId) };
+}
+
+/**
+ * Generates and returns a fresh secure access link for a file.
+ */
+function generateNewLink(fileId, adminUser) {
+  const db = getDb();
+  const file = ensureFileMetadata(fileId);
+  if (!file) return { success: false, error: 'File not found.' };
+
+  const link = `/view/${fileId}`;
+
+  // Audit log
+  const auditId = 'aud_' + crypto.randomBytes(8).toString('hex');
+  db.prepare(`
+    INSERT INTO audit_logs (id, timestamp, admin_id, admin_username, file_id, action_type, result, details)
+    VALUES (?, ?, ?, ?, ?, 'LINK_GENERATED', 'SUCCESS', ?)
+  `).run(auditId, Date.now(), adminUser?.adminId || 'admin', adminUser?.username || 'admin', fileId, JSON.stringify({ link }));
+
+  return { success: true, link, file_id: fileId };
+}
+
 module.exports = {
   getDashboardStats,
   listFiles,
@@ -419,6 +536,8 @@ module.exports = {
   revokeFile,
   extendFileExpiry,
   deleteFile,
+  updateFileControls,
+  generateNewLink,
   listAccessEvents,
   listAuditLogs,
   listVerifications,

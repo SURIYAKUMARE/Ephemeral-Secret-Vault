@@ -65,6 +65,10 @@ if (process.env.VERCEL_URL) {
 }
 const baseUrl = (process.env.BASE_URL || process.env.PUBLIC_BASE_URL || defaultBaseUrl).replace(/\/+$/, '');
 const sweeperIntervalMs = parseInt(process.env.SWEEPER_INTERVAL_MS || process.env.SWEEP_INTERVAL_MS, 10) || 10000;
+const accessLogRetentionDays = parseInt(process.env.ACCESS_LOG_RETENTION_DAYS, 10) || 30;
+const adminUsername = process.env.ADMIN_USERNAME || 'admin';
+const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH || null;
+const adminPassword = process.env.ADMIN_PASSWORD || null;
 
 module.exports = {
   port,
@@ -75,5 +79,9 @@ module.exports = {
   databasePath,
   baseUrl,
   sweeperIntervalMs,
+  accessLogRetentionDays,
+  adminUsername,
+  adminPasswordHash,
+  adminPassword,
   validateAndGetMasterKey
 };
