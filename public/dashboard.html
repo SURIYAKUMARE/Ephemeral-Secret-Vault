@@ -265,6 +265,10 @@
               </div>
             </div>
             <div class="vault-row-actions">
+              <button type="button" data-action="track-ip" data-id="${item.id}" class="btn btn-ghost btn-sm" title="View Recipient IP & Access Activity">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                IP Log
+              </button>
               <button type="button" data-action="copy" data-url="${viewUrl}" class="btn btn-ghost btn-sm" title="Copy link">
                 <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                 Copy
@@ -277,6 +281,13 @@
                 <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
               </button>
             </div>
+            <div id="ip-drawer-${item.id}" style="display:none;width:100%;margin-top:10px;padding:12px 14px;background:rgba(0,0,0,0.4);border-radius:var(--r-md);border:1px solid rgba(99,102,241,0.25);font-size:12px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                <span style="font-weight:700;color:var(--text-1);text-transform:uppercase;font-size:10px;letter-spacing:0.06em;">Recipient Access Telemetry</span>
+                <span style="font-size:10px;color:var(--text-4);">Live IP Tracking</span>
+              </div>
+              <div id="ip-drawer-content-${item.id}" style="color:var(--text-3);">Loading visitor data...</div>
+            </div>
           `;
           vaultsList.appendChild(row);
         }
@@ -284,11 +295,44 @@
         statActive.textContent = String(activeCount);
       }
 
-      vaultsList.addEventListener('click', e => {
+      vaultsList.addEventListener('click', async e => {
         const btn = e.target.closest('[data-action]');
         if (!btn) return;
         if (btn.dataset.action === 'copy') {
           navigator.clipboard.writeText(btn.dataset.url).then(() => showToast('Link copied!')).catch(() => showToast('Copy failed'));
+        }
+        if (btn.dataset.action === 'track-ip') {
+          const id = btn.dataset.id;
+          const drawer = document.getElementById(`ip-drawer-${id}`);
+          const content = document.getElementById(`ip-drawer-content-${id}`);
+          if (!drawer || !content) return;
+          if (drawer.style.display === 'block') {
+            drawer.style.display = 'none';
+            return;
+          }
+          drawer.style.display = 'block';
+          content.innerHTML = '<span style="color:var(--text-3);">Querying visitor log...</span>';
+          try {
+            const res = await fetch(`/api/vault/${id}/activity`);
+            if (!res.ok) throw new Error('Query failed');
+            const data = await res.json();
+            if (data && data.latest_access) {
+              const a = data.latest_access;
+              content.innerHTML = `
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:4px;">
+                  <div><strong style="color:var(--text-4);font-size:10px;display:block;">RECIPIENT IP</strong><span class="mono" style="color:#22D3EE;font-weight:700;">${a.ip_address || 'Unknown'}</span></div>
+                  <div><strong style="color:var(--text-4);font-size:10px;display:block;">LOCATION</strong><span style="color:var(--text-1);">${[a.city, a.country].filter(Boolean).join(', ') || 'Unknown'}</span></div>
+                  <div><strong style="color:var(--text-4);font-size:10px;display:block;">STATUS</strong><span style="color:${a.access_status === 'REVEALED' ? '#EF4444' : '#10B981'};font-weight:700;">${a.access_status || 'OPENED'}</span></div>
+                  <div><strong style="color:var(--text-4);font-size:10px;display:block;">OPENED AT</strong><span style="color:var(--text-2);">${new Date(a.timestamp).toLocaleString()}</span></div>
+                </div>
+                <div style="font-size:11px;color:var(--text-4);margin-top:6px;">Device: ${a.browser || 'Browser'} on ${a.os || 'OS'} (${a.device_type || 'Desktop'})</div>
+              `;
+            } else {
+              content.innerHTML = '<span style="color:var(--text-4);">No recipient access attempts recorded yet. Waiting for link to be opened.</span>';
+            }
+          } catch (err) {
+            content.innerHTML = '<span style="color:#EF4444;">Unable to load access logs at this moment.</span>';
+          }
         }
         if (btn.dataset.action === 'delete') {
           const list = getHistory().filter(i => i.id !== btn.dataset.id);

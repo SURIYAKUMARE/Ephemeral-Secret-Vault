@@ -130,6 +130,9 @@ router.get('/benchmark', (req, res) => {
 // Public Safe Metadata API
 router.get(['/api/vault/:id/metadata', '/api/secret/:id/metadata'], validateSecretId, secretController.getVaultMetadata);
 
+// Creator Safe Access Activity & Visitor IP API
+router.get(['/api/vault/:id/activity', '/api/vault/:id/access-activity', '/api/secret/:id/activity'], validateSecretId, secretController.getVaultAccessActivity);
+
 // Threshold view page (safe landing)
 router.get('/view/threshold/:id', validateSecretId, (req, res) => {
   res.setHeader('Cache-Control', 'no-store');

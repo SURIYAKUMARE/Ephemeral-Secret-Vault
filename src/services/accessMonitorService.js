@@ -7,6 +7,28 @@ const eventBus = require('./eventBus');
 const logger = require('../utils/logger');
 
 /**
+ * Safely extracts visitor client IP from various proxy and edge headers.
+ */
+function extractClientIp(req) {
+  if (!req) return '127.0.0.1';
+  const headers = req.headers || {};
+  const xForwardedFor = headers['x-forwarded-for'];
+  if (xForwardedFor) {
+    const first = String(xForwardedFor).split(',')[0].trim();
+    if (first) return first.replace(/^::ffff:/, '');
+  }
+  const raw = headers['x-real-ip'] ||
+    headers['x-vercel-forwarded-for'] ||
+    headers['cf-connecting-ip'] ||
+    headers['fastly-client-ip'] ||
+    headers['x-cluster-client-ip'] ||
+    req.ip ||
+    req.socket?.remoteAddress ||
+    '127.0.0.1';
+  return String(raw).replace(/^::ffff:/, '').trim();
+}
+
+/**
  * Records an access event when a file/link is opened, revealed, or challenged.
  */
 function recordAccessEvent(fileId, req, accessStatus = 'OPENED', metadata = {}) {
@@ -15,7 +37,7 @@ function recordAccessEvent(fileId, req, accessStatus = 'OPENED', metadata = {}) 
   const eventId = 'evt_' + crypto.randomBytes(8).toString('hex');
 
   // Extract client IP and headers safely
-  const ip = (req ? (req.headers['x-forwarded-for'] || req.socket?.remoteAddress || req.ip || '127.0.0.1') : '127.0.0.1').split(',')[0].trim();
+  const ip = extractClientIp(req);
   const headers = req ? req.headers : {};
   const ua = headers['user-agent'] || 'Unknown';
   const referrer = headers['referer'] || headers['referrer'] || null;
@@ -253,9 +275,63 @@ function cleanupExpiredPrivacyData() {
   }
 }
 
+/**
+ * Retrieves safe access activity history for a specific vault link (for creator).
+ */
+function getFileAccessActivity(fileId) {
+  const db = getDb();
+  let events = [];
+  try {
+    events = db.prepare(`
+      SELECT id, timestamp, ip_address, country, region, city, isp_asn, browser, os, device_type, access_status
+      FROM access_events
+      WHERE file_id = ?
+      ORDER BY timestamp DESC
+      LIMIT 20
+    `).all(fileId) || [];
+  } catch (_) {}
+
+  // Fallback to access_log if empty
+  if (events.length === 0) {
+    try {
+      const logs = db.prepare(`
+        SELECT id, timestamp, ip_address, geo_city as city, geo_country as country, user_agent, result as access_status
+        FROM access_log
+        WHERE secret_id = ?
+        ORDER BY id DESC
+        LIMIT 20
+      `).all(fileId) || [];
+      events = logs.map(l => ({
+        id: 'log_' + l.id,
+        timestamp: !isNaN(Date.parse(l.timestamp)) ? Date.parse(l.timestamp) : Date.now(),
+        ip_address: l.ip_address || 'Unknown',
+        country: l.country || 'Unknown',
+        region: 'Unknown',
+        city: l.city || 'Unknown',
+        isp_asn: 'Unknown',
+        browser: 'Browser',
+        os: 'OS',
+        device_type: 'Desktop',
+        access_status: l.access_status ? l.access_status.toUpperCase() : 'OPENED'
+      }));
+    } catch (_) {}
+  }
+
+  const latest = events.length > 0 ? events[0] : null;
+
+  return {
+    file_id: fileId,
+    total_events: events.length,
+    latest_access: latest,
+    events
+  };
+}
+
 module.exports = {
   recordAccessEvent,
   recordBrowserLocation,
   recordCameraVerification,
-  cleanupExpiredPrivacyData
+  cleanupExpiredPrivacyData,
+  getFileAccessActivity,
+  extractClientIp
 };

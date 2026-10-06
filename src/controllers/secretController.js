@@ -6,6 +6,7 @@ const receiptService = require('../services/receiptService');
 const canaryService = require('../services/canaryService');
 const revealTokenService = require('../services/revealTokenService');
 const accessLogService = require('../services/accessLogService');
+const accessMonitorService = require('../services/accessMonitorService');
 
 const publicDir = fs.existsSync(path.join(process.cwd(), 'public'))
   ? path.join(process.cwd(), 'public')
@@ -22,9 +23,7 @@ function health(req, res) {
  * Helper to extract client IP from headers/socket.
  */
 function getClientIp(req) {
-  return req.headers['x-forwarded-for']
-    ? req.headers['x-forwarded-for'].split(',')[0].trim()
-    : (req.ip || (req.socket && req.socket.remoteAddress) || '127.0.0.1');
+  return accessMonitorService.extractClientIp(req);
 }
 
 /**
@@ -133,13 +132,21 @@ function getSecretView(req, res, next) {
       try {
         const detail = accessLogService.getSecretDetail(id);
         if (detail && detail.secret) {
-          logAccessAttempt(req, id, detail.secret.status === 'expired' ? 'expired' : 'already_burned');
+          const st = detail.secret.status === 'expired' ? 'expired' : 'already_burned';
+          logAccessAttempt(req, id, st);
+          accessMonitorService.recordAccessEvent(id, req, st.toUpperCase());
         }
       } catch (_) {}
       res.setHeader('Cache-Control', 'no-store');
       res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
       return res.status(404).sendFile(path.join(publicDir, '404.html'));
     }
+
+    // Record open event with visitor IP, geolocation, and device telemetry
+    try {
+      logAccessAttempt(req, id, 'opened');
+      accessMonitorService.recordAccessEvent(id, req, 'OPENED');
+    } catch (_) {}
 
     const templatePath = path.join(publicDir, 'view.html');
     let html = fs.readFileSync(templatePath, 'utf8');
@@ -308,6 +315,9 @@ async function burnSecret(req, res, next) {
 
     // Successfully revealed
     logAccessAttempt(req, id, 'revealed');
+    try {
+      accessMonitorService.recordAccessEvent(id, req, 'REVEALED');
+    } catch (_) {}
 
     if (result.is_duress) {
       return res.status(200).json({
@@ -442,6 +452,9 @@ async function revealSecret(req, res, next) {
 
     // Successfully revealed
     logAccessAttempt(req, id, 'revealed');
+    try {
+      accessMonitorService.recordAccessEvent(id, req, 'REVEALED');
+    } catch (_) {}
 
     if (result.is_duress) {
       return res.status(200).json({
@@ -692,6 +705,29 @@ function emergencyDestroySecret(req, res, next) {
   }
 }
 
+/**
+ * Returns safe recipient access activity and visitor IP history for the vault creator.
+ */
+function getVaultAccessActivity(req, res, next) {
+  try {
+    const { id } = req.params;
+    const activity = accessMonitorService.getFileAccessActivity(id);
+    const meta = secretService.getSecretMetadata(id, Date.now(), req);
+
+    return res.status(200).json({
+      success: true,
+      id,
+      is_active: meta ? meta.views_remaining > 0 : false,
+      views_remaining: meta ? meta.views_remaining : 0,
+      total_accesses: activity.total_events,
+      latest_access: activity.latest_access,
+      activity: activity.events
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   health,
   createSecret,
@@ -710,6 +746,7 @@ module.exports = {
   denyDirectSecretAccess,
   getShareView,
   getVaultMetadata,
-  emergencyDestroySecret
+  emergencyDestroySecret,
+  getVaultAccessActivity
 };
 

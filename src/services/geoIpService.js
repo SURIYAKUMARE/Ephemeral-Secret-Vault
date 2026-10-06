@@ -22,6 +22,11 @@ const KNOWN_NETWORKS = [
   { prefix: '185.', country: 'United Kingdom', region: 'England', city: 'London', isp: 'British Telecom (AS2856)' }
 ];
 
+let geoip = null;
+try {
+  geoip = require('geoip-lite');
+} catch (_) {}
+
 /**
  * Resolves approximate IP-based location from request IP and headers.
  *
@@ -30,7 +35,7 @@ const KNOWN_NETWORKS = [
  * @returns {object}
  */
 function resolveIpLocation(ip, headers = {}) {
-  const cleanIp = String(ip || '127.0.0.1').split(',')[0].trim();
+  const cleanIp = String(ip || '127.0.0.1').replace(/^::ffff:/, '').split(',')[0].trim();
 
   // Cloudflare / Reverse proxy edge headers when deployed
   const cfCountry = headers['cf-ipcountry'] || headers['x-country'];
@@ -60,6 +65,23 @@ function resolveIpLocation(ip, headers = {}) {
         is_approximate: true
       };
     }
+  }
+
+  // Use GeoIP database if available
+  if (geoip) {
+    try {
+      const geo = geoip.lookup(cleanIp);
+      if (geo) {
+        return {
+          ip: cleanIp,
+          country: geo.country || 'International',
+          region: geo.region || 'Region Unknown',
+          city: geo.city || 'City Unknown',
+          isp_asn: 'Public Internet Provider',
+          is_approximate: true
+        };
+      }
+    } catch (_) {}
   }
 
   // Default fallback for public IPs
