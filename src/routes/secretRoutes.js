@@ -52,8 +52,8 @@ router.get('/file', (req, res) => {
 // Dedicated Share Center
 router.get('/share/:id', validateSecretId, secretController.getShareView);
 
-// Safe view splash page (supports /view/:id, /v/:id, and /vault/:id)
-router.get(['/view/:id', '/v/:id', '/vault/:id'], validateSecretId, secretController.getSecretView);
+// Safe view splash page (supports /view/:id, /v/:id, /vault/:id, and /secret/:id)
+router.get(['/view/:id', '/v/:id', '/vault/:id', '/secret/:id'], validateSecretId, secretController.getSecretView);
 
 // Expired Secret page
 router.get('/expired', (req, res) => {

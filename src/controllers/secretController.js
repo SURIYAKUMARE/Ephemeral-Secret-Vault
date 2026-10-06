@@ -718,10 +718,11 @@ function getVaultAccessActivity(req, res, next) {
       success: true,
       id,
       is_active: meta ? meta.views_remaining > 0 : false,
-      views_remaining: meta ? meta.views_remaining : 0,
       total_accesses: activity.total_events,
+      total_events: activity.total_events,
       latest_access: activity.latest_access,
-      activity: activity.events
+      activity: activity.events,
+      events: activity.events
     });
   } catch (err) {
     next(err);
